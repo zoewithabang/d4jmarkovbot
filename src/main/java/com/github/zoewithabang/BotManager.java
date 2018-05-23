@@ -15,5 +15,7 @@ class BotManager
             .build();
     
         clientMarkovBot.getDispatcher().registerListener(new MarkovBot());
+        
+        clientMarkovBot.login();
     }
 }
