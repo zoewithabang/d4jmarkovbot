@@ -45,17 +45,9 @@
         </plugins>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>log4j.properties</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>log4j.properties</include>
-                </includes>
-                <targetPath>${project.build.outputDirectory}</targetPath>
+                <directory>${basedir}/src/main/resources</directory>
+                <targetPath>${basedir}/target</targetPath>
+                <filtering>false</filtering>
             </resource>
         </resources>
     </build>
