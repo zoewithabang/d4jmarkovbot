@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ICommand
 {
-    Logger LOGGER = LoggerFactory.getLogger(ICommand.class);
+    Logger LOGGER = LoggerFactory.getLogger("ZOEWITHABANG");
     
     void execute(MessageReceivedEvent event, List<String> args);
 }

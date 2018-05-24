@@ -6,7 +6,7 @@ import sx.blah.discord.handle.obj.IChannel;
 
 public interface IBot
 {
-    Logger LOGGER = LoggerFactory.getLogger(IBot.class);
+    Logger LOGGER = LoggerFactory.getLogger("ZOEWITHABANG");
     
     void sendMessage(IChannel channel, String message);
 }
