@@ -43,13 +43,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <targetPath>${basedir}/target</targetPath>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
     </build>
 
     <repositories>
