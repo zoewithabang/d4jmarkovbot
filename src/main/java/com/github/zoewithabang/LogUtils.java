@@ -22,7 +22,7 @@ public class LogUtils
                 Properties loggerProperties = new Properties();
                 
                 loggerProperties.load(loggerPropertyStream);
-                logClassName = loggerProperties.getProperty("logger.outfile.name");
+                logClassName = loggerProperties.getProperty("property.loggerClass");
                 Class logClass = Class.forName(logClassName);
                 LOGGER = LoggerFactory.getLogger(logClass);
                 
