@@ -22,12 +22,12 @@ public class GetAllMessagesFromUser implements ICommand
         
         if(argsSize < 1)
         {
-            LOGGER.error("[MARKOVBOT] GetAllMessages expected 1 argument, found {}", argsSize);
+            LOGGER.error("[MARKOVBOT] GetAllMessages expected 1 argument, found {}.", argsSize);
             bot.sendMessage(event.getChannel(), "Error: Expected a single argument.");
             return;
         }
         
-        LOGGER.debug("[MARKOVBOT] Executing GetAllMessagesFromUser for User {}", args.get(0));
+        LOGGER.debug("[MARKOVBOT] Executing GetAllMessagesFromUser for User '{}'", args.get(0));
         bot.sendMessage(event.getChannel(), "This is where I would get messages!");
     }
 }

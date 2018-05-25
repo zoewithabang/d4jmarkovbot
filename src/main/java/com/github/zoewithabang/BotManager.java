@@ -34,11 +34,11 @@ class BotManager
         }
         catch(IOException e)
         {
-            LOGGER.error("[BOTMANAGER] IOException on getting MarkovBot properties file {}", e);
+            LOGGER.error("[BOTMANAGER] IOException on getting MarkovBot properties file.", e);
         }
         catch(NullPointerException e)
         {
-            LOGGER.error("[BOTMANAGER] NullPointerException on loading MarkovBot properties file {}", e);
+            LOGGER.error("[BOTMANAGER] NullPointerException on loading MarkovBot properties file.", e);
         }
     }
     
@@ -59,7 +59,7 @@ class BotManager
         }
         catch(DiscordException e)
         {
-            LOGGER.error("[BOTMANAGER] DiscordException when creating MarkovBot {}", e);
+            LOGGER.error("[BOTMANAGER] DiscordException when creating MarkovBot.", e);
         }
     }
 }

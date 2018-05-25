@@ -31,10 +31,12 @@ public class LogUtils
             catch(IOException e)
             {
                 System.err.println("ERROR: IOException on loading logger properties file, aborting.");
+                e.printStackTrace();
             }
             catch(ClassNotFoundException e)
             {
                 System.err.println("ERROR: ClassNotFoundException when trying to find the class named in properties as '" + logClassName + "', aborting.");
+                e.printStackTrace();
             }
         }
         
