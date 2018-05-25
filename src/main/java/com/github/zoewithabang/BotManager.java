@@ -36,6 +36,10 @@ class BotManager
         {
             LOGGER.error("[BOTMANAGER] IOException on getting MarkovBot properties file {}", e);
         }
+        catch(NullPointerException e)
+        {
+            LOGGER.error("[BOTMANAGER] NullPointerException on loading MarkovBot properties file {}", e);
+        }
     }
     
     static void run()
