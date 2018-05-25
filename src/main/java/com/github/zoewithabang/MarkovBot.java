@@ -12,11 +12,14 @@ import java.util.*;
 
 public class MarkovBot implements IBot
 {
-    private final String PREFIX = "!";
-    private Map<String, ICommand> commands = new HashMap<>();
+    private Properties properties;
+    private Map<String, ICommand> commands;
     
-    public MarkovBot()
+    public MarkovBot(Properties properties)
     {
+        this.properties = properties;
+        commands = new HashMap<>();
+        
         commands.put("get", new GetAllMessagesFromUser(this));
     }
     
@@ -40,18 +43,20 @@ public class MarkovBot implements IBot
     @EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event)
     {
+        String prefix = properties.getProperty("prefix");
+        
         //separate message by spaces, args[0] will have the command, if this is a message for the bot
         String[] args = event.getMessage().getContent().split(" ");
         
         //if a message doesn't start with the bot's prefix, ignore it
         if(args.length == 0
-            || !args[0].startsWith(PREFIX))
+            || !args[0].startsWith(prefix))
         {
             return;
         }
         
         //get the actual command, minus the bot's prefix
-        String command = args[0].substring(PREFIX.length());
+        String command = args[0].substring(prefix.length());
         
         //put the args into an ArrayList, removing the command
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
