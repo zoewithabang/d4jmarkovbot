@@ -80,11 +80,25 @@ public class GetAllMessagesFromUser implements ICommand
         IGuild server = event.getGuild();
         List<IUser> users = server.getUsers();
         IUser specifiedUser = null;
+        String trimmedId;
         
+        //trim the ID taken from message input so that it's just the numerical part
+        if(id.startsWith("<@!")) //if user has a nickname
+        {
+            trimmedId = id.substring(3, id.length() - 1);
+            LOGGER.debug("[MARKOVBOT] User has nickname, trimmed ID of {}", trimmedId);
+        }
+        else //if user does not have a nickname, 'id.startsWith("<@")'
+        {
+            trimmedId = id.substring(2, id.length() - 1);
+            LOGGER.debug("[MARKOVBOT] User has no nickname, trimmed ID of {}", trimmedId);
+        }
+        
+        //iterate over users in server to find match
         for(IUser user : users)
         {
-            LOGGER.debug("[MARKOVBOT] User {} Discriminator {}", user.getName(), user.getDiscriminator());
-            if(user.getDiscriminator().equals(id))
+            LOGGER.debug("[MARKOVBOT] User {} String ID {}", user.getName(), user.getStringID());
+            if(user.getStringID().equals(trimmedId))
             {
                 LOGGER.debug("[MARKOVBOT] User {} matches ID {}", user.getName(), id);
                 specifiedUser = user;
