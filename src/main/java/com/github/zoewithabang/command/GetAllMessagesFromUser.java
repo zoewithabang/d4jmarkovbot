@@ -24,11 +24,11 @@ public class GetAllMessagesFromUser implements ICommand
     @Override
     public void execute(MessageReceivedEvent event, List<String> args)
     {
-        LOGGER.debug("[MARKOVBOT] Executing GetAllMessagesFromUser for User '{}'", args.get(0));
         if(!validateArgs(event, args))
         {
             return;
         }
+        LOGGER.debug("[MARKOVBOT] Executing GetAllMessagesFromUser for User '{}'", args.get(0));
         
         //check if user has stored messages
         //if yes, get latest message, then IChannel#getMessageHistoryFrom(LocalDateTime)
