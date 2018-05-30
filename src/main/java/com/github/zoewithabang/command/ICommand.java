@@ -1,4 +1,4 @@
-package com.github.zoewithabang.Command;
+package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.LogUtils;
 import org.slf4j.Logger;

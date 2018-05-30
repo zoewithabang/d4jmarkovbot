@@ -1,5 +1,6 @@
 package com.github.zoewithabang;
 
+import com.github.zoewithabang.bot.MarkovBot;
 import org.slf4j.Logger;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;

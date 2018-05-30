@@ -1,7 +1,7 @@
-package com.github.zoewithabang;
+package com.github.zoewithabang.bot;
 
-import com.github.zoewithabang.Command.GetAllMessagesFromUser;
-import com.github.zoewithabang.Command.ICommand;
+import com.github.zoewithabang.command.GetAllMessagesFromUser;
+import com.github.zoewithabang.command.ICommand;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;

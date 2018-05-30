@@ -1,6 +1,6 @@
-package com.github.zoewithabang.Command;
+package com.github.zoewithabang.command;
 
-import com.github.zoewithabang.IBot;
+import com.github.zoewithabang.bot.IBot;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
