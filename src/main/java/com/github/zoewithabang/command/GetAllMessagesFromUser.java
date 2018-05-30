@@ -2,9 +2,13 @@ package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.MessageHistory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GetAllMessagesFromUser implements ICommand
@@ -26,18 +30,12 @@ public class GetAllMessagesFromUser implements ICommand
             return;
         }
         
-        /*
-        bot.sendMessage(event.getChannel(), "This is where I would get messages, given the arg " + args.get(0));
-        bot.sendMessage(event.getChannel(), "`This is where I would get messages, given the arg " + args.get(0) + "`");
-        */
-        
-        //check if arg is a user
         //check if user has stored messages
         //if yes, get latest message, then IChannel#getMessageHistoryFrom(LocalDateTime)
         //if no, IChannel#getFullMessageHistory()
         
+        //check if arg is a user
         String userId = args.get(0);
-        
         IUser user = getUser(event, userId);
         
         if(user == null)
@@ -47,7 +45,20 @@ public class GetAllMessagesFromUser implements ICommand
             return;
         }
         
-        bot.sendMessage(event.getChannel(), "Hey, I got a " + user.getName() + "!");
+        List<IChannel> channels = event.getGuild().getChannels();
+        List<MessageHistory> messageHistories = new ArrayList<>();
+        for(IChannel channel : channels)
+        {
+            messageHistories.add(channel.getFullMessageHistory());
+        }
+        
+        for(MessageHistory messageHistory : messageHistories)
+        {
+            for(IMessage message : messageHistory)
+            {
+                bot.sendMessage(event.getChannel(), "'" + message.getAuthor() + "' said '" + message.getFormattedContent() + "' at '" + message.getTimestamp() + "'");
+            }
+        }
     }
     
     private boolean validateArgs(MessageReceivedEvent event, List<String> args)
