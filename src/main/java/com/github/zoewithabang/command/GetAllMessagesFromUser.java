@@ -1,24 +1,25 @@
 package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
+import com.github.zoewithabang.model.UserData;
+import com.github.zoewithabang.service.UserService;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.MessageHistory;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 
 public class GetAllMessagesFromUser implements ICommand
 {
-    
     private IBot bot;
+    private Properties botProperties;
     
-    public GetAllMessagesFromUser(IBot bot)
+    public GetAllMessagesFromUser(IBot bot, Properties botProperties)
     {
         this.bot = bot;
+        this.botProperties = botProperties;
     }
     
     @Override
@@ -30,13 +31,9 @@ public class GetAllMessagesFromUser implements ICommand
         }
         LOGGER.debug("[MARKOVBOT] Executing GetAllMessagesFromUser for User '{}'", args.get(0));
         
-        //check if user has stored messages
-        //if yes, get latest message, then IChannel#getMessageHistoryFrom(LocalDateTime)
-        //if no, IChannel#getFullMessageHistory()
-        
         //check if arg is a user
         String userId = args.get(0);
-        IUser user = getUser(event, userId);
+        IUser user = getUserInServer(event, userId);
         
         if(user == null)
         {
@@ -44,20 +41,43 @@ public class GetAllMessagesFromUser implements ICommand
             bot.sendMessage(event.getChannel(), "Error: Unable to find user '" + userId + "' on this server.");
             return;
         }
-        
-        List<IChannel> channels = event.getGuild().getChannels();
-        List<MessageHistory> messageHistories = new ArrayList<>();
-        for(IChannel channel : channels)
+    
+        UserService userService = new UserService(botProperties);
+        UserData storedUser = null;
+        try
         {
-            messageHistories.add(channel.getFullMessageHistory());
+            storedUser = userService.getUserWithMessages(userId);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting stored User for ID '{}'.", userId, e);
+            bot.sendMessage(event.getChannel(), "Error: Exception occurred on checking stored user '" + userId + "'.");
+            return;
         }
         
-        for(MessageHistory messageHistory : messageHistories)
+        boolean userHasStoredMessages = false;
+        if(storedUser.getTracked() == null)
         {
-            for(IMessage message : messageHistory)
-            {
-                bot.sendMessage(event.getChannel(), "'" + message.getAuthor() + "' said '" + message.getFormattedContent() + "' at '" + message.getTimestamp() + "'");
-            }
+            //create user with tracked true
+            //update storedUser
+        }
+        else if(!storedUser.getTracked())
+        {
+            //update user with tracked true
+            //update storedUser
+        }
+        else
+        {
+            userHasStoredMessages = true;
+        }
+        
+        if(userHasStoredMessages)
+        {
+            //get latest message, then IChannel#getMessageHistoryFrom(LocalDateTime)
+        }
+        else
+        {
+            //IChannel#getFullMessageHistory()
         }
     }
     
@@ -86,7 +106,7 @@ public class GetAllMessagesFromUser implements ICommand
         return true;
     }
     
-    private IUser getUser(MessageReceivedEvent event, String id)
+    private IUser getUserInServer(MessageReceivedEvent event, String id)
     {
         IGuild server = event.getGuild();
         List<IUser> users = server.getUsers();

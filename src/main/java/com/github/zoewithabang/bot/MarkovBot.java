@@ -20,7 +20,7 @@ public class MarkovBot implements IBot
         this.properties = properties;
         commands = new HashMap<>();
         
-        commands.put("get", new GetAllMessagesFromUser(this));
+        commands.put("get", new GetAllMessagesFromUser(this, properties));
     }
     
     @Override
