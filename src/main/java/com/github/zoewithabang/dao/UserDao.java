@@ -134,7 +134,7 @@ public class UserDao extends Dao<UserData, String>
             "messages.content AS messages_content, " +
             "messages.timestamp AS messages_timestamp " +
             "FROM users " +
-            "INNER JOIN messages " +
+            "LEFT JOIN messages " +
             "ON users.id = messages.user_id " +
             "WHERE users.id = ?;";
         
