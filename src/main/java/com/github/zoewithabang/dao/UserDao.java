@@ -153,6 +153,13 @@ public class UserDao extends Dao<UserData, String>
                 do
                 {
                     String messageId = resultSet.getString("messages_id");
+                    
+                    if(messageId == null
+                        || messageId.toUpperCase().equals("null"))
+                    {
+                        break;
+                    }
+                    
                     String userId = resultSet.getString("users_id");
                     String content = resultSet.getString("messages_content");
                     Long timestamp = resultSet.getTimestamp("messages_timestamp").getTime();
