@@ -23,23 +23,23 @@ public class MarkovBot implements IBot
         commands.put("get", new GetAllMessagesFromUser(this, properties));
     }
     
-    @Override
-    public void sendMessage(IChannel channel, String message)
-    {
-        RequestBuffer.request(() ->
-            {
-                try
+        @Override
+        public void sendMessage(IChannel channel, String message)
+        {
+            RequestBuffer.request(() ->
                 {
-                    LOGGER.debug("[MARKOVBOT] Sending message '{}' to channel '{}'.", message, channel.getName());
-                    channel.sendMessage(message);
+                    try
+                    {
+                        LOGGER.debug("Sending message '{}' to channel '{}'.", message, channel.getName());
+                        channel.sendMessage(message);
+                    }
+                    catch(DiscordException e)
+                    {
+                        LOGGER.error("Failed to send message to channel '{}'.", channel.getName(), e);
+                    }
                 }
-                catch(DiscordException e)
-                {
-                    LOGGER.error("[MARKOVBOT] Failed to send message to channel '{}'.", channel.getName(), e);
-                }
-            }
-        );
-    }
+            );
+        }
     
     @EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event)
@@ -66,12 +66,12 @@ public class MarkovBot implements IBot
         //execute command (if known)
         if(commands.containsKey(command))
         {
-            LOGGER.debug("[MARKOVBOT] Received command, running '{}'.", command);
+            LOGGER.debug("Received command, running '{}'.", command);
             commands.get(command).execute(event, argsList);
         }
         else
         {
-            LOGGER.warn("[MARKOVBOT] Received unknown command '{}'.", command);
+            LOGGER.warn("Received unknown command '{}'.", command);
         }
     }
 }
