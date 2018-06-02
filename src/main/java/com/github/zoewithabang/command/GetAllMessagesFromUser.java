@@ -16,9 +16,7 @@ import sx.blah.discord.util.RequestBuilder;
 
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class GetAllMessagesFromUser implements ICommand
 {
@@ -226,8 +224,8 @@ public class GetAllMessagesFromUser implements ICommand
             {
                 messageHistory = getFullMessageHistory(channel);
             }
-    
-            messageHistory.removeIf(m -> !m.getAuthor().equals(user));
+            
+            messageHistory.removeIf(m -> m.getAuthor() == null || !m.getAuthor().equals(user));
             
             allMessages.addAll(messageHistory);
         }
