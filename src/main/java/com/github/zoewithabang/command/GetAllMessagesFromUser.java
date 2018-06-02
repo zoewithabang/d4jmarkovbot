@@ -229,7 +229,14 @@ public class GetAllMessagesFromUser implements ICommand
                 messageHistory = getFullMessageHistory(channel);
             }
             
-            messageHistory.removeIf(m -> m.getAuthor() == null || !m.getAuthor().equals(user));
+            messageHistory.removeIf(m ->
+            {
+                LOGGER.debug("MessageHistory Remove If:");
+                LOGGER.debug("m is " + m.toString());
+                LOGGER.debug("author is " + m.getAuthor());
+                LOGGER.debug("user is " + user);
+                return m.getAuthor() == null || !m.getAuthor().equals(user);
+            });
             
             allMessages.addAll(messageHistory);
         }
