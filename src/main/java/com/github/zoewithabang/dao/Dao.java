@@ -28,7 +28,7 @@ public abstract class Dao<T, K>
                 + ":"
                 + botProperties.getProperty("dbport")
                 + "/"
-                + botProperties.getProperty("database");
+                + botProperties.getProperty("dbdatabase");
             
             Properties connectionProperties = new Properties();
             connectionProperties.setProperty("user", botProperties.getProperty("dbuser"));
