@@ -50,7 +50,7 @@ public class UserDao extends Dao<UserData, String>
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            ResultSet resultSet = statement.executeQuery(query);
+            ResultSet resultSet = statement.executeQuery();
             List<UserData> userList = new ArrayList<>();
             
             while(resultSet.next())
@@ -79,7 +79,7 @@ public class UserDao extends Dao<UserData, String>
             statement.setString(1, user.getId());
             statement.setBoolean(2, user.getTracked());
             
-            statement.executeUpdate(query);
+            statement.executeUpdate();
         }
         catch(SQLException e)
         {
@@ -98,7 +98,7 @@ public class UserDao extends Dao<UserData, String>
             statement.setBoolean(1, user.getTracked());
             statement.setString(2, user.getId());
             
-            statement.executeUpdate(query);
+            statement.executeUpdate();
         }
         catch(SQLException e)
         {
