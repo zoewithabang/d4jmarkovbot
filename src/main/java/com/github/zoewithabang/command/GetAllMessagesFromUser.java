@@ -229,7 +229,7 @@ public class GetAllMessagesFromUser implements ICommand
                 messageHistory = getFullMessageHistory(channel);
             }
             
-            List<IMessage> messages = Arrays.asList((IMessage[])messageHistory.toArray());
+            List<IMessage> messages = Arrays.asList(messageHistory.asArray());
             
             messages.removeIf(m -> m.getAuthor() != null && !m.getAuthor().equals(user));
             
