@@ -64,6 +64,7 @@ public class GetAllMessagesFromUser implements ICommand
         try
         {
             storedUser = userService.getUserWithMessages(userId);
+            LOGGER.debug("Retrieved stored user: {}", storedUser);
         }
         catch(SQLException e)
         {
@@ -182,7 +183,10 @@ public class GetAllMessagesFromUser implements ICommand
             if(user.getStringID().equals(trimmedId))
             {
                 LOGGER.debug("User {} matches ID {}", user.getName(), id);
-                specifiedUser = user;
+                if(!user.isBot())
+                {
+                    specifiedUser = user;
+                }
                 break;
             }
         }
