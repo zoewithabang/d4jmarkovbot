@@ -131,4 +131,32 @@ public class MessageDao extends Dao<MessageData, String>
             throw e;
         }
     }
+    
+    public MessageData getLatestForUser(Connection connection, String userId) throws SQLException
+    {
+        String query = "SELECT * FROM messages WHERE user_id = ? ORDER BY timestamp DESC LIMIT 1;";
+        
+        try(PreparedStatement statement = connection.prepareStatement(query))
+        {
+            statement.setString(1, userId);
+            
+            ResultSet resultSet = statement.executeQuery();
+            MessageData message = null;
+            
+            if(resultSet.next())
+            {
+                String messageId = resultSet.getString("id");
+                String content = resultSet.getString("content");
+                Long timestamp = resultSet.getTimestamp("timestamp").getTime();
+                message = new MessageData(messageId, userId, content, timestamp);
+            }
+            
+            return message;
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting Message data for user ID '{}'.", userId, e);
+            throw e;
+        }
+    }
 }
