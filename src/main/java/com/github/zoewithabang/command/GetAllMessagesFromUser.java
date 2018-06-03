@@ -9,10 +9,9 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageHistory;
 import sx.blah.discord.util.RequestBuffer;
-import sx.blah.discord.util.RequestBuilder;
 
 import java.sql.SQLException;
 import java.time.Instant;
@@ -20,6 +19,7 @@ import java.util.*;
 
 public class GetAllMessagesFromUser implements ICommand
 {
+    public static final String command = "get";
     private IBot bot;
     private Properties botProperties;
     private UserService userService;
@@ -34,79 +34,58 @@ public class GetAllMessagesFromUser implements ICommand
     }
     
     @Override
-    public void execute(MessageReceivedEvent event, List<String> args)
+    public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
-        if(!validateArgs(event, args))
-        {
-            return;
-        }
-        LOGGER.debug("Executing GetAllMessagesFromUser for User '{}'", args.get(0));
-    
-        String userIdMarkdown = args.get(0);
+        LOGGER.debug("Executing GetAllMessagesFromUser for event '{}', args '{}' and sendBotMessages '{}'.", event, args, sendBotMessages);
         
-        //find user
+        IChannel eventChannel = event.getChannel();
         IGuild server = event.getGuild();
-        IUser user = findUser(server, userIdMarkdown);
+        IUser user;
+        String userIdMarkdown;
+        String userId;
+        UserData storedUser;
+        List<IMessage> allUserMessages;
+        boolean userHasStoredMessages;
+    
+        user = validateArgs(args, server);
         
         if(user == null)
         {
-            LOGGER.warn("Could not find a user matching the string {}", userIdMarkdown);
-            bot.sendMessage(event.getChannel(), "Error: Unable to find a user '" + userIdMarkdown + "' on this server.");
+            if(sendBotMessages)
+            {
+                String message = "Usage: '" + botProperties.getProperty("prefix") + command + " @User' to make me get the messages of someone called User.";
+                bot.sendMessage(eventChannel, message);
+            }
             return;
         }
     
-        String userId = user.getStringID();
-    
-        bot.sendMessage(event.getChannel(), "Retrieving messages for " + userIdMarkdown + ", please wait...");
+        userIdMarkdown = args.get(0);
+        userId = user.getStringID();
         
-        UserData storedUser;
+        if(sendBotMessages)
+        {
+            bot.sendMessage(event.getChannel(), "Retrieving messages for " + userIdMarkdown + ", please wait...");
+        }
         
         try
         {
-            storedUser = userService.getUserWithMessages(userId);
-            LOGGER.debug("Retrieved stored user: {}", storedUser);
+            storedUser = findStoredUser(userId);
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on getting stored User for ID '{}'.", userId, e);
-            bot.sendMessage(event.getChannel(), "Error: Exception occurred on checking stored user '" + userIdMarkdown + "'.");
+            postErrorMessage(eventChannel, sendBotMessages, 1001);
             return;
         }
         
-        boolean userHasStoredMessages = false;
-        
-        if(storedUser.getTracked() == null)
+        try
         {
-            try
-            {
-                userService.storeNewMessageTrackedUser(userId);
-            }
-            catch(SQLException e)
-            {
-                LOGGER.error("SQLException on storing new User for ID '{}'.", userId, e);
-                bot.sendMessage(event.getChannel(), "Error: Exception occurred on storing new user '" + userIdMarkdown + "'.");
-                return;
-            }
+             userHasStoredMessages = manageStoredUserForTracking(storedUser, userId);
         }
-        else if(!storedUser.getTracked())
+        catch(SQLException e)
         {
-            try
-            {
-                userService.updateUserForMessageTracking(userId);
-            }
-            catch(SQLException e)
-            {
-                LOGGER.error("SQLException on updating stored User for ID '{}'.", userId, e);
-                bot.sendMessage(event.getChannel(), "Error: Exception occurred on updating user '" + userIdMarkdown + "'.");
-                return;
-            }
+            postErrorMessage(eventChannel, sendBotMessages, 1002);
+            return;
         }
-        else
-        {
-            userHasStoredMessages = true;
-        }
-    
-        List<IMessage> allUserMessages;
         
         try
         {
@@ -114,7 +93,7 @@ public class GetAllMessagesFromUser implements ICommand
         }
         catch(SQLException e)
         {
-            bot.sendMessage(event.getChannel(), "Error: Exception occurred on getting latest message time of user '" + userIdMarkdown + "'.");
+            postErrorMessage(eventChannel, sendBotMessages, 1003);
             return;
         }
         
@@ -125,45 +104,37 @@ public class GetAllMessagesFromUser implements ICommand
         catch(SQLException e)
         {
             LOGGER.error("SQLException on storing Messages for User ID '{}'.", userId, e);
-            bot.sendMessage(event.getChannel(), "Error: Exception occurred on storing messages for user '" + userIdMarkdown + "'.");
+            postErrorMessage(eventChannel, sendBotMessages, 1004);
             return;
         }
         
         bot.sendMessage(event.getChannel(), "Hey, I should have all the messages posted by " + userIdMarkdown + " now!");
     }
     
-    private boolean validateArgs(MessageReceivedEvent event, List<String> args)
+    private IUser validateArgs(List<String> args, IGuild server)
     {
         LOGGER.debug("Validating args in GetAllMessagesFromUser");
         int argsSize = args.size();
-        IChannel channel = event.getChannel();
         
         if(argsSize != 1)
         {
             LOGGER.warn("GetAllMessagesFromUser expected 1 argument, found {}.", argsSize);
-            bot.sendMessage(channel, "Error: Expected a single argument.");
-            return false;
+            return null;
         }
         
-        String arg = args.get(0);
+        String id = args.get(0);
         
-        if(!arg.startsWith("<@")
-            || !arg.endsWith(">"))
+        if(!id.startsWith("<@")
+            || !id.endsWith(">"))
         {
-            LOGGER.warn("GetAllMessagesFromUser could not find USER_ID in arg {}.", arg);
-            bot.sendMessage(channel, "Error: Could not identify a user ID for input '" + arg + "'.");
-            return false;
+            LOGGER.warn("GetAllMessagesFromUser could not find USER_ID in arg {}.", id);
+            return null;
         }
-        
-        return true;
-    }
     
-    private IUser findUser(IGuild server, String id)
-    {
         List<IUser> users = server.getUsers();
         IUser specifiedUser = null;
         String trimmedId;
-        
+    
         //trim the ID taken from message input so that it's just the numerical part
         if(id.startsWith("<@!")) //if user has a nickname
         {
@@ -175,7 +146,7 @@ public class GetAllMessagesFromUser implements ICommand
             trimmedId = id.substring(2, id.length() - 1);
             LOGGER.debug("User has no nickname, trimmed ID of {}", trimmedId);
         }
-        
+    
         //iterate over users in server to find match
         for(IUser user : users)
         {
@@ -190,8 +161,73 @@ public class GetAllMessagesFromUser implements ICommand
                 break;
             }
         }
-        
+    
         return specifiedUser;
+    }
+    
+    private UserData findStoredUser(String userId) throws SQLException
+    {
+        try
+        {
+            UserData storedUser = userService.getUserWithMessages(userId);
+            LOGGER.debug("Retrieved stored user: {}", storedUser);
+            return storedUser;
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting stored User for ID '{}'.", userId, e);
+            throw e;
+        }
+    }
+    
+    private boolean manageStoredUserForTracking(UserData storedUser, String userId) throws SQLException
+    {
+        if(storedUser.getTracked() == null
+            || !storedUser.getTracked())
+        {
+            try
+            {
+                setUserToBeTracked(storedUser, userId);
+                return false;
+            }
+            catch(SQLException e)
+            {
+                LOGGER.error("SQLException on managing Stored User '{}' for ID '{}'.", storedUser, userId, e);
+                throw e;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    private void setUserToBeTracked(UserData storedUser, String userId) throws SQLException
+    {
+        if(storedUser.getTracked() == null)
+        {
+            try
+            {
+                userService.storeNewMessageTrackedUser(userId);
+            }
+            catch(SQLException e)
+            {
+                LOGGER.error("SQLException on storing new User for ID '{}'.", userId, e);
+                throw e;
+            }
+        }
+        else if(!storedUser.getTracked())
+        {
+            try
+            {
+                userService.updateUserForMessageTracking(userId);
+            }
+            catch(SQLException e)
+            {
+                LOGGER.error("SQLException on updating stored User for ID '{}'.", userId, e);
+                throw e;
+            }
+        }
     }
     
     private List<IMessage> getUserMessages(IGuild server, IUser user, Boolean userHasStoredMessages) throws SQLException
@@ -257,5 +293,18 @@ public class GetAllMessagesFromUser implements ICommand
                 return channel.getFullMessageHistory();
             }
         ).get();
+    }
+    
+    private void postErrorMessage(IChannel channel, boolean sendErrorMessages, int code)
+    {
+        if(sendErrorMessages)
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.withColor(255, 7, 59);
+            builder.withTitle(botProperties.getProperty("prefix") + command);
+            builder.appendField("Error " + code, "Please let your friendly local bot handler know about this!", false);
+            
+            bot.sendEmbedMessage(channel, builder.build());
+        }
     }
 }

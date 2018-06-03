@@ -22,7 +22,7 @@ public class MarkovBot implements IBot
         this.properties = properties;
         commands = new HashMap<>();
         
-        commands.put("get", new GetAllMessagesFromUser(this, properties));
+        commands.put(GetAllMessagesFromUser.command, new GetAllMessagesFromUser(this, properties));
     }
     
     @Override
@@ -89,7 +89,7 @@ public class MarkovBot implements IBot
         if(commands.containsKey(command))
         {
             LOGGER.debug("Received command, running '{}'.", command);
-            commands.get(command).execute(event, argsList);
+            commands.get(command).execute(event, argsList, true);
         }
         else
         {
