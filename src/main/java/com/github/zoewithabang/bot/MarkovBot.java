@@ -3,8 +3,10 @@ package com.github.zoewithabang.bot;
 import com.github.zoewithabang.command.GetAllMessagesFromUser;
 import com.github.zoewithabang.command.ICommand;
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RequestBuffer;
 
@@ -23,23 +25,43 @@ public class MarkovBot implements IBot
         commands.put("get", new GetAllMessagesFromUser(this, properties));
     }
     
-        @Override
-        public void sendMessage(IChannel channel, String message)
+    @Override
+    public IMessage sendMessage(IChannel channel, String messageString) throws DiscordException
+    {
+        try
         {
-            RequestBuffer.request(() ->
+            return RequestBuffer.request(() ->
                 {
-                    try
-                    {
-                        LOGGER.debug("Sending message '{}' to channel '{}'.", message, channel.getName());
-                        channel.sendMessage(message);
-                    }
-                    catch(DiscordException e)
-                    {
-                        LOGGER.error("Failed to send message to channel '{}'.", channel.getName(), e);
-                    }
+                    LOGGER.debug("Sending message '{}' to channel '{}'.", messageString, channel.getName());
+                    return channel.sendMessage(messageString);
                 }
-            );
+            ).get();
         }
+        catch(DiscordException e)
+        {
+            LOGGER.error("Failed to send message '{}' to channel '{}'.", messageString, channel.getName(), e);
+            throw e;
+        }
+    }
+    
+    @Override
+    public IMessage sendEmbedMessage(IChannel channel, EmbedObject embed) throws DiscordException
+    {
+        try
+        {
+            return RequestBuffer.request(() ->
+                {
+                    LOGGER.debug("Sending embed message '{}' to channel '{}'.", embed, channel.getName());
+                    return channel.sendMessage(embed);
+                }
+            ).get();
+        }
+        catch(DiscordException e)
+        {
+            LOGGER.error("Failed to send embed message '{}' to channel '{}'.", embed, channel.getName(), e);
+            throw e;
+        }
+    }
     
     @EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event)
@@ -71,7 +93,7 @@ public class MarkovBot implements IBot
         }
         else
         {
-            LOGGER.warn("Received unknown command '{}'.", command);
+            LOGGER.info("Received unknown command '{}'.", command);
         }
     }
 }
