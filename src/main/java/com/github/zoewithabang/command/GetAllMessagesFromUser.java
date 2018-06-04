@@ -188,6 +188,7 @@ public class GetAllMessagesFromUser implements ICommand
             try
             {
                 setUserToBeTracked(storedUser, userId);
+                LOGGER.debug("Set user '{}' with ID '{}' to be tracked.", storedUser, userId);
                 return false;
             }
             catch(SQLException e)
@@ -209,6 +210,7 @@ public class GetAllMessagesFromUser implements ICommand
             try
             {
                 userService.storeNewMessageTrackedUser(userId);
+                LOGGER.debug("Stored a new message tracked user for ID '{}'.", userId);
             }
             catch(SQLException e)
             {
@@ -221,6 +223,7 @@ public class GetAllMessagesFromUser implements ICommand
             try
             {
                 userService.updateUserForMessageTracking(userId);
+                LOGGER.debug("Updated an existing user with ID '{}' for message tracking.", userId);
             }
             catch(SQLException e)
             {
@@ -240,6 +243,7 @@ public class GetAllMessagesFromUser implements ICommand
             try
             {
                 latestStoredMessageTime = messageService.getLatestMessageTimeOfUser(userId);
+                LOGGER.debug("Latest message time of user with ID '{}' is '{}'.", userId, userHasStoredMessages);
             }
             catch(SQLException e)
             {
@@ -257,11 +261,12 @@ public class GetAllMessagesFromUser implements ICommand
             
             if(userHasStoredMessages)
             {
+                LOGGER.debug("User has stored messages, getting messages from now to '{}' in channel '{}'.", latestStoredMessageTime, channel);
                 messageHistory = getMessageHistoryTo(channel, latestStoredMessageTime);
-                
             }
             else
             {
+                LOGGER.debug("User has no stored messages, getting all messages in channel '{}'.", channel);
                 messageHistory = getFullMessageHistory(channel);
             }
             
@@ -269,9 +274,11 @@ public class GetAllMessagesFromUser implements ICommand
             
             messages.removeIf(m -> m.getAuthor() != null && !m.getAuthor().equals(user));
             
+            LOGGER.debug("Found {} messages in channel '{}', adding to all message list.", messages.size());
             allMessages.addAll(messages);
         }
         
+        LOGGER.debug("Returning all messages for user with ID '{}'.", userId);
         return allMessages;
     }
     
