@@ -11,7 +11,7 @@ public class Main
     {
         LOGGER = LogUtils.getLogger();
         
-        LOGGER.debug("[MAIN] Started, initialising BotManager...");
+        LOGGER.debug("Started, initialising BotManager...");
         
         BotManager.init();
     }

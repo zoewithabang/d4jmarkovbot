@@ -19,11 +19,19 @@ class BotManager
     
     static void init()
     {
-        getProperties();
-        run();
+        try
+        {
+            getProperties();
+            run();
+        }
+        catch(IOException | NullPointerException | DiscordException e)
+        {
+            LOGGER.error("Exception caused application to exit.");
+            System.exit(1);
+        }
     }
     
-    static void getProperties()
+    private static void getProperties() throws IOException, NullPointerException
     {
         try
         {
@@ -35,15 +43,17 @@ class BotManager
         }
         catch(IOException e)
         {
-            LOGGER.error("[BOTMANAGER] IOException on getting MarkovBot properties file.", e);
+            LOGGER.error("IOException on getting MarkovBot properties file.", e);
+            throw e;
         }
         catch(NullPointerException e)
         {
-            LOGGER.error("[BOTMANAGER] NullPointerException on loading MarkovBot properties file.", e);
+            LOGGER.error("NullPointerException on loading MarkovBot properties file.", e);
+            throw e;
         }
     }
     
-    static void run()
+    private static void run() throws DiscordException
     {
         try
         {
@@ -60,7 +70,8 @@ class BotManager
         }
         catch(DiscordException e)
         {
-            LOGGER.error("[BOTMANAGER] DiscordException when creating MarkovBot.", e);
+            LOGGER.error("Unhandled DiscordException in running MarkovBot.", e);
+            throw e;
         }
     }
 }
