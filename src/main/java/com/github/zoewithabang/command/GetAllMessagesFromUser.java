@@ -243,7 +243,7 @@ public class GetAllMessagesFromUser implements ICommand
             try
             {
                 latestStoredMessageTime = messageService.getLatestMessageTimeOfUser(userId);
-                LOGGER.debug("Latest message time of user with ID '{}' is '{}'.", userId, userHasStoredMessages);
+                LOGGER.debug("Latest message time of user with ID '{}' is '{}'.", userId, latestStoredMessageTime);
             }
             catch(SQLException e)
             {
