@@ -12,4 +12,5 @@ public interface IBot
     
     IMessage sendMessage(IChannel channel, String message);
     IMessage sendEmbedMessage(IChannel channel, EmbedObject embed);
+    void postErrorMessage(IChannel channel, boolean sendErrorMessages, String command, Integer code);
 }

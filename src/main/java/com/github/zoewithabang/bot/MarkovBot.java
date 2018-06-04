@@ -8,6 +8,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.RequestBuffer;
 
 import java.util.*;
@@ -86,14 +87,59 @@ public class MarkovBot implements IBot
         argsList.remove(0);
         
         //execute command (if known)
-        if(commands.containsKey(command))
+        try
         {
-            LOGGER.debug("Received command, running '{}'.", command);
-            commands.get(command).execute(event, argsList, true);
+            if(commands.containsKey(command))
+            {
+                LOGGER.debug("Received command, running '{}'.", command);
+                commands.get(command).execute(event, argsList, true);
+            }
+            else
+            {
+                LOGGER.info("Received unknown command '{}'.", command);
+            }
         }
-        else
+        catch(Exception e)
         {
-            LOGGER.info("Received unknown command '{}'.", command);
+            LOGGER.error("Uncaught Exception when executing command '{}', TROUBLESHOOT THIS!!!", command);
+            postErrorMessage(event.getChannel(), true, null, null);
+        }
+    }
+    
+    @Override
+    public void postErrorMessage(IChannel channel, boolean sendErrorMessages, String command, Integer code)
+    {
+        if(sendErrorMessages)
+        {
+            try
+            {
+                EmbedBuilder builder = new EmbedBuilder();
+                String error;
+                builder.withColor(255, 7, 59);
+                
+                if(command != null)
+                {
+                    builder.withTitle(properties.getProperty("prefix") + command);
+                }
+                
+                if(code != null)
+                {
+                    error = "Error " + code;
+                    
+                }
+                else
+                {
+                    error = "Unknown Error";
+                }
+                
+                builder.appendField(error, "Please let your friendly local bot handler know about this!", false);
+                
+                sendEmbedMessage(channel, builder.build());
+            }
+            catch(DiscordException e)
+            {
+                LOGGER.error("DiscordException thrown on trying to post error message to channel '{}'.", channel, e);
+            }
         }
     }
 }

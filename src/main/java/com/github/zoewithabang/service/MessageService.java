@@ -46,7 +46,9 @@ public class MessageService implements IService
                     String id = message.getStringID();
                     String content = message.getContent();
                     Long timestamp = message.getTimestamp().toEpochMilli();
-                    messageDao.store(connection, new MessageData(id, userId, content, timestamp));
+                    MessageData messageData = new MessageData(id, userId, content, timestamp);
+                    LOGGER.debug("Storing MessageData '{}'...", messageData);
+                    messageDao.store(connection, messageData);
                 }
                 connection.commit();
             }
