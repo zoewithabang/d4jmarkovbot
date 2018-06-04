@@ -9,6 +9,7 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageHistory;
 import sx.blah.discord.util.RequestBuffer;
@@ -96,6 +97,11 @@ public class GetAllMessagesFromUser implements ICommand
             postErrorMessage(eventChannel, sendBotMessages, 1003);
             return;
         }
+        catch(DiscordException e)
+        {
+            postErrorMessage(eventChannel, sendBotMessages, 1004);
+            return;
+        }
         
         try
         {
@@ -104,7 +110,7 @@ public class GetAllMessagesFromUser implements ICommand
         catch(SQLException e)
         {
             LOGGER.error("SQLException on storing Messages for User ID '{}'.", userId, e);
-            postErrorMessage(eventChannel, sendBotMessages, 1004);
+            postErrorMessage(eventChannel, sendBotMessages, 1005);
             return;
         }
         
@@ -259,15 +265,23 @@ public class GetAllMessagesFromUser implements ICommand
         {
             MessageHistory messageHistory;
             
-            if(userHasStoredMessages)
+            try
             {
-                LOGGER.debug("User has stored messages, getting messages from now to '{}' in channel '{}'.", latestStoredMessageTime, channel);
-                messageHistory = getMessageHistoryTo(channel, latestStoredMessageTime);
+                if(userHasStoredMessages)
+                {
+                    LOGGER.debug("User has stored messages, getting messages from now to '{}' in channel '{}'.", latestStoredMessageTime, channel);
+                    messageHistory = getMessageHistoryTo(channel, latestStoredMessageTime);
+                }
+                else
+                {
+                    LOGGER.debug("User has no stored messages, getting all messages in channel '{}'.", channel);
+                    messageHistory = getFullMessageHistory(channel);
+                }
             }
-            else
+            catch(DiscordException e)
             {
-                LOGGER.debug("User has no stored messages, getting all messages in channel '{}'.", channel);
-                messageHistory = getFullMessageHistory(channel);
+                LOGGER.error("DiscordException thrown when trying to get message history for User '{}' in channel '{}' and previous stored '{}'.", user, channel, userHasStoredMessages);
+                throw e;
             }
             
             List<IMessage> messages = new ArrayList<>(Arrays.asList(messageHistory.asArray()));
@@ -282,7 +296,7 @@ public class GetAllMessagesFromUser implements ICommand
         return allMessages;
     }
     
-    private MessageHistory getMessageHistoryTo(IChannel channel, Instant latestStoredMessageTime)
+    private MessageHistory getMessageHistoryTo(IChannel channel, Instant latestStoredMessageTime) throws DiscordException
     {
         return RequestBuffer.request(() ->
             {
@@ -292,7 +306,7 @@ public class GetAllMessagesFromUser implements ICommand
         ).get();
     }
     
-    private MessageHistory getFullMessageHistory(IChannel channel)
+    private MessageHistory getFullMessageHistory(IChannel channel) throws DiscordException
     {
         return RequestBuffer.request(() ->
             {
@@ -306,12 +320,19 @@ public class GetAllMessagesFromUser implements ICommand
     {
         if(sendErrorMessages)
         {
-            EmbedBuilder builder = new EmbedBuilder();
-            builder.withColor(255, 7, 59);
-            builder.withTitle(botProperties.getProperty("prefix") + command);
-            builder.appendField("Error " + code, "Please let your friendly local bot handler know about this!", false);
-            
-            bot.sendEmbedMessage(channel, builder.build());
+            try
+            {
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.withColor(255, 7, 59);
+                builder.withTitle(botProperties.getProperty("prefix") + command);
+                builder.appendField("Error " + code, "Please let your friendly local bot handler know about this!", false);
+    
+                bot.sendEmbedMessage(channel, builder.build());
+            }
+            catch(DiscordException e)
+            {
+                LOGGER.error("DiscordException thrown on trying to post error message to channel '{}'.", channel, e);
+            }
         }
     }
 }
