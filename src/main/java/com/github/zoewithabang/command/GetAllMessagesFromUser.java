@@ -274,7 +274,7 @@ public class GetAllMessagesFromUser implements ICommand
             
             messages.removeIf(m -> m.getAuthor() != null && !m.getAuthor().equals(user));
             
-            LOGGER.debug("Found {} messages in channel '{}', adding to all message list.", messages.size());
+            LOGGER.debug("Found {} messages in channel '{}', adding to all message list.", messages.size(), channel);
             allMessages.addAll(messages);
         }
         
