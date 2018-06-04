@@ -298,10 +298,13 @@ public class GetAllMessagesFromUser implements ICommand
     
     private MessageHistory getMessageHistoryTo(IChannel channel, Instant latestStoredMessageTime) throws DiscordException
     {
+        //add 1ms so that the message that time belonged to is not retrieved again
+        Instant timeToGetMessagesTo = latestStoredMessageTime.plusMillis(1);
+        
         return RequestBuffer.request(() ->
             {
-                LOGGER.debug("Getting message history to '{}' for channel '{}'.", latestStoredMessageTime, channel.getName());
-                return channel.getMessageHistoryTo(latestStoredMessageTime);
+                LOGGER.debug("Getting message history to '{}' for channel '{}'.", timeToGetMessagesTo, channel.getName());
+                return channel.getMessageHistoryTo(timeToGetMessagesTo);
             }
         ).get();
     }
