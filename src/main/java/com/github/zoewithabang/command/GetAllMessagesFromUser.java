@@ -268,12 +268,12 @@ public class GetAllMessagesFromUser implements ICommand
             {
                 if(userHasStoredMessages)
                 {
-                    LOGGER.debug("User has stored messages, getting messages from now to '{}' in channel '{}'.", latestStoredMessageTime, channel);
+                    LOGGER.debug("User has stored messages, getting messages from now to '{}' in channel '{}'.", latestStoredMessageTime, channel.getName());
                     messageHistory = getMessageHistoryTo(channel, latestStoredMessageTime);
                 }
                 else
                 {
-                    LOGGER.debug("User has no stored messages, getting all messages in channel '{}'.", channel);
+                    LOGGER.debug("User has no stored messages, getting all messages in channel '{}'.", channel.getName());
                     messageHistory = getFullMessageHistory(channel);
                 }
             }
@@ -287,7 +287,7 @@ public class GetAllMessagesFromUser implements ICommand
             
             messages.removeIf(m -> m.getAuthor() != null && !m.getAuthor().equals(user));
             
-            LOGGER.debug("Found {} messages in channel '{}', adding to all message list.", messages.size(), channel);
+            LOGGER.debug("Found {} messages in channel '{}', adding to all message list.", messages.size(), channel.getName());
             allMessages.addAll(messages);
         }
         
