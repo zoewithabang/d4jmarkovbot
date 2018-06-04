@@ -35,6 +35,8 @@ public abstract class Dao<T, K>
             connectionProperties.setProperty("password", botProperties.getProperty("dbpassword"));
             connectionProperties.setProperty("useSSL", "true");
             connectionProperties.setProperty("verifyServerCertificate", "false");
+            connectionProperties.setProperty("useUnicode", "yes");
+            connectionProperties.setProperty("characterEncoding", "UTF-8");
             
             return DriverManager.getConnection(url, connectionProperties);
         }
