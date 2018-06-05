@@ -9,14 +9,17 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 public class MessageService implements IService
 {
     private MessageDao messageDao;
+    private Random random;
     
     public MessageService(Properties botProperties)
     {
         messageDao = new MessageDao(botProperties);
+        random = new Random();
     }
     
     public Instant getLatestMessageTimeOfUser(String userId) throws SQLException
@@ -66,6 +69,33 @@ public class MessageService implements IService
         catch(SQLException e)
         {
             LOGGER.error("SQLException on storing Messages for User ID '{}'.", userId, e);
+            throw e;
+        }
+    }
+    
+    public List<MessageData> getRandomSequentialMessagesForUser(String userId, int messageCount) throws SQLException
+    {
+        try(Connection connection = messageDao.getConnection())
+        {
+            Integer userMessageCount = messageDao.getMessageCountForUser(connection, userId);
+            
+            if(userMessageCount < messageCount)
+            {
+                throw new IllegalArgumentException("User has less messages stored than requested count.");
+            }
+            
+            Integer offset = random.nextInt(userMessageCount - messageCount);
+            
+            return messageDao.getRandomsForUser(connection, userId, offset, messageCount);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting Messages for User ID '{}'.", userId, e);
+            throw e;
+        }
+        catch(IllegalArgumentException e)
+        {
+            LOGGER.error("IllegalArgumentException on getting Messages for User ID '{}'.", userId, e);
             throw e;
         }
     }
