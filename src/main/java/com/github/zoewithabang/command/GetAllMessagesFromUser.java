@@ -4,6 +4,7 @@ import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.model.UserData;
 import com.github.zoewithabang.service.MessageService;
 import com.github.zoewithabang.service.UserService;
+import com.github.zoewithabang.util.DiscordHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -47,14 +48,20 @@ public class GetAllMessagesFromUser implements ICommand
         List<IMessage> allUserMessages;
         boolean userHasStoredMessages;
     
+        //TODO: placeholder, add actual permissions system later
+        if(!event.getAuthor().getStringID().equals("83126901098414080"))
+        {
+            bot.sendMessage(eventChannel, "You do not have permission to use this command!");
+            return;
+        }
+        
         user = validateArgs(args, server);
         
         if(user == null)
         {
             if(sendBotMessages)
             {
-                String message = "Usage: '" + botProperties.getProperty("prefix") + command + " @User' to make me get the messages of someone called User.";
-                bot.sendMessage(eventChannel, message);
+                bot.sendMessage(eventChannel, "Usage: '" + botProperties.getProperty("prefix") + command + " @User' to make me get the messages of someone called User.");
             }
             return;
         }
@@ -128,46 +135,8 @@ public class GetAllMessagesFromUser implements ICommand
         }
         
         String id = args.get(0);
-        
-        if(!id.startsWith("<@")
-            || !id.endsWith(">"))
-        {
-            LOGGER.warn("GetAllMessagesFromUser could not find USER_ID in arg {}.", id);
-            return null;
-        }
     
-        List<IUser> users = server.getUsers();
-        IUser specifiedUser = null;
-        String trimmedId;
-    
-        //trim the ID taken from message input so that it's just the numerical part
-        if(id.startsWith("<@!")) //if user has a nickname
-        {
-            trimmedId = id.substring(3, id.length() - 1);
-            LOGGER.debug("User has nickname, trimmed ID of {}", trimmedId);
-        }
-        else //if user does not have a nickname, 'id.startsWith("<@")'
-        {
-            trimmedId = id.substring(2, id.length() - 1);
-            LOGGER.debug("User has no nickname, trimmed ID of {}", trimmedId);
-        }
-    
-        //iterate over users in server to find match
-        for(IUser user : users)
-        {
-            LOGGER.debug("User {} String ID {}", user.getName(), user.getStringID());
-            if(user.getStringID().equals(trimmedId))
-            {
-                LOGGER.debug("User {} matches ID {}", user.getName(), id);
-                if(!user.isBot())
-                {
-                    specifiedUser = user;
-                }
-                break;
-            }
-        }
-    
-        return specifiedUser;
+        return DiscordHelper.getUserFromMarkdownId(server, id);
     }
     
     private UserData findStoredUser(String userId) throws SQLException
