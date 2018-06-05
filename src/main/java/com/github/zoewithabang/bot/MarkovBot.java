@@ -2,6 +2,7 @@ package com.github.zoewithabang.bot;
 
 import com.github.zoewithabang.command.GetAllMessagesFromUser;
 import com.github.zoewithabang.command.ICommand;
+import com.github.zoewithabang.command.MarkovChain;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -24,6 +25,7 @@ public class MarkovBot implements IBot
         commands = new HashMap<>();
         
         commands.put(GetAllMessagesFromUser.command, new GetAllMessagesFromUser(this, properties));
+        commands.put(MarkovChain.command, new MarkovChain(this, properties));
     }
     
     @Override
