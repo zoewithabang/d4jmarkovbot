@@ -1,5 +1,6 @@
 package com.github.zoewithabang;
 
+import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 
 
@@ -9,7 +10,7 @@ public class Main
     
     public static void main(String[] args)
     {
-        LOGGER = LogUtils.getLogger();
+        LOGGER = Logging.getLogger();
         
         LOGGER.debug("Started, initialising BotManager...");
         

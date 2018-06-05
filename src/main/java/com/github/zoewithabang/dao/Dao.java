@@ -1,6 +1,6 @@
 package com.github.zoewithabang.dao;
 
-import com.github.zoewithabang.LogUtils;
+import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public abstract class Dao<T, K>
 {
-    protected Logger LOGGER = LogUtils.getLogger();
+    protected Logger LOGGER = Logging.getLogger();
     private Properties botProperties;
     
     public Dao(Properties botProperties)

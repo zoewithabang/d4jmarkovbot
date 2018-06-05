@@ -1,6 +1,7 @@
 package com.github.zoewithabang;
 
 import com.github.zoewithabang.bot.MarkovBot;
+import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -13,7 +14,7 @@ import java.util.Properties;
 
 class BotManager
 {
-    private static Logger LOGGER = LogUtils.getLogger();
+    private static Logger LOGGER = Logging.getLogger();
     private static HashMap<String, Properties> botProperties = new HashMap<>();
     private static IDiscordClient clientMarkovBot;
     

@@ -1,9 +1,9 @@
 package com.github.zoewithabang.model;
 
-import com.github.zoewithabang.LogUtils;
+import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 
 public interface IModel
 {
-    Logger LOGGER = LogUtils.getLogger();
+    Logger LOGGER = Logging.getLogger();
 }

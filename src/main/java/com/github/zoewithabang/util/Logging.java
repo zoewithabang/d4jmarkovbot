@@ -1,5 +1,6 @@
-package com.github.zoewithabang;
+package com.github.zoewithabang.util;
 
+import com.github.zoewithabang.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class LogUtils
+public class Logging
 {
     private static Logger LOGGER;
     
