@@ -1,7 +1,7 @@
 token=inserttokenhere
 prefix=!
-dbuser=markovbot
+dbuser=username
 dbpassword=password
-dbdatabase=markovbot
 dbaddress=localhost
 dbport=3306
+dbdatabasemarkov=markovbot

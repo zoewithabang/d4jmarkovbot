@@ -13,18 +13,22 @@ import java.util.Random;
 
 public class MessageService implements IService
 {
+    private Properties botProperties;
+    private String databaseMarkov;
     private MessageDao messageDao;
     private Random random;
     
     public MessageService(Properties botProperties)
     {
+        this.botProperties = botProperties;
+        databaseMarkov = botProperties.getProperty("dbdatabasemarkov");
         messageDao = new MessageDao(botProperties);
         random = new Random();
     }
     
     public Instant getLatestMessageTimeOfUser(String userId) throws SQLException
     {
-        try(Connection connection = messageDao.getConnection())
+        try(Connection connection = messageDao.getConnection(databaseMarkov))
         {
             MessageData message = messageDao.getLatestForUser(connection, userId);
             return Instant.ofEpochMilli(message.getTimestamp());
@@ -38,7 +42,7 @@ public class MessageService implements IService
     
     public void storeMessagesForUser(String userId, List<IMessage> allUserMessages) throws SQLException
     {
-        try(Connection connection = messageDao.getConnection())
+        try(Connection connection = messageDao.getConnection(databaseMarkov))
         {
             boolean oldAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -75,7 +79,7 @@ public class MessageService implements IService
     
     public String getStringOfRandomSequentialMessageContentsForUser(String userId, int messageCount) throws SQLException
     {
-        try(Connection connection = messageDao.getConnection())
+        try(Connection connection = messageDao.getConnection(databaseMarkov))
         {
             Integer userMessageCount = messageDao.getMessageCountForUser(connection, userId);
             

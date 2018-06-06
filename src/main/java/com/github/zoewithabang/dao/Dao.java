@@ -19,7 +19,7 @@ public abstract class Dao<T, K>
         this.botProperties = botProperties;
     }
     
-    public Connection getConnection() throws SQLException
+    public Connection getConnection(String database) throws SQLException
     {
         try
         {
@@ -28,7 +28,7 @@ public abstract class Dao<T, K>
                 + ":"
                 + botProperties.getProperty("dbport")
                 + "/"
-                + botProperties.getProperty("dbdatabase");
+                + database;
             
             Properties connectionProperties = new Properties();
             connectionProperties.setProperty("user", botProperties.getProperty("dbuser"));

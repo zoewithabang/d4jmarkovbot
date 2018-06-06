@@ -10,16 +10,20 @@ import java.util.Properties;
 
 public class UserService implements IService
 {
+    private Properties botProperties;
+    private String databaseMarkov;
     private UserDao userDao;
     
     public UserService(Properties botProperties)
     {
+        this.botProperties = botProperties;
+        databaseMarkov = botProperties.getProperty("dbdatabasemarkov");
         userDao = new UserDao(botProperties);
     }
     
     public UserData getUserWithMessages(String userId) throws SQLException
     {
-        try(Connection connection = userDao.getConnection())
+        try(Connection connection = userDao.getConnection(databaseMarkov))
         {
             return userDao.getWithMessages(connection, userId);
         }
@@ -32,7 +36,7 @@ public class UserService implements IService
     
     public UserData storeNewMessageTrackedUser(String userId) throws SQLException
     {
-        try(Connection connection = userDao.getConnection())
+        try(Connection connection = userDao.getConnection(databaseMarkov))
         {
             UserData user = new UserData(userId, true);
             userDao.store(connection, user);
@@ -47,7 +51,7 @@ public class UserService implements IService
     
     public UserData updateUserForMessageTracking(String userId) throws SQLException
     {
-        try(Connection connection = userDao.getConnection())
+        try(Connection connection = userDao.getConnection(databaseMarkov))
         {
             UserData user = new UserData(userId, true);
             userDao.update(connection, user);

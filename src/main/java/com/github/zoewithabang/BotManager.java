@@ -1,6 +1,6 @@
 package com.github.zoewithabang;
 
-import com.github.zoewithabang.bot.MarkovBot;
+import com.github.zoewithabang.bot.ZeroBot;
 import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 import sx.blah.discord.api.ClientBuilder;
@@ -16,7 +16,7 @@ class BotManager
 {
     private static Logger LOGGER = Logging.getLogger();
     private static HashMap<String, Properties> botProperties = new HashMap<>();
-    private static IDiscordClient clientMarkovBot;
+    private static IDiscordClient clientZeroBot;
     
     static void init()
     {
@@ -36,20 +36,20 @@ class BotManager
     {
         try
         {
-            InputStream markovBotPropertyStream = BotManager.class.getClassLoader().getResourceAsStream("markovbot.properties");
-            Properties markovBotProperties = new Properties();
-            markovBotProperties.load(markovBotPropertyStream);
+            InputStream zeroBotPropertyStream = BotManager.class.getClassLoader().getResourceAsStream("zerobot.properties");
+            Properties zeroBotProperties = new Properties();
+            zeroBotProperties.load(zeroBotPropertyStream);
             
-            botProperties.put("MarkovBot", markovBotProperties);
+            botProperties.put("ZeroBot", zeroBotProperties);
         }
         catch(IOException e)
         {
-            LOGGER.error("IOException on getting MarkovBot properties file.", e);
+            LOGGER.error("IOException on getting ZeroBot properties file.", e);
             throw e;
         }
         catch(NullPointerException e)
         {
-            LOGGER.error("NullPointerException on loading MarkovBot properties file.", e);
+            LOGGER.error("NullPointerException on loading ZeroBot properties file.", e);
             throw e;
         }
     }
@@ -58,20 +58,20 @@ class BotManager
     {
         try
         {
-            Properties markovBotProperties = botProperties.get("MarkovBot");
+            Properties zeroBotProperties = botProperties.get("ZeroBot");
             
-            clientMarkovBot = new ClientBuilder()
-                .withToken(markovBotProperties.getProperty("token"))
+            clientZeroBot = new ClientBuilder()
+                .withToken(zeroBotProperties.getProperty("token"))
                 .withRecommendedShardCount()
                 .build();
         
-            clientMarkovBot.getDispatcher().registerListener(new MarkovBot(markovBotProperties));
+            clientZeroBot.getDispatcher().registerListener(new ZeroBot(zeroBotProperties));
         
-            clientMarkovBot.login();
+            clientZeroBot.login();
         }
         catch(DiscordException e)
         {
-            LOGGER.error("Unhandled DiscordException in running MarkovBot.", e);
+            LOGGER.error("Unhandled DiscordException in running ZeroBot.", e);
             throw e;
         }
     }

@@ -14,12 +14,12 @@ import sx.blah.discord.util.RequestBuffer;
 
 import java.util.*;
 
-public class MarkovBot implements IBot
+public class ZeroBot implements IBot
 {
     private Properties properties;
     private Map<String, ICommand> commands;
     
-    public MarkovBot(Properties properties)
+    public ZeroBot(Properties properties)
     {
         this.properties = properties;
         commands = new HashMap<>();
