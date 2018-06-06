@@ -179,7 +179,7 @@ public class MessageDao extends Dao<MessageData, String>
         }
     }
     
-    public List<MessageData> getRandomsForUser(Connection connection, String userId, int offset, int amount) throws SQLException
+    public String getConcatenatedRandomContentsForUser(Connection connection, String userId, int offset, int amount) throws SQLException
     {
         String query = "SELECT * FROM messages WHERE user_id = ? ORDER BY RAND() LIMIT ?,?;";
         
@@ -190,21 +190,19 @@ public class MessageDao extends Dao<MessageData, String>
             statement.setInt(3, amount);
             
             ResultSet resultSet = statement.executeQuery();
-            List<MessageData> messageList = new ArrayList<>();
+            StringBuilder contentsBuilder = new StringBuilder();
             
             while(resultSet.next())
             {
-                String messageId = resultSet.getString("id");
                 String content = resultSet.getString("content");
-                Long timestamp = resultSet.getTimestamp("timestamp").getTime();
-                messageList.add(new MessageData(messageId, userId, content, timestamp));
+                contentsBuilder.append(content).append(' ');
             }
             
-            return messageList;
+            return contentsBuilder.toString();
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on getting random Message datas for user ID '{}', offset '{}' and amount '{}'.", userId, offset, amount, e);
+            LOGGER.error("SQLException on getting random Message contents for user ID '{}', offset '{}' and amount '{}'.", userId, offset, amount, e);
             throw e;
         }
     }

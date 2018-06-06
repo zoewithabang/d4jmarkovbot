@@ -10,9 +10,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 public class MarkovChain implements ICommand
 {
@@ -34,13 +32,18 @@ public class MarkovChain implements ICommand
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
         final int MESSAGE_COUNT = 10;
+        final int MARKOV_PREFIX_SIZE = 2;
+        final int MAX_OUTPUT_WORD_SIZE = 10;
         
         IChannel eventChannel = event.getChannel();
         IGuild server = event.getGuild();
         IUser user;
         String userIdMarkdown;
         String userId;
-        List<MessageData> storedMessages;
+        String storedMessages;
+        String[] words;
+        int wordsCount;
+        Map<String, List<String>> markovTable = new HashMap<>();
     
         user = validateArgs(args, server);
     
@@ -58,7 +61,7 @@ public class MarkovChain implements ICommand
     
         try
         {
-            storedMessages = messageService.getRandomSequentialMessagesForUser(userId, MESSAGE_COUNT);
+            storedMessages = messageService.getStringOfRandomSequentialMessageContentsForUser(userId, MESSAGE_COUNT);
         }
         catch(SQLException e)
         {
@@ -66,7 +69,95 @@ public class MarkovChain implements ICommand
             return;
         }
         
-        bot.sendMessage(eventChannel, "I got " + storedMessages.size() + " messages from " + userIdMarkdown + ", here's one: \"" + storedMessages.get(0) + "\", fancy huh?");
+        
+        //get sequential messages
+        //for each message, split into words, add to word array
+        //iterate over word array "word array size - key size" times, counter i
+        //add word at i, append words up to key size with spaces between, "wordAtI nextWord lastWord" for key size 3
+        words = storedMessages.trim().split(" ");
+        wordsCount = words.length;
+        if(wordsCount < MAX_OUTPUT_WORD_SIZE)
+        {
+            //send error that output word size is too big/words too small
+        }
+        
+        //build table
+        for(int i = 0; i < (wordsCount - MARKOV_PREFIX_SIZE); i++)
+        {
+            StringBuilder prefixBuilder = new StringBuilder(words[i]);
+            String prefix;
+            String suffix;
+            
+            for(int j = (i + 1); j < (i + MARKOV_PREFIX_SIZE); j++)
+            {
+                prefixBuilder.append(' ').append(words[j]);
+            }
+            
+            prefix = prefixBuilder.toString();
+            
+            if(i + MARKOV_PREFIX_SIZE < wordsCount)
+            {
+                suffix = words[i + MARKOV_PREFIX_SIZE];
+            }
+            else
+            {
+                suffix = "";
+            }
+            
+            
+            
+            if(markovTable.containsKey(prefix))
+            {
+                markovTable.get(prefix).add(suffix);
+            }
+            else
+            {
+                List<String> suffixes = new ArrayList<>();
+                suffixes.add(suffix);
+                markovTable.put(prefix, suffixes);
+            }
+        }
+        
+        //get output
+        String prefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
+        String[] latestPrefixWords = prefix.split(" ");
+        List<String> output = new ArrayList<>(Arrays.asList(latestPrefixWords));
+        int addedWords = 0;
+        
+        while(output.size() <= MAX_OUTPUT_WORD_SIZE)
+        {
+            latestPrefixWords = output.subList(addedWords, addedWords + MARKOV_PREFIX_SIZE).toArray(new String[0]);
+            prefix = String.join(" ", latestPrefixWords);
+            List<String> suffixes = markovTable.get(prefix);
+            String suffix;
+            
+            if(suffixes.size() == 1) //either an end of chain or single result
+            {
+                suffix = suffixes.get(0);
+                if(suffix.equals(""))
+                {
+                    break; //end of chain, end of output
+                }
+                else
+                {
+                    output.add(suffix);
+                }
+            }
+            else //more than one result, pick one randomly
+            {
+                suffix = suffixes.get(random.nextInt(suffixes.size()));
+                output.add(suffix);
+            }
+            
+            if(output.size() >= MAX_OUTPUT_WORD_SIZE)
+            {
+                break;
+            }
+            
+            addedWords++;
+        }
+        
+        bot.sendMessage(eventChannel, userIdMarkdown + " says '" + String.join(" ", output) + "'");
     }
     
     private IUser validateArgs(List<String> args, IGuild server)
