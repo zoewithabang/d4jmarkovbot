@@ -127,7 +127,7 @@ public class ZeroBot implements IBot
         }
         catch(Exception e)
         {
-            LOGGER.error("Uncaught Exception when executing command '{}', TROUBLESHOOT THIS!!!", command);
+            LOGGER.error("Uncaught Exception when executing command '{}', TROUBLESHOOT THIS!!!", command, e);
             postErrorMessage(event.getChannel(), true, null, null);
         }
     }
