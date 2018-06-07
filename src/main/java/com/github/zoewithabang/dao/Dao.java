@@ -3,9 +3,7 @@ package com.github.zoewithabang.dao;
 import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,6 +41,21 @@ public abstract class Dao<T, K>
         catch(SQLException e)
         {
             LOGGER.error("SQLException on attempting to connect to database.", e);
+            throw e;
+        }
+    }
+    
+    public void setNamesUtf8mb4(Connection connection) throws SQLException
+    {
+        String query = "SET NAMES 'utf8mb4';";
+        
+        try(PreparedStatement statement = connection.prepareStatement(query))
+        {
+            statement.executeQuery();
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on setting names to utf8mb4.", e);
             throw e;
         }
     }

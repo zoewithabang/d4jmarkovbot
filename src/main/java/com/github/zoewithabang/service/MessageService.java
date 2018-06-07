@@ -48,6 +48,8 @@ public class MessageService implements IService
             connection.setAutoCommit(false);
             try
             {
+                messageDao.setNamesUtf8mb4(connection);
+                
                 for(IMessage message : allUserMessages)
                 {
                     String content = message.getContent();
@@ -88,13 +90,17 @@ public class MessageService implements IService
         try(Connection connection = messageDao.getConnection(databaseMarkov))
         {
             Integer userMessageCount = messageDao.getMessageCountForUser(connection, userId);
+            Integer offset;
             
             if(userMessageCount < messageCount)
             {
                 messageCount = userMessageCount;
+                offset = 0;
             }
-            
-            Integer offset = random.nextInt(userMessageCount - messageCount);
+            else
+            {
+                offset = random.nextInt(userMessageCount - messageCount);
+            }
             
             return messageDao.getConcatenatedRandomContentsForUser(connection, userId, offset, messageCount);
         }
