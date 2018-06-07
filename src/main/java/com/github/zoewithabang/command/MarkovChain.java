@@ -31,9 +31,10 @@ public class MarkovChain implements ICommand
     @Override
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
-        final int MESSAGE_COUNT = 10;
+        final int MESSAGE_COUNT = 1000;
         final int MARKOV_PREFIX_SIZE = 2;
-        final int MAX_OUTPUT_WORD_SIZE = 10;
+        final int DESIRED_MIN_OUTPUT_WORD_SIZE = 4;
+        final int MAX_OUTPUT_WORD_SIZE = 20;
         
         IChannel eventChannel = event.getChannel();
         IGuild server = event.getGuild();
@@ -69,11 +70,6 @@ public class MarkovChain implements ICommand
             return;
         }
         
-        
-        //get sequential messages
-        //for each message, split into words, add to word array
-        //iterate over word array "word array size - key size" times, counter i
-        //add word at i, append words up to key size with spaces between, "wordAtI nextWord lastWord" for key size 3
         words = storedMessages.trim().split(" ");
         wordsCount = words.length;
         if(wordsCount < MAX_OUTPUT_WORD_SIZE)
@@ -103,8 +99,6 @@ public class MarkovChain implements ICommand
             {
                 suffix = "";
             }
-            
-            
             
             if(markovTable.containsKey(prefix))
             {
@@ -150,6 +144,13 @@ public class MarkovChain implements ICommand
             }
             
             if(output.size() >= MAX_OUTPUT_WORD_SIZE)
+            {
+                break;
+            }
+            
+            if(output.size() >= DESIRED_MIN_OUTPUT_WORD_SIZE
+                && random.nextFloat() < 0.33
+                && suffixes.contains(""))
             {
                 break;
             }
