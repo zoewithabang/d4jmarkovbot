@@ -111,11 +111,10 @@ public class GetAllMessagesFromUser implements ICommand
         
         try
         {
-            messageService.storeMessagesForUser(userId, allUserMessages);
+            storeUserMessages(userId, allUserMessages);
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on storing Messages for User ID '{}'.", userId, e);
             bot.postErrorMessage(eventChannel, sendBotMessages, command, 1005);
             return;
         }
@@ -285,5 +284,18 @@ public class GetAllMessagesFromUser implements ICommand
                 return channel.getFullMessageHistory();
             }
         ).get();
+    }
+    
+    private void storeUserMessages(String userId, List<IMessage> messages) throws SQLException
+    {
+        try
+        {
+            messageService.storeMessagesForUser(userId, messages);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on storing Messages for User ID '{}'.", userId, e);
+            throw e;
+        }
     }
 }

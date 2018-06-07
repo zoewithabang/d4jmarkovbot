@@ -50,8 +50,14 @@ public class MessageService implements IService
             {
                 for(IMessage message : allUserMessages)
                 {
-                    String id = message.getStringID();
                     String content = message.getContent();
+                    //ignore messages that start with the bot's prefix
+                    if(content.startsWith(botProperties.getProperty("prefix")))
+                    {
+                        continue;
+                    }
+                    
+                    String id = message.getStringID();
                     Long timestamp = message.getTimestamp().toEpochMilli();
                     MessageData messageData = new MessageData(id, userId, content, timestamp);
                     LOGGER.debug("Storing MessageData '{}'...", messageData);
