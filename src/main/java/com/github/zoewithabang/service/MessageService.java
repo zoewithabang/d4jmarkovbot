@@ -85,7 +85,7 @@ public class MessageService implements IService
             
             if(userMessageCount < messageCount)
             {
-                throw new IllegalArgumentException("User has less messages stored than requested count.");
+                messageCount = userMessageCount;
             }
             
             Integer offset = random.nextInt(userMessageCount - messageCount);
