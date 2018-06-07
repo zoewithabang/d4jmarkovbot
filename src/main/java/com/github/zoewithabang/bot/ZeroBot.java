@@ -3,29 +3,44 @@ package com.github.zoewithabang.bot;
 import com.github.zoewithabang.command.GetAllMessagesFromUser;
 import com.github.zoewithabang.command.ICommand;
 import com.github.zoewithabang.command.MarkovChain;
+import com.github.zoewithabang.task.ZeroTubeNowPlaying;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.RequestBuffer;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ZeroBot implements IBot
 {
+    private IDiscordClient client;
     private Properties properties;
     private Map<String, ICommand> commands;
+    private ScheduledExecutorService taskScheduler;
     
-    public ZeroBot(Properties properties)
+    public ZeroBot(IDiscordClient client, Properties properties)
     {
+        this.client = client;
         this.properties = properties;
         commands = new HashMap<>();
+        taskScheduler = Executors.newScheduledThreadPool(1);
         
+        //called commands
         commands.put(GetAllMessagesFromUser.command, new GetAllMessagesFromUser(this, properties));
         commands.put(MarkovChain.command, new MarkovChain(this, properties));
+        
+        //scheduled tasks
+        taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlaying(this, properties), 5, 2, TimeUnit.SECONDS);
     }
     
     @Override
@@ -64,6 +79,13 @@ public class ZeroBot implements IBot
             LOGGER.error("Failed to send embed message '{}' to channel '{}'.", embed, channel.getName(), e);
             throw e;
         }
+    }
+    
+    @Override
+    public void updatePresence(StatusType status, ActivityType activity, String text)
+    {
+        LOGGER.debug("Updating bot presence to status '{}', activity '{}', text '{}'.", status.name(), activity.name(), text);
+        client.changePresence(status, activity, text);
     }
     
     @EventSubscriber
