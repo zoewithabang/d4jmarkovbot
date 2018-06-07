@@ -65,7 +65,7 @@ class BotManager
                 .withRecommendedShardCount()
                 .build();
         
-            clientZeroBot.getDispatcher().registerListener(new ZeroBot(zeroBotProperties));
+            clientZeroBot.getDispatcher().registerListener(new ZeroBot(clientZeroBot, zeroBotProperties));
         
             clientZeroBot.login();
         }
