@@ -1,6 +1,7 @@
 package com.github.zoewithabang.bot;
 
 import com.github.zoewithabang.command.GetAllMessagesFromUser;
+import com.github.zoewithabang.command.GetZeroTube;
 import com.github.zoewithabang.command.ICommand;
 import com.github.zoewithabang.command.MarkovChain;
 import com.github.zoewithabang.task.ZeroTubeNowPlaying;
@@ -38,6 +39,7 @@ public class ZeroBot implements IBot
         //called commands
         commands.put(GetAllMessagesFromUser.command, new GetAllMessagesFromUser(this, properties));
         commands.put(MarkovChain.command, new MarkovChain(this, properties));
+        commands.put(GetZeroTube.command, new GetZeroTube(this, properties));
         
         //scheduled tasks
         taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlaying(this, properties), 5, 2, TimeUnit.SECONDS);

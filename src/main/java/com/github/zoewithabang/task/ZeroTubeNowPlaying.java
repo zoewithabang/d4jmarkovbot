@@ -40,7 +40,6 @@ public class ZeroTubeNowPlaying implements ITask
             //[Thu Jun 07 2018 15:25:06] [playlist] Now playing: Metal Gear Rising: Revengeance OST - A Stranger I Remain Extended (yt:h-rj8HVW3PQ)
             while((line = reader.readLine()) != null)
             {
-                LOGGER.debug("Current log line: {}", line);
                 String[] lineSplitOnPlaylistTag = line.split(NOW_PLAYING_PREFIX);
                 
                 //if this line has a "now playing" entry, the split should have made an array of size 2, with [1] being the video name and youtube ID suffix
