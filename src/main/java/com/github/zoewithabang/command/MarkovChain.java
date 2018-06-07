@@ -112,11 +112,14 @@ public class MarkovChain implements ICommand
             }
         }
         
+        LOGGER.debug("Markov table is '{}'.", markovTable);
+        
         //get output
         String prefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
         String[] latestPrefixWords = prefix.split(" ");
         List<String> output = new ArrayList<>(Arrays.asList(latestPrefixWords));
         int addedWords = 0;
+        LOGGER.debug("Prefix is '{}', latest prefix words are '{}', current output is '{}'.", prefix, latestPrefixWords, output);
         
         while(output.size() <= MAX_OUTPUT_WORD_SIZE)
         {
