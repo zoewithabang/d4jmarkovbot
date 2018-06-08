@@ -132,7 +132,6 @@ public class MarkovChain implements ICommand
         List<String> output = new ArrayList<>(Arrays.asList(latestPrefixWords));
         int addedWordCount = 0;
         LOGGER.debug("Prefix is '{}', latest prefix words are '{}', current output is '{}'.", prefix, latestPrefixWords, output);
-        int emptySuffixCount = 0;
         
         while(output.size() <= MAX_OUTPUT_WORD_SIZE)
         {
@@ -144,18 +143,18 @@ public class MarkovChain implements ICommand
             if(suffixes.size() == 1) //either an end of chain or single result
             {
                 suffix = suffixes.get(0);
-                if(suffix.equals(""))
-                {
-                    break; //end of chain, end of output
-                }
-                else
-                {
-                    output.add(suffix);
-                }
             }
             else //more than one result, pick one randomly
             {
                 suffix = suffixes.get(random.nextInt(suffixes.size()));
+            }
+            
+            if(suffix.equals(""))
+            {
+                break; //end of chain, end of output
+            }
+            else
+            {
                 output.add(suffix);
             }
             
@@ -171,15 +170,10 @@ public class MarkovChain implements ICommand
                 break;
             }
             
-            if(suffixes.contains(""))
-            {
-                emptySuffixCount++;
-            }
-            
             addedWordCount++;
         }
         
-        LOGGER.debug("Empty suffix count: {}, word count: {}.", emptySuffixCount, addedWordCount);
+        LOGGER.debug("Word count: {}.", addedWordCount);
         bot.sendMessage(eventChannel, userIdMarkdown + " says '" + String.join(" ", output) + "'");
     }
     
