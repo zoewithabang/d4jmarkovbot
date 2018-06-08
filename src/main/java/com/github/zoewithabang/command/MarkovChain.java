@@ -86,7 +86,7 @@ public class MarkovChain implements ICommand
             
             if(wordsCount >= MARKOV_PREFIX_SIZE)
             {
-                for(int i = 0; i < (wordsCount - MARKOV_PREFIX_SIZE); i++)
+                for(int i = 0; i <= (wordsCount - MARKOV_PREFIX_SIZE); i++)
                 {
                     StringBuilder prefixBuilder = new StringBuilder(words[i]);
                     String prefix;
@@ -137,7 +137,9 @@ public class MarkovChain implements ICommand
         {
             latestPrefixWords = output.subList(addedWordCount, addedWordCount + MARKOV_PREFIX_SIZE).toArray(new String[0]);
             prefix = String.join(" ", latestPrefixWords);
+            LOGGER.debug("Latest prefix: '{}'", prefix);
             List<String> suffixes = markovTable.get(prefix);
+            LOGGER.debug("Latest suffixes: '{}'", suffixes);
             String suffix;
             
             if(suffixes.size() == 1) //either an end of chain or single result
