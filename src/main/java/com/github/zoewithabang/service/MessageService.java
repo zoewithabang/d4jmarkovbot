@@ -85,7 +85,7 @@ public class MessageService implements IService
         }
     }
     
-    public String getStringOfRandomSequentialMessageContentsForUser(String userId, int messageCount) throws SQLException
+    public List<String> getRandomSequentialMessageContentsForUser(String userId, int messageCount) throws SQLException
     {
         try(Connection connection = messageDao.getConnection(databaseMarkov))
         {
@@ -102,7 +102,7 @@ public class MessageService implements IService
                 offset = random.nextInt(userMessageCount - messageCount);
             }
             
-            return messageDao.getConcatenatedRandomContentsForUser(connection, userId, offset, messageCount);
+            return messageDao.getRandomContentsForUser(connection, userId, offset, messageCount);
         }
         catch(SQLException e)
         {

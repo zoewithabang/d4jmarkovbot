@@ -31,7 +31,8 @@ public class MarkovChain implements ICommand
     @Override
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
-        final int MESSAGE_COUNT = 1000;
+        final int DESIRED_MESSAGE_COUNT = 1000;
+        final int MINIMUM_MESSAGE_COUNT = 10;
         final int MARKOV_PREFIX_SIZE = 2;
         final int DESIRED_MIN_OUTPUT_WORD_SIZE = 4;
         final int MAX_OUTPUT_WORD_SIZE = 20;
@@ -41,9 +42,8 @@ public class MarkovChain implements ICommand
         IUser user;
         String userIdMarkdown;
         String userId;
-        String storedMessages;
-        String[] words;
-        int wordsCount;
+        List<String> storedMessages;
+        int messageCount;
         Map<String, List<String>> markovTable = new HashMap<>();
     
         user = validateArgs(args, server);
@@ -62,7 +62,8 @@ public class MarkovChain implements ICommand
     
         try
         {
-            storedMessages = messageService.getStringOfRandomSequentialMessageContentsForUser(userId, MESSAGE_COUNT);
+            //TODO: change this to collection, do markovs on each of the strings separately, get more pattern ends
+            storedMessages = messageService.getRandomSequentialMessageContentsForUser(userId, DESIRED_MESSAGE_COUNT);
         }
         catch(SQLException e)
         {
@@ -70,45 +71,54 @@ public class MarkovChain implements ICommand
             return;
         }
         
-        words = storedMessages.trim().split(" ");
-        wordsCount = words.length;
-        if(wordsCount < MAX_OUTPUT_WORD_SIZE)
+        //words = storedMessages.trim().split(" ");
+        messageCount = storedMessages.size();
+        if(messageCount < MINIMUM_MESSAGE_COUNT)
         {
             //send error that output word size is too big/words too small
         }
         
         //build table
-        for(int i = 0; i < (wordsCount - MARKOV_PREFIX_SIZE); i++)
+        for(String message : storedMessages)
         {
-            StringBuilder prefixBuilder = new StringBuilder(words[i]);
-            String prefix;
-            String suffix;
+            String[] words = message.trim().split(" ");
+            int wordsCount = words.length;
             
-            for(int j = (i + 1); j < (i + MARKOV_PREFIX_SIZE); j++)
+            if(wordsCount >= MARKOV_PREFIX_SIZE)
             {
-                prefixBuilder.append(' ').append(words[j]);
-            }
-            
-            prefix = prefixBuilder.toString();
-            
-            if(i + MARKOV_PREFIX_SIZE < wordsCount)
-            {
-                suffix = words[i + MARKOV_PREFIX_SIZE];
-            }
-            else
-            {
-                suffix = "";
-            }
-            
-            if(markovTable.containsKey(prefix))
-            {
-                markovTable.get(prefix).add(suffix);
-            }
-            else
-            {
-                List<String> suffixes = new ArrayList<>();
-                suffixes.add(suffix);
-                markovTable.put(prefix, suffixes);
+                for(int i = 0; i < (wordsCount - MARKOV_PREFIX_SIZE); i++)
+                {
+                    StringBuilder prefixBuilder = new StringBuilder(words[i]);
+                    String prefix;
+                    String suffix;
+        
+                    for(int j = (i + 1); j < (i + MARKOV_PREFIX_SIZE); j++)
+                    {
+                        prefixBuilder.append(' ').append(words[j]);
+                    }
+        
+                    prefix = prefixBuilder.toString();
+        
+                    if(i + MARKOV_PREFIX_SIZE < wordsCount)
+                    {
+                        suffix = words[i + MARKOV_PREFIX_SIZE];
+                    }
+                    else
+                    {
+                        suffix = "";
+                    }
+        
+                    if(markovTable.containsKey(prefix))
+                    {
+                        markovTable.get(prefix).add(suffix);
+                    }
+                    else
+                    {
+                        List<String> suffixes = new ArrayList<>();
+                        suffixes.add(suffix);
+                        markovTable.put(prefix, suffixes);
+                    }
+                }
             }
         }
         

@@ -179,7 +179,7 @@ public class MessageDao extends Dao<MessageData, String>
         }
     }
     
-    public String getConcatenatedRandomContentsForUser(Connection connection, String userId, int offset, int amount) throws SQLException
+    public List<String> getRandomContentsForUser(Connection connection, String userId, int offset, int amount) throws SQLException
     {
         String query = "SELECT * FROM messages WHERE user_id = ? ORDER BY RAND() LIMIT ?,?;";
         
@@ -190,15 +190,15 @@ public class MessageDao extends Dao<MessageData, String>
             statement.setInt(3, amount);
             
             ResultSet resultSet = statement.executeQuery();
-            StringBuilder contentsBuilder = new StringBuilder();
+            List<String> contents = new ArrayList<>();
             
             while(resultSet.next())
             {
                 String content = resultSet.getString("content");
-                contentsBuilder.append(content).append(' ');
+                contents.add(content);
             }
             
-            return contentsBuilder.toString();
+            return contents;
         }
         catch(SQLException e)
         {
