@@ -110,12 +110,12 @@ public class MarkovChain implements ICommand
         
                     if(markovTable.containsKey(prefix))
                     {
-                        LOGGER.debug("Markov table already contains prefix '{}', adding suffix '{}'.");
+                        LOGGER.debug("Markov table already contains prefix '{}', adding suffix '{}'.", prefix, suffix);
                         markovTable.get(prefix).add(suffix);
                     }
                     else
                     {
-                        LOGGER.debug("Markov table has new prefix '{}', adding suffix '{}'.");
+                        LOGGER.debug("Markov table has new prefix '{}', adding suffix '{}'.", prefix, suffix);
                         List<String> suffixes = new ArrayList<>();
                         suffixes.add(suffix);
                         markovTable.put(prefix, suffixes);
