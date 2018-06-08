@@ -110,10 +110,12 @@ public class MarkovChain implements ICommand
         
                     if(markovTable.containsKey(prefix))
                     {
+                        LOGGER.debug("Markov table already contains prefix '{}', adding suffix '{}'.");
                         markovTable.get(prefix).add(suffix);
                     }
                     else
                     {
+                        LOGGER.debug("Markov table has new prefix '{}', adding suffix '{}'.");
                         List<String> suffixes = new ArrayList<>();
                         suffixes.add(suffix);
                         markovTable.put(prefix, suffixes);
@@ -128,12 +130,13 @@ public class MarkovChain implements ICommand
         String prefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
         String[] latestPrefixWords = prefix.split(" ");
         List<String> output = new ArrayList<>(Arrays.asList(latestPrefixWords));
-        int addedWords = 0;
+        int addedWordCount = 0;
         LOGGER.debug("Prefix is '{}', latest prefix words are '{}', current output is '{}'.", prefix, latestPrefixWords, output);
+        int emptySuffixCount = 0;
         
         while(output.size() <= MAX_OUTPUT_WORD_SIZE)
         {
-            latestPrefixWords = output.subList(addedWords, addedWords + MARKOV_PREFIX_SIZE).toArray(new String[0]);
+            latestPrefixWords = output.subList(addedWordCount, addedWordCount + MARKOV_PREFIX_SIZE).toArray(new String[0]);
             prefix = String.join(" ", latestPrefixWords);
             List<String> suffixes = markovTable.get(prefix);
             String suffix;
@@ -168,9 +171,15 @@ public class MarkovChain implements ICommand
                 break;
             }
             
-            addedWords++;
+            if(suffixes.contains(""))
+            {
+                emptySuffixCount++;
+            }
+            
+            addedWordCount++;
         }
         
+        LOGGER.debug("Empty suffix count: {}, word count: {}.", emptySuffixCount, addedWordCount);
         bot.sendMessage(eventChannel, userIdMarkdown + " says '" + String.join(" ", output) + "'");
     }
     
