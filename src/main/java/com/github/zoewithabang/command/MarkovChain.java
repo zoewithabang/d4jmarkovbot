@@ -177,8 +177,6 @@ public class MarkovChain implements ICommand
         LOGGER.debug("Word count: {}.", addedWordCount);
         
         postMarkovMessage(event, user, String.join(" ", output));
-        
-        bot.sendMessage(eventChannel, userIdMarkdown + " says '" + String.join(" ", output) + "'");
     }
     
     public boolean validateArgs(MessageReceivedEvent event, List<String> args)
