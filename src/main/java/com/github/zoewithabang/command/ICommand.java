@@ -11,4 +11,5 @@ public interface ICommand
     Logger LOGGER = Logging.getLogger();
     
     void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages);
+    boolean validateArgs(MessageReceivedEvent event, List<String> args);
 }

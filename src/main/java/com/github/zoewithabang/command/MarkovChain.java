@@ -20,6 +20,8 @@ public class MarkovChain implements ICommand
     private MessageService messageService;
     private Random random;
     
+    private IUser user;
+    
     public MarkovChain(IBot bot, Properties botProperties)
     {
         this.bot = bot;
@@ -38,17 +40,13 @@ public class MarkovChain implements ICommand
         final int MAX_OUTPUT_WORD_SIZE = 20;
         
         IChannel eventChannel = event.getChannel();
-        IGuild server = event.getGuild();
-        IUser user;
         String userIdMarkdown;
         String userId;
         List<String> storedMessages;
         int messageCount;
         Map<String, List<String>> markovTable = new HashMap<>();
-    
-        user = validateArgs(args, server);
-    
-        if(user == null)
+        
+        if(!validateArgs(event, args))
         {
             if(sendBotMessages)
             {
@@ -179,7 +177,7 @@ public class MarkovChain implements ICommand
         bot.sendMessage(eventChannel, userIdMarkdown + " says '" + String.join(" ", output) + "'");
     }
     
-    private IUser validateArgs(List<String> args, IGuild server)
+    public boolean validateArgs(MessageReceivedEvent event, List<String> args)
     {
         LOGGER.debug("Validating args in MarkovChain");
         int argsSize = args.size();
@@ -187,11 +185,13 @@ public class MarkovChain implements ICommand
         if(argsSize != 1)
         {
             LOGGER.warn("MarkovChain expected 1 argument, found {}.", argsSize);
-            return null;
+            return false;
         }
     
         String id = args.get(0);
     
-        return DiscordHelper.getUserFromMarkdownId(server, id);
+        user = DiscordHelper.getUserFromMarkdownId(event.getGuild(), id);
+    
+        return user != null;
     }
 }

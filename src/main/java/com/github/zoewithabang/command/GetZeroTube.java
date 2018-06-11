@@ -27,4 +27,10 @@ public class GetZeroTube implements ICommand
         String message = "Tune in with me~ " + url + " \uD83C\uDFB5";
         bot.sendMessage(event.getChannel(), message);
     }
+    
+    @Override
+    public boolean validateArgs(MessageReceivedEvent event, List<String> args)
+    {
+        return true;
+    }
 }

@@ -25,6 +25,7 @@ public class GetAllMessagesFromUser implements ICommand
     private Properties botProperties;
     private UserService userService;
     private MessageService messageService;
+    private IUser user;
     
     public GetAllMessagesFromUser(IBot bot, Properties botProperties)
     {
@@ -41,7 +42,6 @@ public class GetAllMessagesFromUser implements ICommand
         
         IChannel eventChannel = event.getChannel();
         IGuild server = event.getGuild();
-        IUser user;
         String userIdMarkdown;
         String userId;
         UserData storedUser;
@@ -55,9 +55,7 @@ public class GetAllMessagesFromUser implements ICommand
             return;
         }
         
-        user = validateArgs(args, server);
-        
-        if(user == null)
+        if(!validateArgs(event, args))
         {
             if(sendBotMessages)
             {
@@ -122,7 +120,7 @@ public class GetAllMessagesFromUser implements ICommand
         bot.sendMessage(event.getChannel(), "Hey, I should have all the messages posted by " + userIdMarkdown + " now!");
     }
     
-    private IUser validateArgs(List<String> args, IGuild server)
+    public boolean validateArgs(MessageReceivedEvent event, List<String> args)
     {
         LOGGER.debug("Validating args in GetAllMessagesFromUser");
         int argsSize = args.size();
@@ -130,12 +128,14 @@ public class GetAllMessagesFromUser implements ICommand
         if(argsSize != 1)
         {
             LOGGER.warn("GetAllMessagesFromUser expected 1 argument, found {}.", argsSize);
-            return null;
+            return false;
         }
         
         String id = args.get(0);
     
-        return DiscordHelper.getUserFromMarkdownId(server, id);
+        user = DiscordHelper.getUserFromMarkdownId(event.getGuild(), id);
+        
+        return user != null;
     }
     
     private UserData findStoredUser(String userId) throws SQLException
