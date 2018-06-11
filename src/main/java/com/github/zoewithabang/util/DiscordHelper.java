@@ -2,8 +2,10 @@ package com.github.zoewithabang.util;
 
 import org.slf4j.Logger;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.awt.*;
 import java.util.List;
 
 public class DiscordHelper
@@ -51,5 +53,18 @@ public class DiscordHelper
         }
         
         return specifiedUser;
+    }
+    
+    public static Color getColourOfARoleOfUser(IUser user, IGuild guild)
+    {
+        List<IRole> roles = user.getRolesForGuild(guild);
+        if(roles.size() > 0)
+        {
+            return roles.get(0).getColor();
+        }
+        else
+        {
+            return null;
+        }
     }
 }

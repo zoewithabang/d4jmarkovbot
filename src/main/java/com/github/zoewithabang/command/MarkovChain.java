@@ -8,6 +8,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -174,6 +175,9 @@ public class MarkovChain implements ICommand
         }
         
         LOGGER.debug("Word count: {}.", addedWordCount);
+        
+        postMarkovMessage(event, user, String.join(" ", output));
+        
         bot.sendMessage(eventChannel, userIdMarkdown + " says '" + String.join(" ", output) + "'");
     }
     
@@ -193,5 +197,17 @@ public class MarkovChain implements ICommand
         user = DiscordHelper.getUserFromMarkdownId(event.getGuild(), id);
     
         return user != null;
+    }
+    
+    private void postMarkovMessage(MessageReceivedEvent event, IUser user, String message)
+    {
+        EmbedBuilder builder = new EmbedBuilder();
+        
+        builder.withColor(DiscordHelper.getColourOfARoleOfUser(user, event.getGuild()));
+        builder.withAuthorName(user.getDisplayName(event.getGuild()));
+        builder.withThumbnail(user.getAvatarURL());
+        builder.withDescription(message);
+        
+        bot.sendEmbedMessage(event.getChannel(), builder.build());
     }
 }
