@@ -27,8 +27,8 @@ public class AliasService implements IService
             Alias alias = aliasDao.get(connection, aliasString);
             
             return alias != null
-                && alias.getCommand() != null
-                && alias.getCommand().equals("");
+                && alias.getAlias() != null
+                && alias.getAlias().equals(aliasString);
         }
         catch(SQLException e)
         {
