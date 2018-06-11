@@ -29,8 +29,9 @@ public class ZeroTubeNowPlaying implements ITask
     {
         try(ReversedLinesFileReader reader = new ReversedLinesFileReader(new File(botProperties.getProperty("cytubeloglocation")), StandardCharsets.UTF_8))
         {
-            final int YOUTUBE_SUFFIX_LENGTH = 17;
             final String NOW_PLAYING_PREFIX = Pattern.quote("[playlist] Now playing: ");
+            //all suffixes are one space, one (, two lower case characters, a colon, an URL/URL fragment, one )
+            final String NOW_PLAYING_SUFFIX = "\\s\\([a-z]{2}:[\\w\\-.~:/?#\\[\\]@!$&'()*+,;=%]+\\)";
             String line;
         
             //reading over log, from latest line
@@ -47,8 +48,16 @@ public class ZeroTubeNowPlaying implements ITask
                     && lineSplitOnPlaylistTag[1] != null
                     && !lineSplitOnPlaylistTag[1].equals(""))
                 {
-                    //remove the youtube suffix
-                    String title = lineSplitOnPlaylistTag[1].substring(0, lineSplitOnPlaylistTag[1].length() - YOUTUBE_SUFFIX_LENGTH);
+                    String[] lineSplitOnSuffix = lineSplitOnPlaylistTag[1].split(NOW_PLAYING_SUFFIX);
+                    
+                    //in case the video had the suffix in the title (not likely), join all but last (but always first)
+                    StringBuilder titleBuilder = new StringBuilder();
+                    titleBuilder.append(lineSplitOnSuffix[0]);
+                    for(int i = 0; i < lineSplitOnSuffix.length - 1; i++)
+                    {
+                        titleBuilder.append(lineSplitOnSuffix[i]);
+                    }
+                    String title = titleBuilder.toString();
                     
                     //if found title is different to stored, update stored and bot presence
                     if(!nowPlaying.equals(title))
