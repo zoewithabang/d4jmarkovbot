@@ -67,7 +67,7 @@ public class ManageAlias implements ICommand
                 case DELETE:
                     if(validateDelete(eventChannel, args, sendBotMessages))
                     {
-                        deleteAlias(eventChannel, aliasName, aliasCommand, aliasDescription, sendBotMessages);
+                        deleteAlias(eventChannel, aliasName, sendBotMessages);
                     }
                     break;
             }
@@ -166,6 +166,7 @@ public class ManageAlias implements ICommand
             throw e;
         }
         
+        LOGGER.debug("Alias Add passed validation, name '{}', command '{}', description '{}'.", aliasName, aliasCommand, aliasDescription);
         return true;
     }
     
@@ -212,6 +213,7 @@ public class ManageAlias implements ICommand
             throw e;
         }
     
+        LOGGER.debug("Alias Update passed validation, name '{}', command '{}', description '{}'.", aliasName, aliasCommand, aliasDescription);
         return true;
     }
     
@@ -254,6 +256,7 @@ public class ManageAlias implements ICommand
             throw e;
         }
     
+        LOGGER.debug("Alias Delete passed validation, name '{}'.", aliasName);
         return true;
     }
     
@@ -268,6 +271,8 @@ public class ManageAlias implements ICommand
             LOGGER.error("SQLException on adding new Alias name '{}', command '{}', description '{}'.", aliasName, aliasCommand, aliasDescription);
             throw e;
         }
+    
+        LOGGER.debug("Alias added with name '{}', command '{}' and description '{}'.", aliasName, aliasCommand, aliasDescription);
         
         if(sendBotMessages)
         {
@@ -286,6 +291,8 @@ public class ManageAlias implements ICommand
             LOGGER.error("SQLException on updating Alias name '{}', command '{}', description '{}'.", aliasName, aliasCommand, aliasDescription);
             throw e;
         }
+    
+        LOGGER.debug("Alias updated with name '{}', command '{}' and description '{}'.", aliasName, aliasCommand, aliasDescription);
         
         if(sendBotMessages)
         {
@@ -293,17 +300,19 @@ public class ManageAlias implements ICommand
         }
     }
     
-    private void deleteAlias(IChannel eventChannel, String aliasName, String aliasCommand, String aliasDescription, boolean sendBotMessages) throws SQLException
+    private void deleteAlias(IChannel eventChannel, String aliasName, boolean sendBotMessages) throws SQLException
     {
         try
         {
-            aliasService.deleteAlias(aliasName, aliasCommand, aliasDescription);
+            aliasService.deleteAlias(aliasName);
         }
         catch(SQLException e)
         {
             LOGGER.error("SQLException on deleting Alias name '{}'.", aliasName);
             throw e;
         }
+    
+        LOGGER.debug("Alias deleted with name '{}'.", aliasName);
         
         if(sendBotMessages)
         {

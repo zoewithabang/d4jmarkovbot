@@ -82,17 +82,19 @@ public class AliasService implements IService
         }
     }
     
-    public void deleteAlias(String aliasName, String aliasCommand, String aliasDescription) throws SQLException
+    public void deleteAlias(String aliasName) throws SQLException
     {
         try(Connection connection = aliasDao.getConnection(database))
         {
-            Alias alias = new Alias(aliasName, aliasCommand, aliasDescription);
+            Alias alias = new Alias();
+            
+            alias.setAlias(aliasName);
     
             aliasDao.delete(connection, alias);
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on deleting Alias for name '{}', command '{}' and description '{}'.", aliasName, aliasCommand, aliasDescription, e);
+            LOGGER.error("SQLException on deleting Alias for name '{}'.", aliasName, e);
             throw e;
         }
     }
