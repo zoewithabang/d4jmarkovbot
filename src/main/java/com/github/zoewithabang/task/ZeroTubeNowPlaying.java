@@ -64,7 +64,7 @@ public class ZeroTubeNowPlaying implements ITask
                     {
                         LOGGER.debug("Now playing: {}", title);
                         nowPlaying = title;
-                        bot.updatePresence(StatusType.ONLINE, ActivityType.PLAYING, nowPlaying);
+                        bot.updatePresence(StatusType.ONLINE, ActivityType.LISTENING, nowPlaying);
                     }
                 
                     //either presence is updated or doesn't need to be updated
