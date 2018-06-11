@@ -1,9 +1,6 @@
 package com.github.zoewithabang.bot;
 
-import com.github.zoewithabang.command.GetAllMessagesFromUser;
-import com.github.zoewithabang.command.GetZeroTube;
-import com.github.zoewithabang.command.ICommand;
-import com.github.zoewithabang.command.MarkovChain;
+import com.github.zoewithabang.command.*;
 import com.github.zoewithabang.task.ZeroTubeNowPlaying;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -40,6 +37,7 @@ public class ZeroBot implements IBot
         commands.put(GetAllMessagesFromUser.command, new GetAllMessagesFromUser(this, properties));
         commands.put(MarkovChain.command, new MarkovChain(this, properties));
         commands.put(GetZeroTube.command, new GetZeroTube(this, properties));
+        commands.put(ManageAlias.command, new ManageAlias(this, properties));
         
         //scheduled tasks
         taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlaying(this, properties), 5, 2, TimeUnit.SECONDS);
@@ -167,5 +165,11 @@ public class ZeroBot implements IBot
                 LOGGER.error("DiscordException thrown on trying to post error message to channel '{}'.", channel, e);
             }
         }
+    }
+    
+    @Override
+    public List<String> getCommandList()
+    {
+        return new ArrayList<>(commands.keySet());
     }
 }
