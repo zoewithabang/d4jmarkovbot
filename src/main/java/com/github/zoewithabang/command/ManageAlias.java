@@ -132,9 +132,9 @@ public class ManageAlias implements ICommand
             return false;
         }
         
-        aliasName = argGroups[0];
-        aliasCommand = argGroups[1];
-        aliasDescription = argGroups[3];
+        aliasName = argGroups[0].trim();
+        aliasCommand = argGroups[1].trim();
+        aliasDescription = argGroups[3].trim();
         
         if(bot.getCommandList().contains(aliasName))
         {
@@ -188,9 +188,9 @@ public class ManageAlias implements ICommand
             return false;
         }
     
-        aliasName = argGroups[0];
-        aliasCommand = argGroups[1];
-        aliasDescription = argGroups[3];
+        aliasName = argGroups[0].trim();
+        aliasCommand = argGroups[1].trim();
+        aliasDescription = argGroups[3].trim();
     
         try
         {
@@ -231,7 +231,7 @@ public class ManageAlias implements ICommand
             return false;
         }
     
-        aliasName = args.get(0);
+        aliasName = args.get(0).trim();
     
         try
         {
