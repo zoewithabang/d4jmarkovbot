@@ -274,8 +274,6 @@ public class ManageAlias implements ICommand
             aliasName = args.get(0).trim();
         }
         
-        aliasName = args.get(0).trim();
-    
         try
         {
             if(!aliasService.aliasExists(aliasName))
