@@ -34,17 +34,15 @@ public class MarkovChain implements ICommand
     @Override
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
-        final int DESIRED_MESSAGE_COUNT = 1000;
-        final int MINIMUM_MESSAGE_COUNT = 10;
+        final int DESIRED_MESSAGE_COUNT = 5000;
         final int MARKOV_PREFIX_SIZE = 2;
         final int DESIRED_MIN_OUTPUT_WORD_SIZE = 4;
-        final int MAX_OUTPUT_WORD_SIZE = 20;
+        final int MAX_OUTPUT_WORD_SIZE = 40;
         
         IChannel eventChannel = event.getChannel();
         String userIdMarkdown;
         String userId;
         List<String> storedMessages;
-        int messageCount;
         Map<String, List<String>> markovTable = new HashMap<>();
         
         if(!validateArgs(event, args))
@@ -61,20 +59,12 @@ public class MarkovChain implements ICommand
     
         try
         {
-            //TODO: change this to collection, do markovs on each of the strings separately, get more pattern ends
             storedMessages = messageService.getRandomSequentialMessageContentsForUser(userId, DESIRED_MESSAGE_COUNT);
         }
         catch(SQLException e)
         {
             bot.postErrorMessage(eventChannel, sendBotMessages, command, 2001);
             return;
-        }
-        
-        //words = storedMessages.trim().split(" ");
-        messageCount = storedMessages.size();
-        if(messageCount < MINIMUM_MESSAGE_COUNT)
-        {
-            //send error that output word size is too big/words too small
         }
         
         //build table
@@ -164,12 +154,12 @@ public class MarkovChain implements ICommand
                 break;
             }
             
-            if(output.size() >= DESIRED_MIN_OUTPUT_WORD_SIZE
+            /*if(output.size() >= DESIRED_MIN_OUTPUT_WORD_SIZE
                 && random.nextFloat() < 0.33
                 && suffixes.contains(""))
             {
                 break;
-            }
+            }*/
             
             addedWordCount++;
         }
@@ -202,7 +192,7 @@ public class MarkovChain implements ICommand
         EmbedBuilder builder = new EmbedBuilder();
         
         builder.withColor(DiscordHelper.getColourOfARoleOfUser(user, event.getGuild()));
-        builder.withAuthorName(user.getDisplayName(event.getGuild()));
+        builder.withAuthorName(user.getDisplayName(event.getGuild()) + " says:");
         builder.withThumbnail(user.getAvatarURL());
         builder.withDescription(message);
         
