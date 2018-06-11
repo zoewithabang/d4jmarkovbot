@@ -21,6 +21,7 @@ public class ManageAlias implements ICommand
     public static final String command = "alias";
     private IBot bot;
     private Properties botProperties;
+    private String prefix;
     private AliasCommandType type;
     private AliasService aliasService;
     private String aliasName;
@@ -31,6 +32,7 @@ public class ManageAlias implements ICommand
     {
         this.bot = bot;
         this.botProperties = botProperties;
+        prefix = botProperties.getProperty("prefix");
         aliasService = new AliasService(botProperties);
     }
     
@@ -43,7 +45,7 @@ public class ManageAlias implements ICommand
         {
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: '" + botProperties.getProperty("prefix") + command + " add/update/delete \"alias\" \"command if add/update\" \"description if add/update\"'.");
+                bot.sendMessage(eventChannel, "Usage: '" + prefix + command + " add/update/delete alias \"command if add/update\" \"description if add/update\"'.");
             }
             return;
         }
@@ -132,8 +134,24 @@ public class ManageAlias implements ICommand
             return false;
         }
         
-        aliasName = argGroups[0].trim();
-        aliasCommand = argGroups[1].trim();
+        if(argGroups[0].startsWith(prefix))
+        {
+            aliasName = argGroups[0].substring(prefix.length()).trim();
+        }
+        else
+        {
+            aliasName = argGroups[0].trim();
+        }
+    
+        if(argGroups[1].startsWith(prefix))
+        {
+            aliasCommand = argGroups[1].substring(prefix.length()).trim();
+        }
+        else
+        {
+            aliasCommand = argGroups[1].trim();
+        }
+        
         aliasDescription = argGroups[3].trim();
         
         if(bot.getCommandList().contains(aliasName))
@@ -188,8 +206,24 @@ public class ManageAlias implements ICommand
             return false;
         }
     
-        aliasName = argGroups[0].trim();
-        aliasCommand = argGroups[1].trim();
+        if(argGroups[0].startsWith(prefix))
+        {
+            aliasName = argGroups[0].substring(prefix.length()).trim();
+        }
+        else
+        {
+            aliasName = argGroups[0].trim();
+        }
+    
+        if(argGroups[1].startsWith(prefix))
+        {
+            aliasCommand = argGroups[1].substring(prefix.length()).trim();
+        }
+        else
+        {
+            aliasCommand = argGroups[1].trim();
+        }
+        
         aliasDescription = argGroups[3].trim();
     
         try
@@ -231,6 +265,15 @@ public class ManageAlias implements ICommand
             return false;
         }
     
+        if(args.get(0).startsWith(prefix))
+        {
+            aliasName = args.get(0).substring(prefix.length()).trim();
+        }
+        else
+        {
+            aliasName = args.get(0).trim();
+        }
+        
         aliasName = args.get(0).trim();
     
         try
