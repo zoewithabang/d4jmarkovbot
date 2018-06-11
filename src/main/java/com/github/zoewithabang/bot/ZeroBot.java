@@ -184,7 +184,7 @@ public class ZeroBot implements IBot
         }
     }
     
-    private List<String> findAliasCommand(String command)
+    private List<String> findAliasCommand(String command) throws Exception
     {
         try
         {
@@ -204,6 +204,11 @@ public class ZeroBot implements IBot
         {
             LOGGER.error("SQLException on attempting to find Alias command for '{}'.", command, e);
             return new ArrayList<>();
+        }
+        catch(Exception e)
+        {
+            //rethrowing to attemptCommand
+            throw e;
         }
     }
 }

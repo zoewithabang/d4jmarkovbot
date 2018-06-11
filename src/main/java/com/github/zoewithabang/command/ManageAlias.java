@@ -119,8 +119,7 @@ public class ManageAlias implements ICommand
         //splits into 4, "alias", "command arg0", "" and "does command for arg0"
         //argGroups[2] should be empty thanks to the end quote and start quote
         
-        args.remove(0); //removes the add arg
-        String argsString = String.join("", args);
+        String argsString = String.join(" ", args);
         String[] argGroups = argsString.split("\"");
         
         if(argGroups.length != 4)
@@ -176,8 +175,7 @@ public class ManageAlias implements ICommand
         //splits into 4, "alias", "command arg0", "" and "does command for arg0"
         //argGroups[2] should be empty thanks to the end quote and start quote
     
-        args.remove(0); //removes the update arg
-        String argsString = String.join("", args);
+        String argsString = String.join(" ", args);
         String[] argGroups = argsString.split("\"");
     
         if(argGroups.length != 4)
@@ -222,9 +220,7 @@ public class ManageAlias implements ICommand
         //e.g. expected for argsString: alias"command arg0""does command for arg0"
         //splits into 4, "alias", "command arg0", "" and "does command for arg0"
         //argGroups[2] should be empty thanks to the end quote and start quote
-    
-        args.remove(0); //removes the delete arg
-    
+        
         if(args.size() != 1)
         {
             LOGGER.warn("ManageAlias Delete expected 1 argument, found '{}'.", args.size());
