@@ -174,7 +174,10 @@ public class ZeroBot implements IBot
                 {
                     attemptCommand(event, aliasArgs);
                 }
-                LOGGER.info("Received unknown command '{}'.", command);
+                else
+                {
+                    LOGGER.info("Received unknown command '{}'.", command);
+                }
             }
         }
         catch(Exception e)
