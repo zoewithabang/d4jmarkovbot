@@ -107,7 +107,7 @@ public class ZeroBot implements IBot
         {
             //remove prefix, then attempt command
             args[0] = args[0].substring(prefix.length());
-            attemptCommand(event, Arrays.asList(args));
+            attemptCommand(event, new ArrayList<>(Arrays.asList(args)));
         }
     }
     
@@ -154,10 +154,10 @@ public class ZeroBot implements IBot
         return new ArrayList<>(commands.keySet());
     }
     
-    private void attemptCommand(MessageReceivedEvent event, List<String> args)
+    private void attemptCommand(MessageReceivedEvent event, ArrayList<String> args)
     {
         //remove the actual command, minus the bot's prefix
-        String command = args.remove(0).substring(prefix.length());
+        String command = args.remove(0);
     
         //execute command (if known)
         try
@@ -169,7 +169,7 @@ public class ZeroBot implements IBot
             }
             else
             {
-                List<String> aliasArgs = findAliasCommand(command);
+                ArrayList<String> aliasArgs = new ArrayList<>(findAliasCommand(command));
                 if(!aliasArgs.isEmpty())
                 {
                     attemptCommand(event, aliasArgs);
