@@ -37,6 +37,21 @@ public class AliasService implements IService
         }
     }
     
+    public Alias getAlias(String aliasString) throws SQLException
+    {
+        try(Connection connection = aliasDao.getConnection(database))
+        {
+            Alias alias = aliasDao.get(connection, aliasString);
+            
+            return alias;
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting Alias for ID '{}'.", aliasString, e);
+            throw e;
+        }
+    }
+    
     public void addAlias(String aliasName, String aliasCommand, String aliasDescription) throws SQLException
     {
         try(Connection connection = aliasDao.getConnection(database))

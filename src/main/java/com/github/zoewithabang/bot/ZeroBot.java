@@ -1,6 +1,8 @@
 package com.github.zoewithabang.bot;
 
 import com.github.zoewithabang.command.*;
+import com.github.zoewithabang.model.Alias;
+import com.github.zoewithabang.service.AliasService;
 import com.github.zoewithabang.task.ZeroTubeNowPlaying;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -14,6 +16,7 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.RequestBuffer;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,15 +26,19 @@ public class ZeroBot implements IBot
 {
     private IDiscordClient client;
     private Properties properties;
+    private String prefix;
     private Map<String, ICommand> commands;
     private ScheduledExecutorService taskScheduler;
+    private AliasService aliasService;
     
     public ZeroBot(IDiscordClient client, Properties properties)
     {
         this.client = client;
         this.properties = properties;
+        prefix = properties.getProperty("prefix");
         commands = new HashMap<>();
         taskScheduler = Executors.newScheduledThreadPool(1);
+        aliasService = new AliasService(properties);
         
         //called commands
         commands.put(GetAllMessagesFromUser.command, new GetAllMessagesFromUser(this, properties));
@@ -91,42 +98,16 @@ public class ZeroBot implements IBot
     @EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        String prefix = properties.getProperty("prefix");
-        
         //separate message by spaces, args[0] will have the command, if this is a message for the bot
         String[] args = event.getMessage().getContent().split(" ");
         
         //if a message doesn't start with the bot's prefix, ignore it
-        if(args.length == 0
-            || !args[0].startsWith(prefix))
+        if(args.length > 0
+            && args[0].startsWith(prefix))
         {
-            return;
-        }
-        
-        //get the actual command, minus the bot's prefix
-        String command = args[0].substring(prefix.length());
-        
-        //put the args into an ArrayList, removing the command
-        List<String> argsList = new ArrayList<>(Arrays.asList(args));
-        argsList.remove(0);
-        
-        //execute command (if known)
-        try
-        {
-            if(commands.containsKey(command))
-            {
-                LOGGER.debug("Received command, running '{}'.", command);
-                commands.get(command).execute(event, argsList, true);
-            }
-            else
-            {
-                LOGGER.info("Received unknown command '{}'.", command);
-            }
-        }
-        catch(Exception e)
-        {
-            LOGGER.error("Uncaught Exception when executing command '{}', TROUBLESHOOT THIS!!!", command, e);
-            postErrorMessage(event.getChannel(), true, null, null);
+            //remove prefix, then attempt command
+            args[0] = args[0].substring(prefix.length());
+            attemptCommand(event, Arrays.asList(args));
         }
     }
     
@@ -171,5 +152,58 @@ public class ZeroBot implements IBot
     public List<String> getCommandList()
     {
         return new ArrayList<>(commands.keySet());
+    }
+    
+    private void attemptCommand(MessageReceivedEvent event, List<String> args)
+    {
+        //remove the actual command, minus the bot's prefix
+        String command = args.remove(0).substring(prefix.length());
+    
+        //execute command (if known)
+        try
+        {
+            if(commands.containsKey(command))
+            {
+                LOGGER.debug("Received command, running '{}'.", command);
+                commands.get(command).execute(event, args, true);
+            }
+            else
+            {
+                List<String> aliasArgs = findAliasCommand(command);
+                if(!aliasArgs.isEmpty())
+                {
+                    attemptCommand(event, aliasArgs);
+                }
+                LOGGER.info("Received unknown command '{}'.", command);
+            }
+        }
+        catch(Exception e)
+        {
+            LOGGER.error("Uncaught Exception when executing command '{}', TROUBLESHOOT THIS!!!", command, e);
+            postErrorMessage(event.getChannel(), true, null, null);
+        }
+    }
+    
+    private List<String> findAliasCommand(String command)
+    {
+        try
+        {
+            List<String> argsList = new ArrayList<>();
+            Alias alias = aliasService.getAlias(command);
+            
+            if(alias != null
+                && !alias.getCommand().equals(""))
+            {
+                String[] args = alias.getCommand().split(" ");
+                argsList.addAll(Arrays.asList(args));
+            }
+            
+            return argsList;
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on attempting to find Alias command for '{}'.", command, e);
+            return new ArrayList<>();
+        }
     }
 }
