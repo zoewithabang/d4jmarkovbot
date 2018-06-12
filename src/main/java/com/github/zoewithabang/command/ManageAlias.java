@@ -46,8 +46,10 @@ public class ManageAlias implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + command + " add/update/delete alias \"command if add/update\" \"description if add/update\"'.");
+                LOGGER.debug("Sending messages about proper usage.");
+                bot.sendMessage(eventChannel, "Usage for adding an alias: '" + prefix + command + " add aliasName \"command to run\" \"description of this alias\"'.");
+                bot.sendMessage(eventChannel, "Usage for updating an alias: '" + prefix + command + " update aliasName \"command to run\" \"description of this alias\"'.");
+                bot.sendMessage(eventChannel, "Usage for deleting an alias: '" + prefix + command + " delete aliasName'.");
             }
             return;
         }
