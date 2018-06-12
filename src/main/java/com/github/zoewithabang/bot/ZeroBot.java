@@ -45,6 +45,7 @@ public class ZeroBot implements IBot
         commands.put(MarkovChain.command, new MarkovChain(this, properties));
         commands.put(GetZeroTube.command, new GetZeroTube(this, properties));
         commands.put(ManageAlias.command, new ManageAlias(this, properties));
+        commands.put(ListAliases.command, new ListAliases(this, properties));
         
         //scheduled tasks
         taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlaying(this, properties), 5, 2, TimeUnit.SECONDS);
