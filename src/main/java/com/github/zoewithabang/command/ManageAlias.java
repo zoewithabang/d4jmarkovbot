@@ -133,7 +133,7 @@ public class ManageAlias implements ICommand
             LOGGER.warn("ManageAlias Add expected 4 arguments once split on quotes, found '{}'.", argGroups);
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: `" + botProperties.getProperty("prefix") + command + " add \"alias\" \"command\" \"description\"`.");
+                bot.sendMessage(eventChannel, "Usage: `" + prefix + command + " add aliasName \"command to run\" \"description of this alias\"`.");
             }
             return false;
         }
@@ -205,7 +205,7 @@ public class ManageAlias implements ICommand
             LOGGER.warn("ManageAlias Update expected 4 arguments once split on quotes, found '{}'.", argGroups);
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: `" + botProperties.getProperty("prefix") + command + " update \"alias\" \"command\" \"description\"`.");
+                bot.sendMessage(eventChannel, "Usage: `" + prefix + command + " update aliasName \"command to run\" \"description of this alias\"`.");
             }
             return false;
         }
@@ -264,7 +264,7 @@ public class ManageAlias implements ICommand
             LOGGER.warn("ManageAlias Delete expected 1 argument, found '{}'.", args.size());
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: `" + botProperties.getProperty("prefix") + command + " delete \"alias\"`.");
+                bot.sendMessage(eventChannel, "Usage: `" + prefix + command + " delete aliasName`.");
             }
             return false;
         }
