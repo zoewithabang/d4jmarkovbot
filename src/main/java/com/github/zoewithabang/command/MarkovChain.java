@@ -67,6 +67,9 @@ public class MarkovChain implements ICommand
             return;
         }
         
+        int newPrefixCount = 0;
+        int updatedPrefixCount = 0;
+        
         //build table
         for(String message : storedMessages)
         {
@@ -99,21 +102,22 @@ public class MarkovChain implements ICommand
         
                     if(markovTable.containsKey(prefix))
                     {
-                        LOGGER.debug("Markov table already contains prefix '{}', adding suffix '{}'.", prefix, suffix);
                         markovTable.get(prefix).add(suffix);
+                        updatedPrefixCount++;
                     }
                     else
                     {
-                        LOGGER.debug("Markov table has new prefix '{}', adding suffix '{}'.", prefix, suffix);
                         List<String> suffixes = new ArrayList<>();
                         suffixes.add(suffix);
                         markovTable.put(prefix, suffixes);
+                        newPrefixCount++;
                     }
                 }
             }
         }
         
         LOGGER.debug("Markov table is '{}'.", markovTable);
+        LOGGER.debug("New prefix count is '{}', updated prefix count is '{}'.", newPrefixCount, updatedPrefixCount);
         
         //get output
         String prefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
@@ -168,8 +172,6 @@ public class MarkovChain implements ICommand
             {
                 break;
             }
-            
-            
         }
         
         LOGGER.debug("Word count: {}.", addedWordCount);
