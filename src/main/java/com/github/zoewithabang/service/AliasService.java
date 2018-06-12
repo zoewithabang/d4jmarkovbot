@@ -5,6 +5,7 @@ import com.github.zoewithabang.model.Alias;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 
 public class AliasService implements IService
@@ -95,6 +96,19 @@ public class AliasService implements IService
         catch(SQLException e)
         {
             LOGGER.error("SQLException on deleting Alias for name '{}'.", aliasName, e);
+            throw e;
+        }
+    }
+    
+    public List<Alias> getAllAliases() throws SQLException
+    {
+        try(Connection connection = aliasDao.getConnection(database))
+        {
+            return aliasDao.getAll(connection);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting all aliases.");
             throw e;
         }
     }

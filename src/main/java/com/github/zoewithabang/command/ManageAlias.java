@@ -43,8 +43,10 @@ public class ManageAlias implements ICommand
         
         if(!validateArgs(event, args))
         {
+            LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
+                LOGGER.debug("Sending message about proper usage.");
                 bot.sendMessage(eventChannel, "Usage: '" + prefix + command + " add/update/delete alias \"command if add/update\" \"description if add/update\"'.");
             }
             return;

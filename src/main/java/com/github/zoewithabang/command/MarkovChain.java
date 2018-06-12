@@ -18,6 +18,7 @@ public class MarkovChain implements ICommand
     public static final String command = "markov";
     private IBot bot;
     private Properties botProperties;
+    private String prefix;
     private MessageService messageService;
     private Random random;
     
@@ -27,6 +28,7 @@ public class MarkovChain implements ICommand
     {
         this.bot = bot;
         this.botProperties = botProperties;
+        prefix = botProperties.getProperty("prefix");
         this.messageService = new MessageService(botProperties);
         random = new Random();
     }
@@ -47,9 +49,11 @@ public class MarkovChain implements ICommand
         
         if(!validateArgs(event, args))
         {
+            LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: '" + botProperties.getProperty("prefix") + command + " @User' to make me send a message that User would totally say.");
+                LOGGER.debug("Sending message about failed validation.");
+                bot.sendMessage(eventChannel, "Usage: '" + prefix + command + " @User' to make me send a message that User would totally say.");
             }
             return;
         }

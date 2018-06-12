@@ -23,6 +23,7 @@ public class GetAllMessagesFromUser implements ICommand
     public static final String command = "get";
     private IBot bot;
     private Properties botProperties;
+    private String prefix;
     private UserService userService;
     private MessageService messageService;
     private IUser user;
@@ -31,6 +32,7 @@ public class GetAllMessagesFromUser implements ICommand
     {
         this.bot = bot;
         this.botProperties = botProperties;
+        prefix = botProperties.getProperty("prefix");
         userService = new UserService(botProperties);
         messageService = new MessageService(botProperties);
     }
@@ -57,9 +59,11 @@ public class GetAllMessagesFromUser implements ICommand
         
         if(!validateArgs(event, args))
         {
+            LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: '" + botProperties.getProperty("prefix") + command + " @User' to make me get the messages of someone called User.");
+                LOGGER.debug("Sending message about proper usage.");
+                bot.sendMessage(eventChannel, "Usage: '" + prefix + command + " @User' to make me get the messages of someone called User.");
             }
             return;
         }
