@@ -155,9 +155,11 @@ public class MarkovChain implements ICommand
                 else
                 {
                     //end of chain but add a random new prefix, prevent sentence under DESIRED_MIN_OUTPUT_WORD_SIZE
-                    output.add((String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())]);
+                    String randomPrefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
+                    String[] randomPrefixWords = randomPrefix.split(" ");
                     for(int i = 0; i < MARKOV_PREFIX_SIZE; i++)
                     {
+                        output.add(randomPrefixWords[i]);
                         addedWordCount++;
                     }
                 }
