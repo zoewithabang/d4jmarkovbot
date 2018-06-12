@@ -34,7 +34,7 @@ public class MarkovChain implements ICommand
     @Override
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
-        final int DESIRED_MESSAGE_COUNT = 5000;
+        final int DESIRED_MESSAGE_COUNT = 15000;
         final int MARKOV_PREFIX_SIZE = 2;
         final int DESIRED_MIN_OUTPUT_WORD_SIZE = 4;
         final int MAX_OUTPUT_WORD_SIZE = 40;
@@ -117,7 +117,7 @@ public class MarkovChain implements ICommand
         }
         
         LOGGER.debug("Markov table is '{}'.", markovTable);
-        LOGGER.debug("New prefix count is '{}', updated prefix count is '{}'.", newPrefixCount, updatedPrefixCount);
+        LOGGER.info("New prefix count is '{}', updated prefix count is '{}'.", newPrefixCount, updatedPrefixCount);
         
         //get output
         String prefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
@@ -130,9 +130,9 @@ public class MarkovChain implements ICommand
         {
             latestPrefixWords = output.subList(addedWordCount, addedWordCount + MARKOV_PREFIX_SIZE).toArray(new String[0]);
             prefix = String.join(" ", latestPrefixWords);
-            LOGGER.debug("Latest prefix: '{}'", prefix);
+            LOGGER.info("Latest prefix: '{}'", prefix);
             List<String> suffixes = markovTable.get(prefix);
-            LOGGER.debug("Latest suffixes: '{}'", suffixes);
+            LOGGER.info("Latest suffixes: '{}'", suffixes);
             String suffix;
             
             if(suffixes.size() == 1) //either an end of chain or single result
@@ -180,7 +180,7 @@ public class MarkovChain implements ICommand
             }
         }
         
-        LOGGER.debug("Word count: {}.", addedWordCount);
+        LOGGER.info("Word count: {}.", addedWordCount);
         
         postMarkovMessage(event, user, String.join(" ", output));
     }
