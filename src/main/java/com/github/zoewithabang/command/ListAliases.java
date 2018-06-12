@@ -42,6 +42,7 @@ public class ListAliases implements ICommand
                 LOGGER.debug("Sending message about proper usage.");
                 bot.sendMessage(eventChannel, "Usage: '" + prefix + command + "' to list the currently stored alias commands.");
             }
+            return;
         }
         
         try

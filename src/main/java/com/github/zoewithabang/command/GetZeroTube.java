@@ -33,6 +33,7 @@ public class GetZeroTube implements ICommand
                 LOGGER.debug("Sending message about proper usage.");
                 bot.sendMessage(event.getChannel(), "Usage: '" + prefix + command + "' to get call peeps to the music zone!");
             }
+            return;
         }
         
         //uD83C and uDFB5 make a musical note emoji
