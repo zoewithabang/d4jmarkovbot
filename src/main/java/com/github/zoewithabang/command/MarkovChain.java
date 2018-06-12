@@ -37,7 +37,7 @@ public class MarkovChain implements ICommand
         final int DESIRED_MESSAGE_COUNT = 15000;
         final int MARKOV_PREFIX_SIZE = 2;
         final int DESIRED_MIN_OUTPUT_WORD_SIZE = 4;
-        final int MAX_OUTPUT_WORD_SIZE = 40;
+        final int MAX_OUTPUT_WORD_SIZE = 30;
         
         IChannel eventChannel = event.getChannel();
         String userIdMarkdown;
@@ -157,11 +157,12 @@ public class MarkovChain implements ICommand
                     //end of chain but add a random new prefix, prevent sentence under DESIRED_MIN_OUTPUT_WORD_SIZE
                     String randomPrefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
                     String[] randomPrefixWords = randomPrefix.split(" ");
+                    LOGGER.debug("Random prefix words: '{}'", randomPrefixWords);
                     
                     //add comma to last word
                     output.set(output.size() - 1, output.get(output.size() - 1) + ",");
                     
-                    for(int i = 0; i < MARKOV_PREFIX_SIZE; i++)
+                    for(int i = 0; i < randomPrefixWords.length; i++)
                     {
                         output.add(randomPrefixWords[i]);
                         addedWordCount++;
