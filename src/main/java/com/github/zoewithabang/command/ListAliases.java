@@ -72,8 +72,9 @@ public class ListAliases implements ICommand
         for(Alias alias : aliases)
         {
             String title = prefix + alias.getAlias();
-            String content = prefix + alias.getCommand() + "\n" + alias.getDescription();
+            String content = prefix + alias.getCommand();
             builder.appendField(title, content, false);
+            builder.appendField("Description", alias.getDescription(), true);
         }
         
         bot.sendEmbedMessage(channel, builder.build());
