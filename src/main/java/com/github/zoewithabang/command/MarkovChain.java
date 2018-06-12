@@ -142,7 +142,17 @@ public class MarkovChain implements ICommand
             
             if(suffix.equals(""))
             {
-                break; //end of chain, end of output
+                if(output.size() >= DESIRED_MIN_OUTPUT_WORD_SIZE
+                    && random.nextFloat() < 0.66)
+                {
+                    //end of chain, end of output
+                    break;
+                }
+                else
+                {
+                    //end of chain but add a random new prefix, prevent sentence under DESIRED_MIN_OUTPUT_WORD_SIZE
+                    output.add((String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())]);
+                }
             }
             else
             {
@@ -153,13 +163,6 @@ public class MarkovChain implements ICommand
             {
                 break;
             }
-            
-            /*if(output.size() >= DESIRED_MIN_OUTPUT_WORD_SIZE
-                && random.nextFloat() < 0.33
-                && suffixes.contains(""))
-            {
-                break;
-            }*/
             
             addedWordCount++;
         }
