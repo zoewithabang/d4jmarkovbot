@@ -152,11 +152,16 @@ public class MarkovChain implements ICommand
                 {
                     //end of chain but add a random new prefix, prevent sentence under DESIRED_MIN_OUTPUT_WORD_SIZE
                     output.add((String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())]);
+                    for(int i = 0; i < MARKOV_PREFIX_SIZE; i++)
+                    {
+                        addedWordCount++;
+                    }
                 }
             }
             else
             {
                 output.add(suffix);
+                addedWordCount++;
             }
             
             if(output.size() >= MAX_OUTPUT_WORD_SIZE)
@@ -164,7 +169,7 @@ public class MarkovChain implements ICommand
                 break;
             }
             
-            addedWordCount++;
+            
         }
         
         LOGGER.debug("Word count: {}.", addedWordCount);
