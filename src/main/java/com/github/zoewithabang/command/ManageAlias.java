@@ -18,7 +18,7 @@ enum AliasCommandType
 
 public class ManageAlias implements ICommand
 {
-    public static final String command = "alias";
+    public static final String COMMAND = "alias";
     private IBot bot;
     private Properties botProperties;
     private String prefix;
@@ -47,9 +47,9 @@ public class ManageAlias implements ICommand
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending messages about proper usage.");
-                bot.sendMessage(eventChannel, "Usage for adding an alias: `" + prefix + command + " add aliasName \"command to run\" \"description of this alias\"`.");
-                bot.sendMessage(eventChannel, "Usage for updating an alias: `" + prefix + command + " update aliasName \"command to run\" \"description of this alias\"`.");
-                bot.sendMessage(eventChannel, "Usage for deleting an alias: `" + prefix + command + " delete aliasName`.");
+                bot.sendMessage(eventChannel, "Usage for adding an alias: `" + prefix + COMMAND + " add aliasName \"command to run\" \"description of this alias\"`.");
+                bot.sendMessage(eventChannel, "Usage for updating an alias: `" + prefix + COMMAND + " update aliasName \"command to run\" \"description of this alias\"`.");
+                bot.sendMessage(eventChannel, "Usage for deleting an alias: `" + prefix + COMMAND + " delete aliasName`.");
             }
             return;
         }
@@ -133,7 +133,7 @@ public class ManageAlias implements ICommand
             LOGGER.warn("ManageAlias Add expected 4 arguments once split on quotes, found '{}'.", argGroups);
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: `" + prefix + command + " add aliasName \"command to run\" \"description of this alias\"`.");
+                bot.sendMessage(eventChannel, "Usage: `" + prefix + COMMAND + " add aliasName \"command to run\" \"description of this alias\"`.");
             }
             return false;
         }
@@ -183,7 +183,7 @@ public class ManageAlias implements ICommand
         catch(SQLException e)
         {
             LOGGER.error("SQLException on attempting to check if alias '{}' exists.", aliasName, e);
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 2001);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2001);
             throw e;
         }
         
@@ -205,7 +205,7 @@ public class ManageAlias implements ICommand
             LOGGER.warn("ManageAlias Update expected 4 arguments once split on quotes, found '{}'.", argGroups);
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: `" + prefix + command + " update aliasName \"command to run\" \"description of this alias\"`.");
+                bot.sendMessage(eventChannel, "Usage: `" + prefix + COMMAND + " update aliasName \"command to run\" \"description of this alias\"`.");
             }
             return false;
         }
@@ -245,7 +245,7 @@ public class ManageAlias implements ICommand
         catch(SQLException e)
         {
             LOGGER.error("SQLException on attempting to check if alias '{}' exists.", aliasName, e);
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 2002);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2002);
             throw e;
         }
     
@@ -264,7 +264,7 @@ public class ManageAlias implements ICommand
             LOGGER.warn("ManageAlias Delete expected 1 argument, found '{}'.", args.size());
             if(sendBotMessages)
             {
-                bot.sendMessage(eventChannel, "Usage: `" + prefix + command + " delete aliasName`.");
+                bot.sendMessage(eventChannel, "Usage: `" + prefix + COMMAND + " delete aliasName`.");
             }
             return false;
         }
@@ -293,7 +293,7 @@ public class ManageAlias implements ICommand
         catch(SQLException e)
         {
             LOGGER.error("SQLException on attempting to check if alias '{}' exists.", aliasName, e);
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 2003);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2003);
             throw e;
         }
     

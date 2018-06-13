@@ -41,11 +41,11 @@ public class ZeroBot implements IBot
         aliasService = new AliasService(properties);
         
         //called commands
-        commands.put(GetAllMessagesFromUser.command, new GetAllMessagesFromUser(this, properties));
-        commands.put(MarkovChain.command, new MarkovChain(this, properties));
-        commands.put(GetZeroTube.command, new GetZeroTube(this, properties));
-        commands.put(ManageAlias.command, new ManageAlias(this, properties));
-        commands.put(ListAliases.command, new ListAliases(this, properties));
+        commands.put(GetAllMessagesFromUser.COMMAND, new GetAllMessagesFromUser(this, properties));
+        commands.put(MarkovChain.COMMAND, new MarkovChain(this, properties));
+        commands.put(GetZeroTube.COMMAND, new GetZeroTube(this, properties));
+        commands.put(ManageAlias.COMMAND, new ManageAlias(this, properties));
+        commands.put(ListAliases.COMMAND, new ListAliases(this, properties));
         
         //scheduled tasks
         taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlaying(this, properties), 5, 2, TimeUnit.SECONDS);

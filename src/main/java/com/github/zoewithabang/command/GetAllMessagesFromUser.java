@@ -20,7 +20,7 @@ import java.util.*;
 
 public class GetAllMessagesFromUser implements ICommand
 {
-    public static final String command = "get";
+    public static final String COMMAND = "get";
     private IBot bot;
     private Properties botProperties;
     private String prefix;
@@ -63,7 +63,7 @@ public class GetAllMessagesFromUser implements ICommand
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + command + " @User' to make me get the messages of someone called User.");
+                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + " @User' to make me get the messages of someone called User.");
             }
             return;
         }
@@ -82,7 +82,7 @@ public class GetAllMessagesFromUser implements ICommand
         }
         catch(SQLException e)
         {
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 1001);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 1001);
             return;
         }
         
@@ -92,7 +92,7 @@ public class GetAllMessagesFromUser implements ICommand
         }
         catch(SQLException e)
         {
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 1002);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 1002);
             return;
         }
         
@@ -102,12 +102,12 @@ public class GetAllMessagesFromUser implements ICommand
         }
         catch(SQLException e)
         {
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 1003);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 1003);
             return;
         }
         catch(DiscordException e)
         {
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 1004);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 1004);
             return;
         }
         
@@ -117,7 +117,7 @@ public class GetAllMessagesFromUser implements ICommand
         }
         catch(SQLException e)
         {
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 1005);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 1005);
             return;
         }
         

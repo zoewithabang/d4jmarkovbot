@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class GetZeroTube implements ICommand
 {
-    public static final String command = "music";
+    public static final String COMMAND = "music";
     private IBot bot;
     private Properties botProperties;
     private String prefix;
@@ -31,7 +31,7 @@ public class GetZeroTube implements ICommand
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(event.getChannel(), "Usage: '" + prefix + command + "' to get call peeps to the music zone!");
+                bot.sendMessage(event.getChannel(), "Usage: '" + prefix + COMMAND + "' to get call peeps to the music zone!");
             }
             return;
         }

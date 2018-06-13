@@ -15,7 +15,7 @@ import java.util.*;
 
 public class MarkovChain implements ICommand
 {
-    public static final String command = "markov";
+    public static final String COMMAND = "markov";
     private IBot bot;
     private Properties botProperties;
     private String prefix;
@@ -53,7 +53,7 @@ public class MarkovChain implements ICommand
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending message about failed validation.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + command + " @User' to make me send a message that User would totally say.");
+                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + " @User' to make me send a message that User would totally say.");
             }
             return;
         }
@@ -67,7 +67,8 @@ public class MarkovChain implements ICommand
         }
         catch(SQLException e)
         {
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 2001);
+            LOGGER.debug("SQLException on getting messages for Markov chain, userId '{}' and DESIRED_MESSAGE_COUNT '{}'.", userId, DESIRED_MESSAGE_COUNT);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2001);
             return;
         }
         

@@ -14,7 +14,7 @@ import java.util.Properties;
 
 public class ListAliases implements ICommand
 {
-    public static final String command = "aliases";
+    public static final String COMMAND = "aliases";
     private IBot bot;
     private Properties botProperties;
     private String prefix;
@@ -40,7 +40,7 @@ public class ListAliases implements ICommand
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + command + "' to list the currently stored alias commands.");
+                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + "' to list the currently stored alias commands.");
             }
             return;
         }
@@ -51,7 +51,7 @@ public class ListAliases implements ICommand
         }
         catch(SQLException e)
         {
-            bot.postErrorMessage(eventChannel, sendBotMessages, command, 3001);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 3001);
         }
         
         postAliasesMessage(eventChannel, aliases);
