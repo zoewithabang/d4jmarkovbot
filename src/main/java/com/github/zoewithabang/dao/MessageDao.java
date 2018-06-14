@@ -160,13 +160,40 @@ public class MessageDao extends Dao<MessageData, String>
         }
     }
     
-    public Integer getMessageCountForUser(Connection connection, String userId) throws SQLException
+    public Integer getMessageCountForUsers(Connection connection, List<String> userIds) throws SQLException, IllegalStateException
     {
-        String query = "SELECT COUNT(*) AS total FROM messages WHERE user_id = ?;";
+        if(userIds == null
+            || userIds.isEmpty())
+        {
+            LOGGER.error("userIds must not be null or empty.");
+            throw new IllegalStateException("userIds must not be null or empty.");
+        }
+        
+        StringBuilder whereBuilder = new StringBuilder();
+        boolean firstUser = true;
+        
+        for(int i = 0; i < userIds.size(); i++)
+        {
+            if(firstUser)
+            {
+                firstUser = false;
+            }
+            else
+            {
+                whereBuilder.append(" OR ");
+            }
+            
+            whereBuilder.append("user_id = ?");
+        }
+        
+        String query = "SELECT COUNT(*) AS total FROM messages WHERE " + whereBuilder.toString() + ";";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setString(1, userId);
+            for(int i = 0; i < userIds.size(); i++)
+            {
+                statement.setString(i, userIds.get(i));
+            }
             
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
@@ -174,20 +201,52 @@ public class MessageDao extends Dao<MessageData, String>
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on getting message count for user ID '{}'.", userId, e);
+            LOGGER.error("SQLException on getting message count for users '{}'.", userIds, e);
             throw e;
         }
     }
     
-    public List<String> getRandomContentsForUser(Connection connection, String userId, int offset, int amount) throws SQLException
+    public List<String> getRandomContentsForUsers(Connection connection, List<String> userIds, int offset, int amount) throws SQLException, IllegalStateException
     {
-        String query = "SELECT * FROM messages WHERE user_id = ? ORDER BY RAND() LIMIT ?,?;";
+        if(userIds == null
+            || userIds.isEmpty())
+        {
+            LOGGER.error("userIds must not be null or empty.");
+            throw new IllegalStateException("userIds must not be null or empty.");
+        }
+    
+        StringBuilder whereBuilder = new StringBuilder();
+        boolean firstUser = true;
+    
+        for(int i = 0; i < userIds.size(); i++)
+        {
+            if(firstUser)
+            {
+                firstUser = false;
+            }
+            else
+            {
+                whereBuilder.append(" OR ");
+            }
+        
+            whereBuilder.append("user_id = ?");
+        }
+        
+        String query = "SELECT * FROM messages WHERE " + whereBuilder.toString() + " ORDER BY RAND() LIMIT ?,?;";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setString(1, userId);
-            statement.setInt(2, offset);
-            statement.setInt(3, amount);
+            int varCount = 1;
+            
+            for(int i = 1; i < userIds.size(); i++)
+            {
+                statement.setString(i, userIds.get(i));
+                varCount++;
+            }
+            
+            statement.setInt(varCount, offset);
+            varCount++;
+            statement.setInt(varCount, amount);
             
             ResultSet resultSet = statement.executeQuery();
             List<String> contents = new ArrayList<>();
@@ -202,7 +261,51 @@ public class MessageDao extends Dao<MessageData, String>
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on getting random Message contents for user ID '{}', offset '{}' and amount '{}'.", userId, offset, amount, e);
+            LOGGER.error("SQLException on getting random Message contents for users '{}', offset '{}' and amount '{}'.", userIds, offset, amount, e);
+            throw e;
+        }
+    }
+    
+    public Integer getTotalMessageCount(Connection connection) throws SQLException
+    {
+        String query = "SELECT COUNT(*) AS total FROM messages;";
+    
+        try(PreparedStatement statement = connection.prepareStatement(query))
+        {
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt("total");
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting total message count.", e);
+            throw e;
+        }
+    }
+    
+    public List<String> getRandomContents(Connection connection, Integer offset, int amount) throws SQLException
+    {
+        String query = "SELECT * FROM messages ORDER BY RAND() LIMIT ?,?;";
+    
+        try(PreparedStatement statement = connection.prepareStatement(query))
+        {
+            statement.setInt(1, offset);
+            statement.setInt(2, amount);
+        
+            ResultSet resultSet = statement.executeQuery();
+            List<String> contents = new ArrayList<>();
+        
+            while(resultSet.next())
+            {
+                String content = resultSet.getString("content");
+                contents.add(content);
+            }
+        
+            return contents;
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting random Message contents for offset '{}' and amount '{}'.", offset, amount, e);
             throw e;
         }
     }

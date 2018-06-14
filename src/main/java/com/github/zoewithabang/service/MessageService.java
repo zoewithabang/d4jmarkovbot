@@ -3,10 +3,12 @@ package com.github.zoewithabang.service;
 import com.github.zoewithabang.dao.MessageDao;
 import com.github.zoewithabang.model.MessageData;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -85,13 +87,20 @@ public class MessageService implements IService
         }
     }
     
-    public List<String> getRandomSequentialMessageContentsForUser(String userId, int messageCount) throws SQLException
+    public List<String> getRandomSequentialMessageContentsForUsers(List<IUser> users, int messageCount) throws SQLException, IllegalStateException, IllegalArgumentException
     {
+        List<String> userIds = new ArrayList<>();
+    
+        for(IUser user : users)
+        {
+            userIds.add(user.getStringID());
+        }
+        
         try(Connection connection = messageDao.getConnection(databaseMarkov))
         {
-            Integer userMessageCount = messageDao.getMessageCountForUser(connection, userId);
+            Integer userMessageCount = messageDao.getMessageCountForUsers(connection, userIds);
             Integer offset;
-            
+
             if(userMessageCount < messageCount)
             {
                 messageCount = userMessageCount;
@@ -101,17 +110,49 @@ public class MessageService implements IService
             {
                 offset = random.nextInt(userMessageCount - messageCount);
             }
-            
-            return messageDao.getRandomContentsForUser(connection, userId, offset, messageCount);
+
+            return messageDao.getRandomContentsForUsers(connection, userIds, offset, messageCount);
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on getting Messages for User ID '{}'.", userId, e);
+            LOGGER.error("SQLException on getting Messages for users '{}'.", users, e);
+            throw e;
+        }
+        catch(IllegalStateException e)
+        {
+            LOGGER.error("IllegalStateException on getting Messages for users '{}'.", users, e);
             throw e;
         }
         catch(IllegalArgumentException e)
         {
-            LOGGER.error("IllegalArgumentException on getting Messages for User ID '{}'.", userId, e);
+            LOGGER.error("IllegalArgumentException on getting Messages for users '{}'.", users, e);
+            throw e;
+        }
+    }
+    
+    
+    public List<String> getRandomSequentialMessageContents(int messageCount) throws SQLException
+    {
+        try(Connection connection = messageDao.getConnection(databaseMarkov))
+        {
+            Integer totalMessageCount = messageDao.getTotalMessageCount(connection);
+            Integer offset;
+        
+            if(totalMessageCount < messageCount)
+            {
+                messageCount = totalMessageCount;
+                offset = 0;
+            }
+            else
+            {
+                offset = random.nextInt(totalMessageCount - messageCount);
+            }
+        
+            return messageDao.getRandomContents(connection, offset, messageCount);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting Messages.", e);
             throw e;
         }
     }
