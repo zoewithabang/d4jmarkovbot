@@ -188,11 +188,13 @@ public class MessageDao extends Dao<MessageData, String>
         
         String query = "SELECT COUNT(*) AS total FROM messages WHERE " + whereBuilder.toString() + ";";
         
+        LOGGER.debug("Query is '{}'", query);
+        
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
             for(int i = 0; i < userIds.size(); i++)
             {
-                statement.setString(i, userIds.get(i));
+                statement.setString(i + 1, userIds.get(i));
             }
             
             ResultSet resultSet = statement.executeQuery();
@@ -233,20 +235,22 @@ public class MessageDao extends Dao<MessageData, String>
         }
         
         String query = "SELECT * FROM messages WHERE " + whereBuilder.toString() + " ORDER BY RAND() LIMIT ?,?;";
+    
+        LOGGER.debug("Query is '{}'", query);
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            int varCount = 1;
+            int nextVarCount = 1;
             
-            for(int i = 1; i < userIds.size(); i++)
+            for(int i = 0; i < userIds.size(); i++)
             {
-                statement.setString(i, userIds.get(i));
-                varCount++;
+                statement.setString(i + 1, userIds.get(i));
+                nextVarCount++;
             }
             
-            statement.setInt(varCount, offset);
-            varCount++;
-            statement.setInt(varCount, amount);
+            statement.setInt(nextVarCount, offset);
+            nextVarCount++;
+            statement.setInt(nextVarCount, amount);
             
             ResultSet resultSet = statement.executeQuery();
             List<String> contents = new ArrayList<>();
