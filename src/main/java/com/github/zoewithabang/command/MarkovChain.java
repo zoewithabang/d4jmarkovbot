@@ -436,7 +436,7 @@ public class MarkovChain implements ICommand
         EmbedBuilder builder = new EmbedBuilder();
         
         builder.withColor(colour);
-        builder.withAuthorName(nameBuilder.toString() + " says:");
+        builder.withAuthorName(nameBuilder.toString());
         builder.withThumbnail(thumbnail);
         builder.withDescription(message);
         
