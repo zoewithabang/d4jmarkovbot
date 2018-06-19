@@ -58,10 +58,11 @@ public class DiscordHelper
     public static Color getColorOfTopRoleOfUser(IUser user, IGuild guild)
     {
         List<IRole> roles = user.getRolesForGuild(guild);
+        Color roleColour = new Color(79, 84, 92);
+        
         if(roles.size() > 1)
         {
             int highestRolePosition = Integer.MAX_VALUE;
-            Color roleColour = new Color(79, 84, 92);
             
             for(IRole role : roles)
             {
@@ -77,7 +78,12 @@ public class DiscordHelper
         }
         else if(roles.size() == 1)
         {
-            return roles.get(0).getColor();
+            if(!roles.get(0).getColor().equals(Color.WHITE))
+            {
+                roleColour = roles.get(0).getColor();
+            }
+            
+            return roleColour;
         }
         else
         {
