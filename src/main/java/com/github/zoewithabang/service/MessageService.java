@@ -16,21 +16,21 @@ import java.util.Random;
 public class MessageService implements IService
 {
     private Properties botProperties;
-    private String databaseMarkov;
+    private String database;
     private MessageDao messageDao;
     private Random random;
     
     public MessageService(Properties botProperties)
     {
         this.botProperties = botProperties;
-        databaseMarkov = botProperties.getProperty("dbdatabasemarkov");
+        database = botProperties.getProperty("dbdatabase");
         messageDao = new MessageDao(botProperties);
         random = new Random();
     }
     
     public Instant getLatestMessageTimeOfUser(String userId) throws SQLException
     {
-        try(Connection connection = messageDao.getConnection(databaseMarkov))
+        try(Connection connection = messageDao.getConnection(database))
         {
             MessageData message = messageDao.getLatestForUser(connection, userId);
             return Instant.ofEpochMilli(message.getTimestamp());
@@ -44,7 +44,7 @@ public class MessageService implements IService
     
     public void storeMessagesForUser(String userId, List<IMessage> allUserMessages) throws SQLException
     {
-        try(Connection connection = messageDao.getConnection(databaseMarkov))
+        try(Connection connection = messageDao.getConnection(database))
         {
             boolean oldAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -96,7 +96,7 @@ public class MessageService implements IService
             userIds.add(user.getStringID());
         }
         
-        try(Connection connection = messageDao.getConnection(databaseMarkov))
+        try(Connection connection = messageDao.getConnection(database))
         {
             Integer userMessageCount = messageDao.getMessageCountForUsers(connection, userIds);
             Integer offset;
@@ -133,7 +133,7 @@ public class MessageService implements IService
     
     public List<String> getRandomSequentialMessageContents(int messageCount) throws SQLException
     {
-        try(Connection connection = messageDao.getConnection(databaseMarkov))
+        try(Connection connection = messageDao.getConnection(database))
         {
             Integer totalMessageCount = messageDao.getTotalMessageCount(connection);
             Integer offset;

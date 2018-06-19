@@ -18,7 +18,7 @@ public class AliasService implements IService
     {
         this.botProperties = botProperties;
         aliasDao = new AliasDao(botProperties);
-        database = botProperties.getProperty("dbdatabasemarkov");
+        database = botProperties.getProperty("dbdatabase");
     }
     
     public boolean aliasExists(String aliasString) throws SQLException

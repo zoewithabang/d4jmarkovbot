@@ -4,6 +4,6 @@ dbuser=username
 dbpassword=password
 dbaddress=localhost
 dbport=3306
-dbdatabasemarkov=markovbot
+dbdatabase=databasename
 cytubeurl=https://www.example.com/r/room
 cytubeloglocation=/example/absolute/path/to/cytube/chanlogs/room.log

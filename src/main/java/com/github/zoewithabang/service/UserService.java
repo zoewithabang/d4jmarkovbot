@@ -1,7 +1,6 @@
 package com.github.zoewithabang.service;
 
 import com.github.zoewithabang.dao.UserDao;
-import com.github.zoewithabang.model.MessageData;
 import com.github.zoewithabang.model.UserData;
 
 import java.sql.Connection;
@@ -11,19 +10,19 @@ import java.util.Properties;
 public class UserService implements IService
 {
     private Properties botProperties;
-    private String databaseMarkov;
+    private String database;
     private UserDao userDao;
     
     public UserService(Properties botProperties)
     {
         this.botProperties = botProperties;
-        databaseMarkov = botProperties.getProperty("dbdatabasemarkov");
+        database = botProperties.getProperty("dbdatabase");
         userDao = new UserDao(botProperties);
     }
     
     public UserData getUserWithMessages(String userId) throws SQLException
     {
-        try(Connection connection = userDao.getConnection(databaseMarkov))
+        try(Connection connection = userDao.getConnection(database))
         {
             return userDao.getWithMessages(connection, userId);
         }
@@ -36,7 +35,7 @@ public class UserService implements IService
     
     public UserData storeNewMessageTrackedUser(String userId) throws SQLException
     {
-        try(Connection connection = userDao.getConnection(databaseMarkov))
+        try(Connection connection = userDao.getConnection(database))
         {
             UserData user = new UserData(userId, true);
             userDao.store(connection, user);
@@ -51,7 +50,7 @@ public class UserService implements IService
     
     public UserData updateUserForMessageTracking(String userId) throws SQLException
     {
-        try(Connection connection = userDao.getConnection(databaseMarkov))
+        try(Connection connection = userDao.getConnection(database))
         {
             UserData user = new UserData(userId, true);
             userDao.update(connection, user);
