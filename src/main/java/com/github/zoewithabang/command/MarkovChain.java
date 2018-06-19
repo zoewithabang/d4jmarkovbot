@@ -1,7 +1,6 @@
 package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
-import com.github.zoewithabang.model.MessageData;
 import com.github.zoewithabang.service.MessageService;
 import com.github.zoewithabang.util.DiscordHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -11,7 +10,6 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
 import java.awt.*;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 
@@ -388,7 +386,7 @@ public class MarkovChain implements ICommand
             case SINGLE:
                 IUser singleUser = users.get(0);
                 
-                colour = DiscordHelper.getColourOfARoleOfUser(singleUser, server);
+                colour = DiscordHelper.getColorOfTopRoleOfUser(singleUser, server);
                 thumbnail = singleUser.getAvatarURL();
                 
                 nameBuilder.append(singleUser.getDisplayName(server));
@@ -396,7 +394,7 @@ public class MarkovChain implements ICommand
                 break;
                 
             case MASHUP:
-                colour = DiscordHelper.getColourOfARoleOfUser(users.get(random.nextInt(users.size())), server);
+                colour = DiscordHelper.getColorOfTopRoleOfUser(users.get(random.nextInt(users.size())), server);
                 thumbnail = users.get(random.nextInt(users.size())).getAvatarURL();
                 
                 boolean firstUser = true;

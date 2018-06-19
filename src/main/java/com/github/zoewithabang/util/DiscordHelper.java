@@ -55,10 +55,27 @@ public class DiscordHelper
         return specifiedUser;
     }
     
-    public static Color getColourOfARoleOfUser(IUser user, IGuild guild)
+    public static Color getColorOfTopRoleOfUser(IUser user, IGuild guild)
     {
         List<IRole> roles = user.getRolesForGuild(guild);
-        if(roles.size() > 0)
+        if(roles.size() > 1)
+        {
+            int highestRolePosition = Integer.MAX_VALUE;
+            Color roleColour = new Color(79, 84, 92);
+            
+            for(IRole role : roles)
+            {
+                if(role.getPosition() < highestRolePosition
+                    && !role.getColor().equals(Color.WHITE))
+                {
+                    highestRolePosition = role.getPosition();
+                    roleColour = role.getColor();
+                }
+            }
+            
+            return roleColour;
+        }
+        else if(roles.size() == 1)
         {
             return roles.get(0).getColor();
         }
