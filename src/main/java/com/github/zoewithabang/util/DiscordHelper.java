@@ -64,23 +64,23 @@ public class DiscordHelper
         
         if(roles.size() > 1)
         {
-            int highestRolePosition = Integer.MAX_VALUE;
+            int topRolePosition = 0;
             
             for(IRole role : roles)
             {
-                if(role.getPosition() < highestRolePosition
-                    && !role.getColor().equals(Color.WHITE))
+                if(role.getPosition() > topRolePosition
+                    && !role.getColor().equals(Color.BLACK))
                 {
-                    highestRolePosition = role.getPosition();
+                    topRolePosition = role.getPosition();
                     roleColour = role.getColor();
                 }
             }
             
-            LOGGER.debug("More than 1 role, highest role pos was '{}', colour is '{}'.", highestRolePosition, roleColour);
+            LOGGER.debug("More than 1 role, top role pos was '{}', colour is '{}'.", topRolePosition, roleColour);
         }
         else if(roles.size() == 1)
         {
-            if(!roles.get(0).getColor().equals(Color.WHITE))
+            if(!roles.get(0).getColor().equals(Color.BLACK))
             {
                 roleColour = roles.get(0).getColor();
     
