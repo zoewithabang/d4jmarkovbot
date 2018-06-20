@@ -173,6 +173,12 @@ public class ZeroBot implements IBot
                 ArrayList<String> aliasArgs = new ArrayList<>(findAliasCommand(command));
                 if(!aliasArgs.isEmpty())
                 {
+                    //quick way to prevent recursive loop, don't allow alias command that in itself is an alias to run
+                    if(aliasArgs.get(0).equals("alias"))
+                    {
+                        postErrorMessage(event.getChannel(), true, null, 1);
+                    }
+                    aliasArgs.addAll(args);
                     attemptCommand(event, aliasArgs);
                 }
                 else
