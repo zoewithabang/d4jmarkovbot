@@ -53,6 +53,7 @@ public class MarkovChain implements ICommand
         IChannel eventChannel = event.getChannel();
         List<String> storedMessages;
         Map<String, List<String>> markovTable;
+        String output;
         
         if(!validateArgs(event, args))
         {
@@ -60,10 +61,10 @@ public class MarkovChain implements ICommand
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending message about failed validation.");
-                bot.sendMessage(eventChannel, "Usage for single user: '" + prefix + COMMAND + " single @User' to make me send a message that User would totally say.");
-                bot.sendMessage(eventChannel, "Usage for user mashups: '" + prefix + COMMAND + " mashup @User1 @User2 @User3 etc' to make me Frankenstein those users together for a post they would totally say.");
-                bot.sendMessage(eventChannel, "Usage for server: '" + prefix + COMMAND + " server' to Frankenstein the whole server together for a post.");
-                bot.sendMessage(eventChannel, "For any of the above commands, put " + MARKOV_PREFIX_SIZE + " words after them in quotes like \"hello there\" to try to start the sentences with ");
+                bot.sendMessage(eventChannel, "Usage for single user: `" + prefix + COMMAND + " single @User' to make me send a message that User would totally say.");
+                bot.sendMessage(eventChannel, "Usage for user mashups: `" + prefix + COMMAND + " mashup @User1 @User2 @User3 etc' to make me Frankenstein those users together for a post they would totally say.");
+                bot.sendMessage(eventChannel, "Usage for server: `" + prefix + COMMAND + " server' to Frankenstein the whole server together for a post.");
+                bot.sendMessage(eventChannel, "For any of the above commands, put " + MARKOV_PREFIX_SIZE + " words after them in quotes like \"hello there\" to try to start the sentences with them!");
             }
             return;
         }
@@ -78,11 +79,50 @@ public class MarkovChain implements ICommand
             return;
         }
         
-        markovTable = buildMarkovTable(storedMessages);
+        try
+        {
+            markovTable = buildMarkovTable(storedMessages);
+        }
+        catch(Exception e)
+        {
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2002);
+            return;
+        }
         
-        String output = generateOutputString(markovTable);
+        try
+        {
+            output = generateOutputString(markovTable);
+        }
+        catch(Exception e)
+        {
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2003);
+            return;
+        }
         
-        postMarkovMessage(event, type, users, output);
+        //check if output is empty, send messages informing if so instead of posting an empty message
+        if(output.isEmpty())
+        {
+            if(seedWords.isEmpty())
+            {
+                bot.sendMessage(eventChannel, "No message was able to be generated. If this user has posted and had their posts added, please let your friendly local bot handler know about this!");
+                return;
+            }
+            else
+            {
+                bot.sendMessage(eventChannel, "I couldn't generate a message for that seed, try a different one maybe?");
+                return;
+            }
+        }
+        
+        try
+        {
+            postMarkovMessage(event, type, users, output);
+        }
+        catch(Exception e)
+        {
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2004);
+            return;
+        }
     }
     
     
@@ -183,6 +223,8 @@ public class MarkovChain implements ICommand
                     return false;
                 }
         }
+        
+        LOGGER.debug("Validation successful, users '{}' and seed words '{}'.", users, seedWords);
         
         return true;
     }
@@ -303,7 +345,23 @@ public class MarkovChain implements ICommand
     private String generateOutputString(Map<String,List<String>> markovTable)
     {
         //get output
-        String prefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
+        String prefix;
+        if(seedWords.isEmpty())
+        {
+            prefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
+        }
+        else
+        {
+            String seed = String.join(" ", seedWords);
+            if(markovTable.containsKey(seed))
+            {
+                prefix = seed;
+            }
+            else
+            {
+                return "";
+            }
+        }
         String[] latestPrefixWords = prefix.split(" ");
         List<String> outputList = new ArrayList<>(Arrays.asList(latestPrefixWords));
         int addedWordCount = 0;
@@ -311,7 +369,19 @@ public class MarkovChain implements ICommand
         
         while(outputList.size() <= MAX_OUTPUT_WORD_SIZE)
         {
-            latestPrefixWords = outputList.subList(addedWordCount, addedWordCount + MARKOV_PREFIX_SIZE).toArray(new String[0]);
+            //using this for temp debugging, shouldn't be needed once the intermittent error is fixed
+            try
+            {
+                latestPrefixWords = outputList.subList(addedWordCount, addedWordCount + MARKOV_PREFIX_SIZE).toArray(new String[0]);
+            }
+            catch(IndexOutOfBoundsException e)
+            {
+                LOGGER.error("IndexOutOfBoundsException when getting latest prefix words.");
+                LOGGER.error("Current output list: {}", outputList);
+                LOGGER.error("Added word count: {}", addedWordCount);
+                LOGGER.error("Added word count plus markov prefix size: {}", addedWordCount + MARKOV_PREFIX_SIZE);
+            }
+            
             prefix = String.join(" ", latestPrefixWords);
             LOGGER.info("Latest prefix: '{}'", prefix);
             List<String> suffixes = markovTable.get(prefix);
@@ -439,6 +509,8 @@ public class MarkovChain implements ICommand
         builder.withAuthorName(nameBuilder.toString());
         builder.withThumbnail(thumbnail);
         builder.withDescription(message);
+        
+        LOGGER.debug("Sending markov message with colour '{}', author name '{}', thumbnail '{}', description '{}'.", colour, nameBuilder.toString(), thumbnail, message);
         
         bot.sendEmbedMessage(event.getChannel(), builder.build());
     }
