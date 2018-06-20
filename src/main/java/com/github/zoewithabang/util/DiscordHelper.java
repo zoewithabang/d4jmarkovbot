@@ -60,6 +60,8 @@ public class DiscordHelper
         List<IRole> roles = user.getRolesForGuild(guild);
         Color roleColour = new Color(79, 84, 92);
         
+        LOGGER.debug("User '{}' has roles '{}'.", user, roles);
+        
         if(roles.size() > 1)
         {
             int highestRolePosition = Integer.MAX_VALUE;
@@ -74,20 +76,20 @@ public class DiscordHelper
                 }
             }
             
-            return roleColour;
+            LOGGER.debug("More than 1 role, highest role pos was '{}', colour is '{}'.", highestRolePosition, roleColour);
         }
         else if(roles.size() == 1)
         {
             if(!roles.get(0).getColor().equals(Color.WHITE))
             {
                 roleColour = roles.get(0).getColor();
+    
+                LOGGER.debug("Single role, colour is '{}'.", roleColour);
             }
-            
-            return roleColour;
         }
-        else
-        {
-            return null;
-        }
+        
+        LOGGER.debug("Returning role colour '{}'.", roleColour);
+        
+        return roleColour;
     }
 }
