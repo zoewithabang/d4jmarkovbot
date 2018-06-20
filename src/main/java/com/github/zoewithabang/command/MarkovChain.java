@@ -400,7 +400,7 @@ public class MarkovChain implements ICommand
             if(suffix.equals(""))
             {
                 if(outputList.size() >= DESIRED_MIN_OUTPUT_WORD_SIZE
-                    && random.nextFloat() < 0.66)
+                    && random.nextFloat() < 0.8)
                 {
                     //end of chain, end of output
                     break;
