@@ -81,8 +81,7 @@ public class ZeroTubeNowPlaying implements ICommand
         String links = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ") || [ZeroTube](" + url + ")";
         EmbedBuilder builder = new EmbedBuilder();
     
-        builder.withAuthorName("Now playing on ZeroTube \uD83C\uDFB5");
-        builder.appendField(nowPlaying.getTitle(), links, false);
+        builder.appendField(nowPlaying.getTitle(), links + " \uD83C\uDFB5", false);
     
         LOGGER.debug("Sending now playing message with now playing data '{}'.", nowPlaying);
     
