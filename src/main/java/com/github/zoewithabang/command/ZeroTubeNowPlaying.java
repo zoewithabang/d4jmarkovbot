@@ -5,6 +5,7 @@ import com.github.zoewithabang.model.CyTubeMedia;
 import com.github.zoewithabang.util.CyTubeHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.util.EmbedBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class ZeroTubeNowPlaying implements ICommand
     private Properties botProperties;
     private String prefix;
     private File log;
+    private String url;
     
     public ZeroTubeNowPlaying(IBot bot, Properties botProperties)
     {
@@ -25,6 +27,7 @@ public class ZeroTubeNowPlaying implements ICommand
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
         log = new File(botProperties.getProperty("cytubeloglocation"));
+        url = botProperties.getProperty("cytubeurl");
     }
     
     @Override
@@ -62,13 +65,27 @@ public class ZeroTubeNowPlaying implements ICommand
         }
         
         //uD83C and uDFB5 make a musical note emoji
-        String message = "Now playing on ZeroTube: " + nowPlaying.getTitle() + " (" + nowPlaying.getFullServiceName() + " at <" + nowPlaying.getFullUrl() + ">) \uD83C\uDFB5";
-        bot.sendMessage(event.getChannel(), message);
+        String message = " " + nowPlaying.getTitle() + " (" + nowPlaying.getFullServiceName() + " at <" + nowPlaying.getFullUrl() + ">) \uD83C\uDFB5";
+        postNowPlayingMessage(event, nowPlaying);
     }
     
     @Override
     public boolean validateArgs(MessageReceivedEvent event, List<String> args)
     {
         return args.size() == 0;
+    }
+    
+    private void postNowPlayingMessage(MessageReceivedEvent event, CyTubeMedia nowPlaying)
+    {
+        String link = "[" + nowPlaying.getTitle() + "](" + nowPlaying.getFullUrl() + ")";
+        EmbedBuilder builder = new EmbedBuilder();
+    
+        builder.withAuthorName("Now playing on ZeroTube:");
+        builder.appendField(nowPlaying.getFullServiceName(), link, false);
+        builder.withFooterText("[Tune in with me~ \uD83C\uDFB5](" + url + ")");
+    
+        LOGGER.debug("Sending now playing message with now playing data '{}'.", nowPlaying);
+    
+        bot.sendEmbedMessage(event.getChannel(), builder.build());
     }
 }
