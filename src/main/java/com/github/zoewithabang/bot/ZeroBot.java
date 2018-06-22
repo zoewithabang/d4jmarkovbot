@@ -3,7 +3,7 @@ package com.github.zoewithabang.bot;
 import com.github.zoewithabang.command.*;
 import com.github.zoewithabang.model.Alias;
 import com.github.zoewithabang.service.AliasService;
-import com.github.zoewithabang.task.ZeroTubeNowPlaying;
+import com.github.zoewithabang.task.ZeroTubeNowPlayingPresence;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -46,9 +46,10 @@ public class ZeroBot implements IBot
         commands.put(GetZeroTube.COMMAND, new GetZeroTube(this, properties));
         commands.put(ManageAlias.COMMAND, new ManageAlias(this, properties));
         commands.put(ListAliases.COMMAND, new ListAliases(this, properties));
+        commands.put(ZeroTubeNowPlaying.COMMAND, new ZeroTubeNowPlaying(this, properties));
         
         //scheduled tasks
-        taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlaying(this, properties), 5, 2, TimeUnit.SECONDS);
+        taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlayingPresence(this, properties), 5, 2, TimeUnit.SECONDS);
     }
     
     @Override
