@@ -9,6 +9,7 @@ import sx.blah.discord.util.EmbedBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
 
@@ -77,12 +78,13 @@ public class ZeroTubeNowPlaying implements ICommand
     
     private void postNowPlayingMessage(MessageReceivedEvent event, CyTubeMedia nowPlaying)
     {
-        String link = "[" + nowPlaying.getTitle() + "](" + nowPlaying.getFullUrl() + ")";
+        String link = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ")";
         EmbedBuilder builder = new EmbedBuilder();
     
         builder.withAuthorName("Now playing on ZeroTube:");
-        builder.appendField(nowPlaying.getFullServiceName(), link, false);
-        builder.withFooterText("[Tune in with me~ \uD83C\uDFB5](" + url + ")");
+        builder.appendField(nowPlaying.getTitle(), link, false);
+        builder.appendField("Tune in with me~ \uD83C\uDFB5", url, false);
+        builder.withTimestamp(Instant.now());
     
         LOGGER.debug("Sending now playing message with now playing data '{}'.", nowPlaying);
     
