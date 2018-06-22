@@ -54,6 +54,12 @@ public class ZeroTubeNowPlaying implements ICommand
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 4001);
             return;
         }
+        catch(IllegalStateException e)
+        {
+            LOGGER.error("IllegalStateException in getting latest now playing CyTube media.");
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 4002);
+            return;
+        }
         
         //uD83C and uDFB5 make a musical note emoji
         String message = "Now playing on ZeroTube: " + nowPlaying.getTitle() + " (" + nowPlaying.getFullServiceName() + " at <" + nowPlaying.getFullUrl() + ">) \uD83C\uDFB5";

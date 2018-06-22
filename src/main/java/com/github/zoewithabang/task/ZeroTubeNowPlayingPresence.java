@@ -45,5 +45,9 @@ public class ZeroTubeNowPlayingPresence implements ITask
         {
             LOGGER.error("Could not find the channel log location '{}'.", botProperties.getProperty("cytubeloglocation"), e);
         }
+        catch(IllegalStateException e)
+        {
+            LOGGER.error("IllegalStateException in getting latest now playing CyTube media.");
+        }
     }
 }

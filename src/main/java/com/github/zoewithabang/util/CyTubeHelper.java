@@ -14,7 +14,7 @@ public class CyTubeHelper
 {
     private static Logger LOGGER = Logging.getLogger();
     
-    public static CyTubeMedia getLatestNowPlaying(File log) throws IOException
+    public static CyTubeMedia getLatestNowPlaying(File log) throws IOException, IllegalStateException
     {
         CyTubeMedia nowPlaying = new CyTubeMedia();
         
@@ -23,7 +23,7 @@ public class CyTubeHelper
             final String NOW_PLAYING_PREFIX = Pattern.quote("[playlist] Now playing: ");
             //all suffixes are one space, one '(', two lower case characters, one ':', an URL/URL fragment (YT is smallest at 11 chars), one ')'
             final int YOUTUBE_SUFFIX_SIZE = 11;
-            final String NOW_PLAYING_SUFFIX = " \\([a-z]{2}:[\\w\\-.~:/?#\\[\\]@!$&'()*+,;=%]{" + YOUTUBE_SUFFIX_SIZE + ",}\\)";
+            final String NOW_PLAYING_SUFFIX = "\\s\\([a-z]{2}:[\\w\\-.~:/?#\\[\\]@!$&'()*+,;=%]{" + YOUTUBE_SUFFIX_SIZE + ",}\\)";
         
             //reading over log, from latest line
             //e.g. of line to ignore:
@@ -41,7 +41,16 @@ public class CyTubeHelper
                     && !lineSplitOnPlaylistTag[1].equals(""))
                 {
                     Matcher matcher = Pattern.compile(NOW_PLAYING_SUFFIX).matcher(lineSplitOnPlaylistTag[1]);
-                    String suffix = matcher.group();
+                    String suffix;
+                    if(matcher.find())
+                    {
+                        suffix = matcher.group();
+                    }
+                    else
+                    {
+                        LOGGER.error("Could not find match in '{}'", lineSplitOnPlaylistTag[1]);
+                        throw new IllegalStateException("Regex matcher could not find now playing suffix.");
+                    }
                     
                     nowPlaying.setTitle(lineSplitOnPlaylistTag[1].substring(0, lineSplitOnPlaylistTag[1].length() - suffix.length()));
                     nowPlaying.setService(suffix.substring(2, 4));
@@ -53,8 +62,12 @@ public class CyTubeHelper
         }
         catch(IOException e)
         {
-            LOGGER.error("Could not find the channel log location '{}'.", log, e);
+            LOGGER.error("IOException, could not find the channel log location '{}'.", log, e);
             throw e;
+        }
+        catch(IllegalStateException e)
+        {
+            LOGGER.error("IllegalStateException, regex matcher could not find now playing suffix.", e);
         }
         
         return nowPlaying;
