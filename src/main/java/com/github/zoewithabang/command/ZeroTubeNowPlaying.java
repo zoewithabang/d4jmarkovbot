@@ -78,13 +78,11 @@ public class ZeroTubeNowPlaying implements ICommand
     
     private void postNowPlayingMessage(MessageReceivedEvent event, CyTubeMedia nowPlaying)
     {
-        String link = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ")";
+        String links = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ") || [ZeroTube](" + url + ")";
         EmbedBuilder builder = new EmbedBuilder();
     
-        builder.withAuthorName("Now playing on ZeroTube:");
-        builder.appendField(nowPlaying.getTitle(), link, false);
-        builder.appendField("Tune in with me~ \uD83C\uDFB5", url, false);
-        builder.withTimestamp(Instant.now());
+        builder.withAuthorName("Now playing on ZeroTube \uD83C\uDFB5");
+        builder.appendField(nowPlaying.getTitle(), links, false);
     
         LOGGER.debug("Sending now playing message with now playing data '{}'.", nowPlaying);
     
