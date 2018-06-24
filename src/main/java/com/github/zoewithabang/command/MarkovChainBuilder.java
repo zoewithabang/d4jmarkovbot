@@ -18,10 +18,6 @@ public class MarkovChainBuilder {
     }
 
     String generateChain(List<String> seedWords, int maxOutputSize) {
-        if (!seedWords.isEmpty() && seedWords.size() != prefixSize) {
-            throw new IllegalArgumentException("Seed word size much match prefix size used to build Markov table.");
-        }
-
         String initialPrefix = getInitialPrefix(seedWords);
 
         if (initialPrefix.isEmpty()) {
@@ -35,7 +31,15 @@ public class MarkovChainBuilder {
         if (seedWords.isEmpty()) {
             return (String) markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
         } else {
+            if (seedWords.size() > prefixSize) {
+                seedWords = seedWords.subList(seedWords.size() - prefixSize, seedWords.size());
+            }
+
             String seed = String.join(" ", seedWords);
+
+            if (seedWords.size() < prefixSize) {
+                seed = getLongerSeed(seed);
+            }
 
             if (markovTable.containsKey(seed)) {
                 return seed;
@@ -44,6 +48,15 @@ public class MarkovChainBuilder {
                 return "";
             }
         }
+    }
+
+    private String getLongerSeed(String seed) {
+        return markovTable.entrySet()
+                          .stream()
+                          .filter(entry -> entry.getKey().toLowerCase().contains(seed.toLowerCase()))
+                          .map(Map.Entry::getKey)
+                          .findAny()
+                          .orElse("");
     }
 
     private String generateChainFromPrefix(String initialPrefix, int maxOutputSize) {

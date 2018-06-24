@@ -80,7 +80,7 @@ public class MarkovChain implements ICommand
 
         try
         {
-            markovChainBuilder = new MarkovChainBuilder(storedMessages, seedWords.size());
+            markovChainBuilder = new MarkovChainBuilder(storedMessages, 2);
         }
         catch(Exception e)
         {
