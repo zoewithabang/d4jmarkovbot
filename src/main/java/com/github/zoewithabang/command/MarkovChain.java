@@ -34,15 +34,13 @@ public class MarkovChain implements ICommand
     private List<String> seedWords;
     
     private final int DESIRED_MESSAGE_COUNT = 15000;
-    private final int MARKOV_PREFIX_SIZE = 2; //must be 2 or more
-    private final int DESIRED_MIN_OUTPUT_WORD_SIZE = 4;
-    private final int MAX_OUTPUT_WORD_SIZE = 30;
-    
+    private final int MAX_OUTPUT_LENGTH = 30;
+
     public MarkovChain(IBot bot, Properties botProperties)
     {
         this.bot = bot;
         this.botProperties = botProperties;
-        prefix = botProperties.getProperty("prefix");
+        prefix = this.botProperties.getProperty("prefix");
         this.messageService = new MessageService(botProperties);
         random = new Random();
     }
@@ -52,7 +50,6 @@ public class MarkovChain implements ICommand
     {
         IChannel eventChannel = event.getChannel();
         List<String> storedMessages;
-        Map<String, List<String>> markovTable;
         String output;
         
         if(!validateArgs(event, args))
@@ -64,7 +61,7 @@ public class MarkovChain implements ICommand
                 bot.sendMessage(eventChannel, "Usage for single user: `" + prefix + COMMAND + " single @User' to make me send a message that User would totally say.");
                 bot.sendMessage(eventChannel, "Usage for user mashups: `" + prefix + COMMAND + " mashup @User1 @User2 @User3 etc' to make me Frankenstein those users together for a post they would totally say.");
                 bot.sendMessage(eventChannel, "Usage for server: `" + prefix + COMMAND + " server' to Frankenstein the whole server together for a post.");
-                bot.sendMessage(eventChannel, "For any of the above commands, put " + MARKOV_PREFIX_SIZE + " words after them in quotes like \"hello there\" to try to start the sentences with them!");
+                bot.sendMessage(eventChannel, "For any of the above commands, put words after them in quotes like \"hello there\" to try to start the sentences with them!");
             }
             return;
         }
@@ -78,10 +75,12 @@ public class MarkovChain implements ICommand
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2001);
             return;
         }
-        
+
+        MarkovChainBuilder markovChainBuilder;
+
         try
         {
-            markovTable = buildMarkovTable(storedMessages);
+            markovChainBuilder = new MarkovChainBuilder(storedMessages, seedWords.size());
         }
         catch(Exception e)
         {
@@ -91,7 +90,7 @@ public class MarkovChain implements ICommand
         
         try
         {
-            output = generateOutputString(markovTable);
+            output = markovChainBuilder.generateChain(seedWords, MAX_OUTPUT_LENGTH);
         }
         catch(Exception e)
         {
@@ -195,14 +194,7 @@ public class MarkovChain implements ICommand
         
             users.add(user);
         }
-    
-        if(!seedWords.isEmpty()
-            && seedWords.size() != MARKOV_PREFIX_SIZE)
-        {
-            LOGGER.warn("Submitted seed words count {} did not match set prefix size of {}.", seedWords.size(), MARKOV_PREFIX_SIZE);
-            return false;
-        }
-    
+
         switch(type)
         {
             case SINGLE:
@@ -283,167 +275,7 @@ public class MarkovChain implements ICommand
             throw e;
         }
     }
-    
-    private Map<String, List<String>> buildMarkovTable(List<String> storedMessages)
-    {
-        Map<String, List<String>> markovTable = new HashMap<>();
-        int newPrefixCount = 0;
-        int updatedPrefixCount = 0;
-    
-        //build table
-        for(String message : storedMessages)
-        {
-            String[] words = message.trim().split(" ");
-            int wordsCount = words.length;
-        
-            if(wordsCount >= MARKOV_PREFIX_SIZE)
-            {
-                for(int i = 0; i <= (wordsCount - MARKOV_PREFIX_SIZE); i++)
-                {
-                    StringBuilder prefixBuilder = new StringBuilder(words[i]);
-                    String prefix;
-                    String suffix;
-                
-                    for(int j = (i + 1); j < (i + MARKOV_PREFIX_SIZE); j++)
-                    {
-                        prefixBuilder.append(' ').append(words[j]);
-                    }
-                
-                    prefix = prefixBuilder.toString();
-                
-                    if(i + MARKOV_PREFIX_SIZE < wordsCount)
-                    {
-                        suffix = words[i + MARKOV_PREFIX_SIZE];
-                    }
-                    else
-                    {
-                        suffix = "";
-                    }
-                
-                    if(markovTable.containsKey(prefix))
-                    {
-                        markovTable.get(prefix).add(suffix);
-                        updatedPrefixCount++;
-                    }
-                    else
-                    {
-                        List<String> suffixes = new ArrayList<>();
-                        suffixes.add(suffix);
-                        markovTable.put(prefix, suffixes);
-                        newPrefixCount++;
-                    }
-                }
-            }
-        }
-    
-        LOGGER.debug("Markov table is '{}'.", markovTable);
-        LOGGER.info("New prefix count is '{}', updated prefix count is '{}'.", newPrefixCount, updatedPrefixCount);
-        
-        return markovTable;
-    }
-    
-    private String generateOutputString(Map<String,List<String>> markovTable)
-    {
-        //get output
-        String prefix;
-        if(seedWords.isEmpty())
-        {
-            prefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
-        }
-        else
-        {
-            String seed = String.join(" ", seedWords);
-            if(markovTable.containsKey(seed))
-            {
-                prefix = seed;
-            }
-            else
-            {
-                return "";
-            }
-        }
-        String[] latestPrefixWords = prefix.split(" ");
-        List<String> outputList = new ArrayList<>(Arrays.asList(latestPrefixWords));
-        int addedWordCount = 0;
-        LOGGER.debug("Prefix is '{}', latest prefix words are '{}', current output is '{}'.", prefix, latestPrefixWords, outputList);
-        
-        while(outputList.size() <= MAX_OUTPUT_WORD_SIZE)
-        {
-            //using this for temp debugging, shouldn't be needed once the intermittent error is fixed
-            try
-            {
-                latestPrefixWords = outputList.subList(addedWordCount, addedWordCount + MARKOV_PREFIX_SIZE).toArray(new String[0]);
-            }
-            catch(IndexOutOfBoundsException e)
-            {
-                LOGGER.error("IndexOutOfBoundsException when getting latest prefix words.");
-                LOGGER.error("Current output list: {}", outputList);
-                LOGGER.error("Added word count: {}", addedWordCount);
-                LOGGER.error("Added word count plus markov prefix size: {}", addedWordCount + MARKOV_PREFIX_SIZE);
-            }
-            
-            prefix = String.join(" ", latestPrefixWords);
-            LOGGER.info("Latest prefix: '{}'", prefix);
-            List<String> suffixes = markovTable.get(prefix);
-            LOGGER.info("Latest suffixes: '{}'", suffixes);
-            String suffix;
-            
-            if(suffixes.size() == 1) //either an end of chain or single result
-            {
-                suffix = suffixes.get(0);
-            }
-            else //more than one result, pick one randomly
-            {
-                suffix = suffixes.get(random.nextInt(suffixes.size()));
-            }
-            
-            if(suffix.equals(""))
-            {
-                if(outputList.size() >= DESIRED_MIN_OUTPUT_WORD_SIZE
-                    && random.nextFloat() < 0.8)
-                {
-                    //end of chain, end of output
-                    break;
-                }
-                else
-                {
-                    //end of chain but add a random new prefix, prevent sentence under DESIRED_MIN_OUTPUT_WORD_SIZE
-                    String randomPrefix = (String)markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
-                    LOGGER.debug("Random prefix: '{}'", randomPrefix);
-                    String[] randomPrefixWords = randomPrefix.split(" ");
-                    
-                    //add comma to last word if no other punctuation
-                    String lastWord = outputList.get(outputList.size() - 1);
-                    if(!lastWord.matches(".*\\p{Punct}"))
-                    {
-                        lastWord = lastWord + ",";
-                    }
-                    outputList.set(outputList.size() - 1, lastWord);
-                    
-                    for(String word : randomPrefixWords)
-                    {
-                        outputList.add(word);
-                        addedWordCount++;
-                    }
-                }
-            }
-            else
-            {
-                outputList.add(suffix);
-                addedWordCount++;
-            }
-            
-            if(outputList.size() >= MAX_OUTPUT_WORD_SIZE)
-            {
-                break;
-            }
-        }
-        
-        LOGGER.info("Word count: {}.", addedWordCount + MARKOV_PREFIX_SIZE);
-        
-        return String.join(" ", outputList);
-    }
-    
+
     private void postMarkovMessage(MessageReceivedEvent event, MarkovChainCommandType type, List<IUser> userList, String message) throws IllegalStateException
     {
         IGuild server = event.getGuild();
