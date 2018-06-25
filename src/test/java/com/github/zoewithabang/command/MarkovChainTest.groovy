@@ -1,5 +1,7 @@
 package com.github.zoewithabang.command
 
+import com.github.zoewithabang.util.Logging
+import org.slf4j.Logger
 import spock.lang.Specification
 
 class MarkovChainTest extends Specification {

@@ -163,12 +163,18 @@ public class MarkovChain implements ICommand
     
         for(String arg : args)
         {
+            if(arg.startsWith("\""))
+            {
+                isInsideQuotes = true;
+                seedWords.add(arg.substring(1, arg.length())); //add trimming the quote
+            }
             if(isInsideQuotes)
             {
                 if(arg.endsWith("\""))
                 {
                     isInsideQuotes = false;
                     seedWords.add(arg.substring(0, arg.length() - 1)); //add, trimming the quote
+                    continue;
                 }
                 else
                 {
@@ -176,14 +182,7 @@ public class MarkovChain implements ICommand
                 }
                 continue;
             }
-        
-            if(arg.startsWith("\""))
-            {
-                isInsideQuotes = true;
-                seedWords.add(arg.substring(1, arg.length())); //add trimming the quote
-                continue;
-            }
-        
+
             IUser user = DiscordHelper.getUserFromMarkdownId(event.getGuild(), arg);
         
             if(user == null)

@@ -18,31 +18,29 @@ public class MarkovChainBuilder {
     }
 
     String generateChain(List<String> seedWords, int maxOutputSize) {
-        String initialPrefix = getInitialPrefix(seedWords);
-
-        if (initialPrefix.isEmpty()) {
-            return initialPrefix;
-        }
-
-        return sanitizeChain(generateChainFromPrefix(initialPrefix, maxOutputSize));
+        return sanitizeChain(generateChainFromSeedWords(seedWords, maxOutputSize));
     }
 
     private String getInitialPrefix(List<String> seedWords) {
         if (seedWords.isEmpty()) {
             return (String) markovTable.keySet().toArray()[random.nextInt(markovTable.size())];
         } else {
-            if (seedWords.size() > prefixSize) {
-                seedWords = seedWords.subList(seedWords.size() - prefixSize, seedWords.size());
-            }
+            String seed;
 
-            String seed = String.join(" ", seedWords);
+            // If more seed words than the prefix size, use only the last (prefix size) words for the table lookup
+            if (seedWords.size() > prefixSize) {
+                seed =  String.join(" ", seedWords.subList(seedWords.size() - prefixSize, seedWords.size()));
+            } else {
+                seed = String.join(" ", seedWords);
+            }
 
             if (seedWords.size() < prefixSize) {
                 seed = getLongerSeed(seed);
+                seedWords = Arrays.asList(seed.split(" "));
             }
 
             if (markovTable.containsKey(seed)) {
-                return seed;
+                return String.join(" ", seedWords);
             } else {
                 LOGGER.warn("Did not find seed [{}] in markov table.", seed);
                 return "";
@@ -53,13 +51,19 @@ public class MarkovChainBuilder {
     private String getLongerSeed(String seed) {
         return markovTable.entrySet()
                           .stream()
-                          .filter(entry -> entry.getKey().toLowerCase().contains(seed.toLowerCase()))
+                          .filter(entry -> Arrays.asList(entry.getKey().toLowerCase().split(" ")).contains(seed.toLowerCase()))
                           .map(Map.Entry::getKey)
                           .findAny()
                           .orElse("");
     }
 
-    private String generateChainFromPrefix(String initialPrefix, int maxOutputSize) {
+    private String generateChainFromSeedWords(List<String> seedWords, int maxOutputSize) {
+        String initialPrefix = getInitialPrefix(seedWords);
+
+        if (initialPrefix.isEmpty()) {
+            return initialPrefix;
+        }
+
         List<String> chain = new ArrayList<>(Arrays.asList(initialPrefix.split(" ")));
 
         while (chain.size() <= maxOutputSize) {
