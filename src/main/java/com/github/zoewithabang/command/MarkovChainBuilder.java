@@ -80,7 +80,7 @@ public class MarkovChainBuilder {
     }
 
     private String sanitizeChain(String chain) {
-        String sanitizedChain = chain.substring(0, 1).toUpperCase() + chain.substring(1);
+        String sanitizedChain = chain; // = chain.substring(0, 1).toUpperCase() + chain.substring(1); <-- enable for capitalization
         sanitizedChain = fixDanglingCharacters(sanitizedChain);
 
         if(!sanitizedChain.matches(".*\\p{Punct}")) {
