@@ -211,7 +211,7 @@ public class ZeroBot implements IBot
         
         try
         {
-            Constructor constructor = commandClass.getConstructor(this.getClass(), properties.getClass());
+            Constructor constructor = commandClass.getConstructor(IBot.class, Properties.class);
             ICommand instance = (ICommand)constructor.newInstance(this, properties);
             Thread thread = new Thread(() -> instance.execute(event, args, sendBotMessages));
             thread.setUncaughtExceptionHandler((th, ex) ->
