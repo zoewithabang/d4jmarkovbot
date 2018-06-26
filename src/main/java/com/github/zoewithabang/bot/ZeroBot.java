@@ -16,6 +16,8 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.RequestBuffer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -27,7 +29,7 @@ public class ZeroBot implements IBot
     private IDiscordClient client;
     private Properties properties;
     private String prefix;
-    private Map<String, ICommand> commands;
+    private Map<String, Class> commands;
     private ScheduledExecutorService taskScheduler;
     private AliasService aliasService;
     
@@ -41,12 +43,12 @@ public class ZeroBot implements IBot
         aliasService = new AliasService(properties);
         
         //called commands
-        commands.put(GetAllMessagesFromUser.COMMAND, new GetAllMessagesFromUser(this, properties));
-        commands.put(MarkovChain.COMMAND, new MarkovChain(this, properties));
-        commands.put(GetZeroTube.COMMAND, new GetZeroTube(this, properties));
-        commands.put(ManageAlias.COMMAND, new ManageAlias(this, properties));
-        commands.put(ListAliases.COMMAND, new ListAliases(this, properties));
-        commands.put(ZeroTubeNowPlaying.COMMAND, new ZeroTubeNowPlaying(this, properties));
+        commands.put(GetAllMessagesFromUser.COMMAND, GetAllMessagesFromUser.class);
+        commands.put(MarkovChain.COMMAND, MarkovChain.class);
+        commands.put(GetZeroTube.COMMAND, GetZeroTube.class);
+        commands.put(ManageAlias.COMMAND, ManageAlias.class);
+        commands.put(ListAliases.COMMAND, ListAliases.class);
+        commands.put(ZeroTubeNowPlaying.COMMAND, ZeroTubeNowPlaying.class);
         
         //scheduled tasks
         taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlayingPresence(this, properties), 5, 2, TimeUnit.SECONDS);
@@ -167,7 +169,7 @@ public class ZeroBot implements IBot
             if(commands.containsKey(command))
             {
                 LOGGER.debug("Received command, running '{}'.", command);
-                commands.get(command).execute(event, args, true);
+                runCommand(command, event, args, true);
             }
             else
             {
@@ -178,6 +180,7 @@ public class ZeroBot implements IBot
                     if(aliasArgs.get(0).equals("alias"))
                     {
                         postErrorMessage(event.getChannel(), true, null, 1);
+                        return;
                     }
                     aliasArgs.addAll(args);
                     attemptCommand(event, aliasArgs);
@@ -192,6 +195,37 @@ public class ZeroBot implements IBot
         {
             LOGGER.error("Uncaught Exception when executing command '{}', TROUBLESHOOT THIS!!!", command, e);
             postErrorMessage(event.getChannel(), true, null, null);
+        }
+    }
+    
+    private void runCommand(String command, MessageReceivedEvent event, ArrayList<String> args, boolean sendBotMessages)
+    {
+        
+        Class commandClass = commands.get(command);
+        if(!ICommand.class.isAssignableFrom(commandClass))
+        {
+            LOGGER.error("Class {} is not assignable from ICommand.", commandClass);
+            postErrorMessage(event.getChannel(), true, null, 2);
+            return;
+        }
+        
+        try
+        {
+            Constructor constructor = commandClass.getConstructor(this.getClass(), properties.getClass());
+            ICommand instance = (ICommand)constructor.newInstance(this, properties);
+            Thread thread = new Thread(() -> instance.execute(event, args, sendBotMessages));
+            thread.setUncaughtExceptionHandler((th, ex) ->
+                {
+                    LOGGER.error("Uncaught Exception when executing command '{}', TROUBLESHOOT THIS!!!", command, ex);
+                    postErrorMessage(event.getChannel(), true, null, null);
+                }
+            );
+            thread.start();
+        }
+        catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassCastException e)
+        {
+            LOGGER.error("Exception occurred on executing command '{}'.", command, e);
+            postErrorMessage(event.getChannel(), true, null, 3);
         }
     }
     
