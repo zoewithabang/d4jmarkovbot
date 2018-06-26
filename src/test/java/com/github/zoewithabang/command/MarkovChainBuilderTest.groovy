@@ -4,6 +4,13 @@ import spock.lang.Specification
 
 class MarkovChainBuilderTest extends Specification
 {
+    def "sanitizing an empty string doesn't result in an exception"() {
+        when:
+        MarkovChainBuilder.sanitizeChain("")
+        then:
+        notThrown(Exception)
+    }
+
     def "dangling quote is added to end of sentence"() {
         when:
         def fixedString = MarkovChainBuilder.fixDanglingCharacters("\"This should end with a quote")

@@ -100,8 +100,13 @@ public class MarkovChainBuilder
         return String.join(" ", chain);
     }
     
-    private String sanitizeChain(String chain)
+    protected static String sanitizeChain(String chain)
     {
+        if (chain.trim().isEmpty())
+        {
+            return chain;
+        }
+        
         String sanitizedChain = chain; // = chain.substring(0, 1).toUpperCase() + chain.substring(1); <-- enable for capitalization
         sanitizedChain = fixDanglingCharacters(sanitizedChain);
         
