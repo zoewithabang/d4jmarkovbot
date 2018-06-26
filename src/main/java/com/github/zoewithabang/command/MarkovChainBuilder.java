@@ -4,6 +4,7 @@ import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MarkovChainBuilder
 {
@@ -64,12 +65,17 @@ public class MarkovChainBuilder
     
     private String getLongerSeed(String seed)
     {
-        return markovTable.entrySet()
+        List<String> matchingSeeds = markovTable.entrySet()
             .stream()
-            .filter(entry -> Arrays.asList(entry.getKey().toLowerCase().split(" ")).contains(seed.toLowerCase()))
             .map(Map.Entry::getKey)
-            .findAny()
-            .orElse("");
+            .filter(key -> Arrays.asList(key.toLowerCase().split(" ")).contains(seed.toLowerCase()))
+            .collect(Collectors.toList());
+        
+        if (matchingSeeds.isEmpty()) {
+            return "";
+        } else {
+            return matchingSeeds.get(random.nextInt(matchingSeeds.size()));
+        }
     }
     
     private String generateChainFromSeedWords(List<String> seedWords, int maxOutputSize)
