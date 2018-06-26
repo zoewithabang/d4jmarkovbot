@@ -3,6 +3,7 @@ package com.github.zoewithabang.command;
 import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.service.MessageService;
 import com.github.zoewithabang.util.DiscordHelper;
+import org.apache.commons.lang3.StringUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -12,12 +13,28 @@ import sx.blah.discord.util.EmbedBuilder;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 enum MarkovChainCommandType
 {
-    SINGLE,
-    MASHUP,
-    SERVER
+    SINGLE("single"),
+    MASHUP("mashup"),
+    SERVER("server");
+    
+    private String commandName;
+    
+    MarkovChainCommandType(String commandName)
+    {
+        this.commandName = commandName;
+    }
+    
+    public static MarkovChainCommandType fromString(String input)
+    {
+        return Arrays.stream(values())
+            .filter(command -> command.commandName.equalsIgnoreCase(input))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("No command found matching name " + input));
+    }
 }
 
 public class MarkovChain implements ICommand
@@ -29,13 +46,13 @@ public class MarkovChain implements ICommand
     private MessageService messageService;
     private Random random;
     
-    private MarkovChainCommandType type;
+    private MarkovChainCommandType commandType;
     private List<IUser> users;
     private List<String> seedWords;
     
     private final int DESIRED_MESSAGE_COUNT = 15000;
     private final int MAX_OUTPUT_LENGTH = 30;
-
+    
     public MarkovChain(IBot bot, Properties botProperties)
     {
         this.bot = bot;
@@ -54,7 +71,6 @@ public class MarkovChain implements ICommand
         
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending message about failed validation.");
@@ -65,7 +81,7 @@ public class MarkovChain implements ICommand
             }
             return;
         }
-    
+        
         try
         {
             storedMessages = getStoredMessages(users, DESIRED_MESSAGE_COUNT);
@@ -75,9 +91,9 @@ public class MarkovChain implements ICommand
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2001);
             return;
         }
-
+        
         MarkovChainBuilder markovChainBuilder;
-
+        
         try
         {
             markovChainBuilder = new MarkovChainBuilder(storedMessages, 2);
@@ -115,149 +131,97 @@ public class MarkovChain implements ICommand
         
         try
         {
-            postMarkovMessage(event, type, users, output);
+            postMarkovMessage(event, commandType, users, output);
         }
         catch(Exception e)
         {
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2004);
-            return;
         }
     }
     
-    
-    
-    public boolean validateArgs(MessageReceivedEvent event, List<String> args)
+    public boolean validateArgs(MessageReceivedEvent event, List<String> initialArgs)
     {
         LOGGER.debug("Validating args in MarkovChain");
         
-        int argsSize = args.size();
-        users = new ArrayList<>();
-        seedWords = new ArrayList<>();
-    
-        if(argsSize == 0)
+        try
         {
-            LOGGER.warn("MarkovChain expected at least 1 argument, found 0.");
+            List<String> args = new ArrayList<>(initialArgs);
+            
+            int argsSize = args.size();
+            
+            if(argsSize == 0)
+            {
+                throw new IllegalArgumentException("MarkovChain expected at least 1 argument, found 0.");
+            }
+            
+            commandType = MarkovChainCommandType.fromString(args.remove(0));
+            
+            users = getUsers(args, event);
+            validateUsers(users, commandType);
+            
+            seedWords = getSeedWords(args);
+        }
+        catch(Exception e)
+        {
+            LOGGER.error("Arg validation failed.", e);
             return false;
-        }
-    
-        String typeString = args.get(0);
-        args.remove(0);
-        
-        switch(typeString)
-        {
-            case "single":
-                type = MarkovChainCommandType.SINGLE;
-                break;
-            case "mashup":
-                type = MarkovChainCommandType.MASHUP;
-                break;
-            case "server":
-                type = MarkovChainCommandType.SERVER;
-                break;
-            default:
-                LOGGER.warn("Unknown type of markov command '{}' issued, aborting execution.");
-                return false;
-        }
-        
-        boolean isInsideQuotes = false;
-    
-        for(String arg : args)
-        {
-            if(arg.startsWith("\""))
-            {
-                isInsideQuotes = true;
-                seedWords.add(arg.substring(1, arg.length())); //add trimming the quote
-            }
-            if(isInsideQuotes)
-            {
-                if(arg.endsWith("\""))
-                {
-                    isInsideQuotes = false;
-                    seedWords.add(arg.substring(0, arg.length() - 1)); //add, trimming the quote
-                    continue;
-                }
-                else
-                {
-                    seedWords.add(arg);
-                }
-                continue;
-            }
-
-            IUser user = DiscordHelper.getUserFromMarkdownId(event.getGuild(), arg);
-        
-            if(user == null)
-            {
-                LOGGER.warn("Expected arg '{}' to be a user but could not find them.", arg);
-                return false;
-            }
-        
-            users.add(user);
-        }
-
-        switch(type)
-        {
-            case SINGLE:
-                if(!validateSingle(users))
-                {
-                    return false;
-                }
-                break;
-            case MASHUP:
-                if(!validateMashup(users))
-                {
-                    return false;
-                }
-                break;
-            case SERVER:
-                if(!validateServer(users))
-                {
-                    return false;
-                }
         }
         
         LOGGER.debug("Validation successful, users '{}' and seed words '{}'.", users, seedWords);
-        
         return true;
     }
     
-    private boolean validateSingle(List<IUser> users)
+    protected List<IUser> getUsers(List<String> args, MessageReceivedEvent event)
     {
-        if(users.size() != 1)
-        {
-            LOGGER.warn("Type single only supports 1 user, found {}.", users.size());
-            return false;
-        }
-        
-        return true;
+        return args.stream()
+            .map(arg -> DiscordHelper.getUserFromMarkdownId(event.getGuild(), arg))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
     
-    private boolean validateMashup(List<IUser> users)
+    protected List<String> getSeedWords(List<String> args)
     {
-        if(users.size() < 2)
+        String argString = String.join(" ", args);
+        
+        if(StringUtils.countMatches(argString, '"') != 2)
         {
-            LOGGER.warn("Type mashup only supports more than 1 user, found {}.", users.size());
-            return false;
+            LOGGER.warn("Args [{}] did not contain a single set of closed quotes, running with no seed words.", argString);
+            return Collections.emptyList();
         }
         
-        return true;
+        String seedWordString = argString.substring(argString.indexOf('"') + 1, argString.lastIndexOf('"'));
+        return Arrays.asList(seedWordString.split(" "));
     }
     
-    private boolean validateServer(List<IUser> users)
+    protected void validateUsers(List<IUser> users, MarkovChainCommandType commandType)
     {
-        if(!users.isEmpty())
+        switch(commandType)
         {
-            LOGGER.warn("Type server does not support specified users, found {}.", users.size());
-            return false;
+            case SINGLE:
+                if(users.size() != 1)
+                {
+                    throw new IllegalArgumentException("Type single only supports 1 user, found " + users.size());
+                }
+                break;
+            case MASHUP:
+                if(users.size() < 2)
+                {
+                    throw new IllegalArgumentException("Type mashup only supports more than 1 user, found " + users.size());
+                }
+                break;
+            case SERVER:
+                if(!users.isEmpty())
+                {
+                    throw new IllegalArgumentException("Type server does not support specified users, found " + users.size());
+                }
         }
-        
-        return true;
     }
     
     private List<String> getStoredMessages(List<IUser> users, int count) throws Exception
     {
         try
         {
-            switch(type)
+            switch(commandType)
             {
                 case SINGLE:
                 case MASHUP:
@@ -274,7 +238,7 @@ public class MarkovChain implements ICommand
             throw e;
         }
     }
-
+    
     private void postMarkovMessage(MessageReceivedEvent event, MarkovChainCommandType type, List<IUser> userList, String message) throws IllegalStateException
     {
         IGuild server = event.getGuild();
@@ -293,7 +257,7 @@ public class MarkovChain implements ICommand
                 nameBuilder.append(singleUser.getDisplayName(server));
                 nameBuilder.append(" says:");
                 break;
-                
+            
             case MASHUP:
                 colour = DiscordHelper.getColorOfTopRoleOfUser(users.get(random.nextInt(users.size())), server);
                 thumbnail = users.get(random.nextInt(users.size())).getAvatarURL();
@@ -322,13 +286,13 @@ public class MarkovChain implements ICommand
                 
                 nameBuilder.append(" say:");
                 break;
-                
+            
             case SERVER:
                 colour = Color.BLACK;
                 thumbnail = server.getIconURL();
                 nameBuilder.append("Everybody says:");
                 break;
-                
+            
             default:
                 throw new IllegalStateException("Markov type was not successfully validated.");
         }

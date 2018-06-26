@@ -1,49 +1,78 @@
 package com.github.zoewithabang.command
 
-import com.github.zoewithabang.util.Logging
-import org.slf4j.Logger
+import spock.lang.Shared
 import spock.lang.Specification
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
+import sx.blah.discord.handle.obj.IGuild
+import sx.blah.discord.handle.obj.IUser
 
-class MarkovChainTest extends Specification {
-    def "dangling quote is added to end of sentence"() {
-        when:
-        def fixedString = MarkovChainBuilder.fixDanglingCharacters("\"This should end with a quote")
-        then:
-        fixedString == "\"This should end with a quote\""
+class MarkovChainTest extends Specification
+{
+    @Shared
+    MarkovChain markovChain
+
+    def setupSpec()
+    {
+        def properties = new Properties()
+        properties.put("prefix", "!")
+        properties.put("dbdatabase", "")
+        markovChain = new MarkovChain(null, properties)
     }
 
-    def "multiple dangling quotes are added to end of sentence"() {
+    def "arg validation fails with no args"()
+    {
         when:
-        def fixedString = MarkovChainBuilder.fixDanglingCharacters("'This should 'end with quotes")
+        def validationPassed = markovChain.validateArgs(null, [])
+
         then:
-        fixedString == "'This should 'end with quotes''"
+        !validationPassed
     }
 
-    def "bracket ends with reverse bracket"() {
+    def "arg validation fails with non-existent command"()
+    {
         when:
-        def fixedString = MarkovChainBuilder.fixDanglingCharacters("(Test sentence")
+        def validationPassed = markovChain.validateArgs(null, ["!bogus"])
+
         then:
-        fixedString == "(Test sentence)"
+        !validationPassed
     }
 
-    def "square bracket ends with reverse square bracket"() {
+    def "only args with valid user ids are added to user list"()
+    {
+        setup:
+        def messageReceivedEvent = Mock(MessageReceivedEvent)
+        def guild = Mock(IGuild)
+        def realUser = Mock(IUser)
+
+        messageReceivedEvent.getGuild() >> guild
+        guild.getUsers() >> [realUser]
+        realUser.getStringID() >> "realUser"
+
         when:
-        def fixedString = MarkovChainBuilder.fixDanglingCharacters("[Test sentence")
+        def userList = markovChain.getUsers(["wrongSyntax", "<@notARealUser>", "<@realUser>"], messageReceivedEvent)
+
         then:
-        fixedString == "[Test sentence]"
+        userList.size() == 1
+        userList.get(0).getStringID() == realUser.getStringID()
     }
 
-    def "mixing different dangling characters"() {
+    def "a single trailing quotation mark will result in no seed words"()
+    {
         when:
-        def fixedString = MarkovChainBuilder.fixDanglingCharacters("[Testing 'multiple (dangling characters")
+        def seedWords = markovChain.getSeedWords(["\"seed", "words"])
+
         then:
-        fixedString == "[Testing 'multiple (dangling characters)']"
+        seedWords.size() == 0
     }
 
-    def "dangling character with no starting character is removed"() {
+    def "only args between quotation marks are parsed as seed words"()
+    {
         when:
-        def fixedString = MarkovChainBuilder.fixDanglingCharacters("Ending quote should be removed'")
+        def seedWords = markovChain.getSeedWords(["!command", "\"seed", "words\"", "<@realUser>"])
+
         then:
-        fixedString == "Ending quote should be removed"
+        seedWords.size() == 2
+        seedWords.contains("seed")
+        seedWords.contains("words")
     }
 }
