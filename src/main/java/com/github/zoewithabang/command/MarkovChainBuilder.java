@@ -4,6 +4,7 @@ import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MarkovChainBuilder
@@ -116,8 +117,10 @@ public class MarkovChainBuilder
         
         String sanitizedChain = chain; // = chain.substring(0, 1).toUpperCase() + chain.substring(1); <-- enable for capitalization
         sanitizedChain = fixDanglingCharacters(sanitizedChain);
+    
+        Pattern endsInPunctuation = Pattern.compile(".*\\p{Punct}", Pattern.MULTILINE);
         
-        if(!sanitizedChain.matches(".*\\p{Punct}"))
+        if(!endsInPunctuation.matcher(sanitizedChain).find())
         {
             sanitizedChain += ".";
         }

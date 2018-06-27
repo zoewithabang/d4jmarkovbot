@@ -65,4 +65,16 @@ class MarkovChainBuilderTest extends Specification
         then:
         notThrown(Exception)
     }
+
+    def "multiline identify ending in punctuation"()
+    {
+        when:
+        def chain = MarkovChainBuilder.sanitizeChain("This is\n" +
+                "a multiline\n" +
+                "ending in a question mark?")
+        then:
+        chain == "This is\n" +
+                "a multiline\n" +
+                "ending in a question mark?"
+    }
 }
