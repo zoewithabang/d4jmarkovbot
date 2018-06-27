@@ -14,10 +14,8 @@ public class DiscordHelper
     
     public static IUser getUserFromMarkdownId(IGuild server, String id)
     {
-        if(!id.startsWith("<@")
-            || !id.endsWith(">"))
+        if(!id.startsWith("<@") || !id.endsWith(">"))
         {
-            LOGGER.warn("Could not find USER_ID in arg {}.", id);
             return null;
         }
     
