@@ -57,4 +57,12 @@ class MarkovChainBuilderTest extends Specification
         then:
         fixedString == "Ending quote should be removed"
     }
+
+    def "fixing dangling chars on chains that include 'blank' words doesn't result in an exception"()
+    {
+        when:
+        MarkovChainBuilder.fixDanglingCharacters("Chain with a double  space")
+        then:
+        notThrown(Exception)
+    }
 }

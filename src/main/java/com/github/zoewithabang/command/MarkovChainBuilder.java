@@ -136,6 +136,11 @@ public class MarkovChainBuilder
         
         for(String word : words)
         {
+            if(word.isEmpty()) //skip if word is not of length 1 or more
+            {
+                continue;
+            }
+            
             String wordToAppend = word;
             if(startingCharacters.contains(word.substring(0, 1)))
             {
