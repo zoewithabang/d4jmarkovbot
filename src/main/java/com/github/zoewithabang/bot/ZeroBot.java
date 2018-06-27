@@ -127,7 +127,8 @@ public class ZeroBot implements IBot
     public void updatePresence(StatusType status, ActivityType activity, String text)
     {
         LOGGER.debug("Updating bot presence to status '{}', activity '{}', text '{}'.", status.name(), activity.name(), text);
-        client.changePresence(status, activity, text);
+        RequestBuffer.request(() -> client.changePresence(status, activity, text));
+        
     }
     
     @Override
@@ -136,7 +137,7 @@ public class ZeroBot implements IBot
         List<IGuild> guilds = client.getGuilds();
         for(IGuild guild : guilds)
         {
-            guild.setUserNickname(client.getOurUser(), name);
+            RequestBuffer.request(() -> guild.setUserNickname(client.getOurUser(), name));
         }
     }
     
