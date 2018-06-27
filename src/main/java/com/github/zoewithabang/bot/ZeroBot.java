@@ -8,6 +8,7 @@ import com.github.zoewithabang.task.ZeroTubeNowPlayingPresence;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
+import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.DiscordException;
@@ -32,7 +33,7 @@ public class ZeroBot implements IBot
     private AliasService aliasService;
     private OptionService optionService;
     
-    public ZeroBot(IDiscordClient client, Properties properties) throws SQLException
+    public ZeroBot(IDiscordClient client, Properties properties)
     {
         this.client = client;
         this.properties = properties;
@@ -53,8 +54,11 @@ public class ZeroBot implements IBot
         
         //scheduled tasks
         taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlayingPresence(this, properties), 5, 2, TimeUnit.SECONDS);
-        
-        //update nickname from db, comment this block out if no db
+    }
+    
+    @EventSubscriber
+    public void onReadyEvent(ReadyEvent event)
+    {
         try
         {
             updateNickname(optionService.getOptionValue("name"));
@@ -62,7 +66,22 @@ public class ZeroBot implements IBot
         catch(SQLException e)
         {
             LOGGER.error("SQLException on getting bot name from database.", e);
-            throw e;
+        }
+    }
+    
+    @EventSubscriber
+    public void onMessageReceived(MessageReceivedEvent event)
+    {
+        //separate message by spaces, args[0] will have the command, if this is a message for the bot
+        String[] args = event.getMessage().getContent().split(" ");
+        
+        //if a message doesn't start with the bot's prefix, ignore it
+        if(args.length > 0
+            && args[0].startsWith(prefix))
+        {
+            //remove prefix, then attempt command
+            args[0] = args[0].substring(prefix.length());
+            attemptCommand(event, new ArrayList<>(Arrays.asList(args)));
         }
     }
     
@@ -118,22 +137,6 @@ public class ZeroBot implements IBot
         for(IGuild guild : guilds)
         {
             guild.setUserNickname(client.getOurUser(), name);
-        }
-    }
-    
-    @EventSubscriber
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
-        //separate message by spaces, args[0] will have the command, if this is a message for the bot
-        String[] args = event.getMessage().getContent().split(" ");
-        
-        //if a message doesn't start with the bot's prefix, ignore it
-        if(args.length > 0
-            && args[0].startsWith(prefix))
-        {
-            //remove prefix, then attempt command
-            args[0] = args[0].substring(prefix.length());
-            attemptCommand(event, new ArrayList<>(Arrays.asList(args)));
         }
     }
     

@@ -1,6 +1,5 @@
 package com.github.zoewithabang;
 
-import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.bot.ZeroBot;
 import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
@@ -27,7 +26,7 @@ class BotManager
             getProperties();
             run();
         }
-        catch(IOException | NullPointerException | DiscordException | SQLException e)
+        catch(IOException | NullPointerException | DiscordException e)
         {
             LOGGER.error("Exception caused application to exit.");
             System.exit(1);
@@ -56,7 +55,7 @@ class BotManager
         }
     }
     
-    private static void run() throws DiscordException, SQLException
+    private static void run() throws DiscordException
     {
         try
         {
@@ -67,20 +66,13 @@ class BotManager
                 .withRecommendedShardCount()
                 .build();
             
-            IBot zeroBot = new ZeroBot(clientZeroBot, zeroBotProperties);
-        
-            clientZeroBot.getDispatcher().registerListener(zeroBot);
+            clientZeroBot.getDispatcher().registerListener(new ZeroBot(clientZeroBot, zeroBotProperties));
         
             clientZeroBot.login();
         }
         catch(DiscordException e)
         {
             LOGGER.error("Unhandled DiscordException in running ZeroBot.", e);
-            throw e;
-        }
-        catch(SQLException e)
-        {
-            LOGGER.error("SQLException in initialising ZeroBot.", e);
             throw e;
         }
     }
