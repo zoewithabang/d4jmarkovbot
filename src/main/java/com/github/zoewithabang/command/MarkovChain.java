@@ -50,7 +50,7 @@ public class MarkovChain implements ICommand
     private List<IUser> users;
     private List<String> seedWords;
     
-    private final int DESIRED_MESSAGE_COUNT = 15000;
+    private final int DESIRED_MESSAGE_COUNT = 200000;
     private final int MAX_OUTPUT_LENGTH = 30;
     
     public MarkovChain(IBot bot, Properties botProperties)
