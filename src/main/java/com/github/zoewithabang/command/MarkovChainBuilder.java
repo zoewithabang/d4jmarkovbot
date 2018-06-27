@@ -95,6 +95,7 @@ public class MarkovChainBuilder
             
             if(markovTable.containsKey(currentPrefix))
             {
+                LOGGER.info("Current prefix: {}", currentPrefix);
                 chain.add(getSuffix(currentPrefix));
             }
             else
@@ -191,12 +192,14 @@ public class MarkovChainBuilder
     {
         List<String> suffixes = markovTable.get(prefix);
         
-        if(suffixes.size() == 1)
-        { //either an end of chain or single result
+        if(suffixes.size() == 1) //either an end of chain or single result
+        {
+            LOGGER.info("Current suffix: {}", suffixes);
             return suffixes.get(0);
         }
-        else
-        { //more than one result, pick one randomly
+        else //more than one result, pick one randomly
+        {
+            LOGGER.info("Current suffixes: {}", suffixes);
             return suffixes.get(random.nextInt(suffixes.size()));
         }
     }
