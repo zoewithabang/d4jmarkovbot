@@ -2,6 +2,7 @@ package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.service.MessageService;
+import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.util.DiscordHelper;
 import org.apache.commons.lang3.StringUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -44,21 +45,22 @@ public class MarkovChain implements ICommand
     private Properties botProperties;
     private String prefix;
     private MessageService messageService;
+    private OptionService optionService;
     private Random random;
     
+    private int desiredMessageCount;
+    private int maxOutputLength;
     private MarkovChainCommandType commandType;
     private List<IUser> users;
     private List<String> seedWords;
-    
-    private final int DESIRED_MESSAGE_COUNT = 200000;
-    private final int MAX_OUTPUT_LENGTH = 30;
     
     public MarkovChain(IBot bot, Properties botProperties)
     {
         this.bot = bot;
         this.botProperties = botProperties;
         prefix = this.botProperties.getProperty("prefix");
-        this.messageService = new MessageService(botProperties);
+        messageService = new MessageService(botProperties);
+        optionService = new OptionService(botProperties);
         random = new Random();
     }
     
@@ -84,11 +86,24 @@ public class MarkovChain implements ICommand
         
         try
         {
-            storedMessages = getStoredMessages(users, DESIRED_MESSAGE_COUNT);
+            desiredMessageCount = Integer.parseInt(optionService.getOptionValue("markov_message_count"));
+            maxOutputLength = Integer.parseInt(optionService.getOptionValue("markov_output_length"));
+            LOGGER.debug("Desired message count of {} and max output length of {}.", desiredMessageCount, maxOutputLength);
+        }
+        catch(Exception e)
+        {
+            LOGGER.error("Exception occurred on setting Markov parameters.", e);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2005);
+            return;
+        }
+        
+        try
+        {
+            storedMessages = getStoredMessages(users, desiredMessageCount);
         }
         catch(Exception e) //generic catch to return
         {
-            LOGGER.error("Exception occurred on getting stored messages for users [{}] and count '{}'.", users, DESIRED_MESSAGE_COUNT, e);
+            LOGGER.error("Exception occurred on getting stored messages for users [{}] and count '{}'.", users, desiredMessageCount, e);
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2001);
             return;
         }
@@ -114,11 +129,11 @@ public class MarkovChain implements ICommand
         
         try
         {
-            output = markovChainBuilder.generateChain(seedWords, MAX_OUTPUT_LENGTH);
+            output = markovChainBuilder.generateChain(seedWords, maxOutputLength);
         }
         catch(Exception e)
         {
-            LOGGER.error("Exception occurred on generating markov chain for seed [{}] and max output length '{}'.", seedWords, MAX_OUTPUT_LENGTH, e);
+            LOGGER.error("Exception occurred on generating markov chain for seed [{}] and max output length '{}'.", seedWords, maxOutputLength, e);
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2003);
             return;
         }
@@ -244,7 +259,7 @@ public class MarkovChain implements ICommand
         }
         catch(Exception e) //rethrow to return in execute(), specific exceptions dealt with in service
         {
-            LOGGER.debug("Exception on getting messages for Markov chain, users '{}' and DESIRED_MESSAGE_COUNT '{}'.", users, count);
+            LOGGER.debug("Exception on getting messages for Markov chain, users '{}' and desiredMessageCount '{}'.", users, count);
             throw e;
         }
     }
