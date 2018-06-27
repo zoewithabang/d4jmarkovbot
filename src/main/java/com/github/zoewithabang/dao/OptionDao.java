@@ -20,7 +20,7 @@ public class OptionDao extends Dao<Option, String>
     @Override
     public Option get(Connection connection, String id) throws SQLException
     {
-        String query = "SELECT * FROM options WHERE id = ?";
+        String query = "SELECT * FROM options WHERE `key` = ?";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
@@ -92,7 +92,7 @@ public class OptionDao extends Dao<Option, String>
     @Override
     public void update(Connection connection, Option option) throws SQLException
     {
-        String query = "UPDATE options SET value = ? WHERE key = ?;";
+        String query = "UPDATE options SET value = ? WHERE `key` = ?;";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
@@ -111,7 +111,7 @@ public class OptionDao extends Dao<Option, String>
     @Override
     public void delete(Connection connection, Option option) throws SQLException
     {
-        String query = "DELETE FROM options WHERE key = ?";
+        String query = "DELETE FROM options WHERE `key` = ?";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
