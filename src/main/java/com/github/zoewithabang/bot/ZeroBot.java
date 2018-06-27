@@ -3,15 +3,13 @@ package com.github.zoewithabang.bot;
 import com.github.zoewithabang.command.*;
 import com.github.zoewithabang.model.Alias;
 import com.github.zoewithabang.service.AliasService;
+import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.task.ZeroTubeNowPlayingPresence;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.ActivityType;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.StatusType;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.RequestBuffer;
@@ -32,8 +30,9 @@ public class ZeroBot implements IBot
     private Map<String, Class> commands;
     private ScheduledExecutorService taskScheduler;
     private AliasService aliasService;
+    private OptionService optionService;
     
-    public ZeroBot(IDiscordClient client, Properties properties)
+    public ZeroBot(IDiscordClient client, Properties properties) throws SQLException
     {
         this.client = client;
         this.properties = properties;
@@ -41,6 +40,7 @@ public class ZeroBot implements IBot
         commands = new HashMap<>();
         taskScheduler = Executors.newScheduledThreadPool(1);
         aliasService = new AliasService(properties);
+        optionService = new OptionService(properties);
         
         //called commands
         commands.put(GetAllMessagesFromUser.COMMAND, GetAllMessagesFromUser.class);
@@ -53,6 +53,17 @@ public class ZeroBot implements IBot
         
         //scheduled tasks
         taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlayingPresence(this, properties), 5, 2, TimeUnit.SECONDS);
+        
+        //update nickname from db, comment this block out if no db
+        try
+        {
+            updateNickname(optionService.getOptionValue("name"));
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting bot name from database.", e);
+            throw e;
+        }
     }
     
     @Override
@@ -98,6 +109,16 @@ public class ZeroBot implements IBot
     {
         LOGGER.debug("Updating bot presence to status '{}', activity '{}', text '{}'.", status.name(), activity.name(), text);
         client.changePresence(status, activity, text);
+    }
+    
+    @Override
+    public void updateNickname(String name)
+    {
+        List<IGuild> guilds = client.getGuilds();
+        for(IGuild guild : guilds)
+        {
+            guild.setUserNickname(client.getOurUser(), name);
+        }
     }
     
     @EventSubscriber

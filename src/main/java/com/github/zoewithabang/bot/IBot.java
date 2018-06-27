@@ -18,6 +18,7 @@ public interface IBot
     IMessage sendMessage(IChannel channel, String message);
     IMessage sendEmbedMessage(IChannel channel, EmbedObject embed);
     void updatePresence(StatusType status, ActivityType activity, String text);
+    void updateNickname(String name);
     void postErrorMessage(IChannel channel, boolean sendErrorMessages, String command, Integer code);
     List<String> getCommandList();
 }
