@@ -74,9 +74,9 @@ public class MarkovChain implements ICommand
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending message about failed validation.");
-                bot.sendMessage(eventChannel, "Usage for single user: `" + prefix + COMMAND + " single @User' to make me send a message that User would totally say.");
-                bot.sendMessage(eventChannel, "Usage for user mashups: `" + prefix + COMMAND + " mashup @User1 @User2 @User3 etc' to make me Frankenstein those users together for a post they would totally say.");
-                bot.sendMessage(eventChannel, "Usage for server: `" + prefix + COMMAND + " server' to Frankenstein the whole server together for a post.");
+                bot.sendMessage(eventChannel, "Usage for single user: `" + prefix + COMMAND + " single @User` to make me send a message that User would totally say.");
+                bot.sendMessage(eventChannel, "Usage for user mashups: `" + prefix + COMMAND + " mashup @User1 @User2 @User3 etc` to make me Frankenstein those users together for a post they would totally say.");
+                bot.sendMessage(eventChannel, "Usage for server: `" + prefix + COMMAND + " server` to Frankenstein the whole server together for a post.");
                 bot.sendMessage(eventChannel, "For any of the above commands, put words after them in quotes like \"hello there\" to try to start the sentences with them!");
             }
             return;
@@ -88,6 +88,7 @@ public class MarkovChain implements ICommand
         }
         catch(Exception e) //generic catch to return
         {
+            LOGGER.error("Exception occurred on getting stored messages for users [{}] and count '{}'.", users, DESIRED_MESSAGE_COUNT, e);
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2001);
             return;
         }
@@ -100,7 +101,14 @@ public class MarkovChain implements ICommand
         }
         catch(Exception e)
         {
+            LOGGER.error("Exception occurred on creating MarkovChainBuilder.", e);
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2002);
+            return;
+        }
+        
+        if(storedMessages.isEmpty())
+        {
+            bot.sendMessage(eventChannel, "No stored messages were found. If the specified user(s) has posted and had their posts added by an admin, please let your friendly local bot handler know about this!");
             return;
         }
         
@@ -110,6 +118,7 @@ public class MarkovChain implements ICommand
         }
         catch(Exception e)
         {
+            LOGGER.error("Exception occurred on generating markov chain for seed [{}] and max output length '{}'.", seedWords, MAX_OUTPUT_LENGTH, e);
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2003);
             return;
         }
@@ -119,7 +128,7 @@ public class MarkovChain implements ICommand
         {
             if(seedWords.isEmpty())
             {
-                bot.sendMessage(eventChannel, "No message was able to be generated. If this user has posted and had their posts added, please let your friendly local bot handler know about this!");
+                bot.sendMessage(eventChannel, "No message was able to be generated. If the specified user(s) has posted and had their posts added by an admin, please let your friendly local bot handler know about this!");
                 return;
             }
             else
@@ -135,6 +144,7 @@ public class MarkovChain implements ICommand
         }
         catch(Exception e)
         {
+            LOGGER.error("Exception occurred on posting markov message for type '{}', users [{}] and output '{}'.", commandType, users, output);
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 2004);
         }
     }
