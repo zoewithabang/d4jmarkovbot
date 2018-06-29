@@ -11,7 +11,7 @@ class DaoTest extends Specification
     @Shared
     Dao dao
 
-    def setupSpec()
+    def SetupSpec()
     {
         InputStream zeroBotPropertyStream = getClass().getClassLoader().getResourceAsStream("zerobot.properties")
         Properties botProperties = new Properties()
