@@ -1,5 +1,7 @@
 package com.github.zoewithabang.model;
 
+import java.util.Objects;
+
 public class Alias implements IModel
 {
     private String alias;
@@ -53,5 +55,23 @@ public class Alias implements IModel
             ", command='" + command + '\'' +
             ", description='" + description + '\'' +
             '}';
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+        Alias alias1 = (Alias) o;
+        return Objects.equals(alias, alias1.alias) &&
+            Objects.equals(command, alias1.command) &&
+            Objects.equals(description, alias1.description);
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        
+        return Objects.hash(alias, command, description);
     }
 }
