@@ -20,7 +20,7 @@ class AliasDaoTest extends Specification
     @Shared
     String dbDriver;
 
-    def SetupSpec()
+    def setupSpec()
     {
         InputStream zeroBotPropertyStream = getClass().getClassLoader().getResourceAsStream("zerobot.properties")
         botProperties = new Properties()
