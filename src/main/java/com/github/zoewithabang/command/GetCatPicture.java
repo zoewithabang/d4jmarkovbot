@@ -121,8 +121,8 @@ public class GetCatPicture implements ICommand
     {
         EmbedBuilder builder = new EmbedBuilder();
         
-        builder.appendField("Source", source, false);
         builder.withImage("attachment://cat." + fileType);
+        builder.withFooterText(source);
         
         bot.sendEmbedMessageWithStream(channel, builder.build(), stream, "cat." + fileType);
     }
