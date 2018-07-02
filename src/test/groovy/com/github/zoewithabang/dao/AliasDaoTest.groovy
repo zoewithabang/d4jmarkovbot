@@ -5,8 +5,6 @@ import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.sql.Connection
-
 class AliasDaoTest extends Specification
 {
     @Shared
@@ -45,13 +43,13 @@ class AliasDaoTest extends Specification
         def retrievedAlias
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                aliasDao.store((Connection)transaction.getConnection(), alias)
-                retrievedAlias = aliasDao.get((Connection)transaction.getConnection, "thisIsATestAlias")
+                aliasDao.store(connection.getConnection(), alias)
+                retrievedAlias = aliasDao.get(connection.getConnection(), "thisIsATestAlias")
                 transaction.rollback()
             }
         }
         then:
-        notThrown(Exception)
         retrievedAlias == alias
+        notThrown(Exception)
     }
 }
