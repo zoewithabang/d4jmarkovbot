@@ -49,6 +49,7 @@ public class ZeroBot implements IBot
         commands.put(GetZeroTube.COMMAND, GetZeroTube.class);
         commands.put(ManageAlias.COMMAND, ManageAlias.class);
         commands.put(ListAliases.COMMAND, ListAliases.class);
+        commands.put(GetCat.COMMAND, GetCat.class);
         commands.put(ZeroTubeNowPlaying.COMMAND, ZeroTubeNowPlaying.class);
         commands.put(ListCommands.COMMAND, ListCommands.class);
         
