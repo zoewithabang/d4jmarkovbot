@@ -1,5 +1,6 @@
 package com.github.zoewithabang.util;
 
+import com.github.zoewithabang.model.HttpResponse;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
@@ -16,7 +17,7 @@ public class HttpRequestHelper
 {
     private static Logger LOGGER = Logging.getLogger();
     
-    public static String performGetRequest(String urlString, String query, String charset) throws MalformedURLException, IOException
+    public static HttpResponse performGetRequest(String urlString, String query, String charset) throws MalformedURLException, IOException
     {
         URL url;
         HttpURLConnection connection;
@@ -57,11 +58,13 @@ public class HttpRequestHelper
             
             if(200 <= responseCode && responseCode <= 299) //success
             {
-                return getInputStreamResultFromConnection(connection);
+                LOGGER.debug("Successful response code {}, getting stream result.", responseCode);
+                return new HttpResponse(getInputStreamResultFromConnection(connection), connection.getURL().toString());
             }
-            else if(responseCode >= 400) //client error
+            else if(responseCode >= 400) //error
             {
-                return getErrorStreamResultFromConnection(connection);
+                LOGGER.debug("Error response code {}, getting error stream result.", responseCode);
+                return new HttpResponse(getErrorStreamResultFromConnection(connection), connection.getURL().toString());
             }
             else
             {

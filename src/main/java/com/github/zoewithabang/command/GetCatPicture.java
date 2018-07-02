@@ -1,15 +1,21 @@
 package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
+import com.github.zoewithabang.model.HttpResponse;
 import com.github.zoewithabang.util.HttpRequestHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.util.EmbedBuilder;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 public class GetCatPicture implements ICommand
 {
@@ -17,21 +23,25 @@ public class GetCatPicture implements ICommand
     private IBot bot;
     private Properties botProperties;
     private String prefix;
+    private Random random;
+    
     private final String CAT_API_SITE = "http://thecatapi.com";
     private final String ENDPOINT_IMAGES_GET = "/api/images/get";
+    private final String[] FILE_TYPES = {"jpg", "png", "gif"};
 
     public GetCatPicture(IBot bot, Properties botProperties)
     {
         this.bot = bot;
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
+        random = new Random();
     }
 
     @Override
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
         IChannel eventChannel = event.getChannel();
-        String catPictureUrl;
+        HttpResponse catPicture;
         
         if(!validateArgs(event, args))
         {
@@ -43,22 +53,32 @@ public class GetCatPicture implements ICommand
             }
             return;
         }
+        
+        String fileType = FILE_TYPES[random.nextInt(FILE_TYPES.length)];
 
         try
         {
-            catPictureUrl = getCatPictureUrl(CAT_API_SITE + ENDPOINT_IMAGES_GET);
+            catPicture = getCatPicture(CAT_API_SITE + ENDPOINT_IMAGES_GET, "html", fileType);
         }
         catch(Exception e)
         {
             LOGGER.error("Exception occurred on getting cat picture URL.", e);
-            if(sendBotMessages)
-            {
-                bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 5001);
-            }
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 5001);
             return;
         }
         
-        bot.sendMessage(event.getChannel(), catPictureUrl);
+        try
+        {
+            String source = catPicture.getSource();
+            InputStream stream = new ByteArrayInputStream(catPicture.getResponse().getBytes());
+            postCatPicture(eventChannel, source, stream, fileType);
+        }
+        catch(Exception e)
+        {
+            LOGGER.error("Exception occurred on posting cat picture with source '{}'.", catPicture.getSource());
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 5002);
+            return;
+        }
     }
 
     @Override
@@ -67,11 +87,11 @@ public class GetCatPicture implements ICommand
         return args.size() == 0;
     }
     
-    public String getCatPictureUrl(String apiUrl) throws MalformedURLException, IOException
+    public HttpResponse getCatPicture(String apiUrl, String dataFormat, String fileType) throws MalformedURLException, IOException
     {
         try
         {
-            return HttpRequestHelper.performGetRequest(apiUrl, null, null);
+            return HttpRequestHelper.performGetRequest(apiUrl, "format=" + dataFormat + "&type=" + fileType, null);
         }
         catch(MalformedURLException e)
         {
@@ -83,5 +103,15 @@ public class GetCatPicture implements ICommand
             LOGGER.error("IOException on getting a cat picture from apiUrl '{}'.", apiUrl, e);
             throw e;
         }
+    }
+    
+    private void postCatPicture(IChannel channel, String source, InputStream stream, String fileType)
+    {
+        EmbedBuilder builder = new EmbedBuilder();
+        
+        builder.appendField("Source", source, false);
+        builder.withImage("attachment://cat." + fileType);
+        
+        bot.sendEmbedMessageWithStream(channel, builder.build(), stream, "cat");
     }
 }

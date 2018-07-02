@@ -9,6 +9,7 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.StatusType;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface IBot
@@ -17,6 +18,7 @@ public interface IBot
     
     IMessage sendMessage(IChannel channel, String message);
     IMessage sendEmbedMessage(IChannel channel, EmbedObject embed);
+    IMessage sendEmbedMessageWithStream(IChannel channel, EmbedObject embed, InputStream stream, String fileName);
     void updatePresence(StatusType status, ActivityType activity, String text);
     void updateNickname(String name);
     void postErrorMessage(IChannel channel, boolean sendErrorMessages, String command, Integer code);

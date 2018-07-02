@@ -15,6 +15,7 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.RequestBuffer;
 
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -120,6 +121,25 @@ public class ZeroBot implements IBot
         catch(DiscordException e)
         {
             LOGGER.error("Failed to send embed message '{}' to channel '{}'.", embed, channel.getName(), e);
+            throw e;
+        }
+    }
+    
+    @Override
+    public IMessage sendEmbedMessageWithStream(IChannel channel, EmbedObject embed, InputStream stream, String fileName)
+    {
+        try
+        {
+            return RequestBuffer.request(() ->
+                {
+                    LOGGER.debug("Sending embed message with stream '{}' to channel '{}'.", embed, channel.getName());
+                    return channel.sendFile(embed, stream, fileName);
+                }
+            ).get();
+        }
+        catch(DiscordException e)
+        {
+            LOGGER.error("Failed to send embed message with stream '{}' to channel '{}'.", embed, channel.getName(), e);
             throw e;
         }
     }
