@@ -70,7 +70,7 @@ public class GetCatPicture implements ICommand
         try
         {
             String source = catPicture.getSource();
-            InputStream stream = new ByteArrayInputStream(catPicture.getResponse().getBytes());
+            InputStream stream = new ByteArrayInputStream(catPicture.getResponse());
             postCatPicture(eventChannel, source, stream, fileType);
         }
         catch(Exception e)

@@ -3,9 +3,7 @@ package com.github.zoewithabang.util;
 import com.github.zoewithabang.model.HttpResponse;
 import org.slf4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
@@ -63,8 +61,9 @@ public class HttpRequestHelper
             }
             else if(responseCode >= 400) //error
             {
-                LOGGER.debug("Error response code {}, getting error stream result.", responseCode);
-                return new HttpResponse(getErrorStreamResultFromConnection(connection), connection.getURL().toString());
+                LOGGER.error("Error response code {}, getting error stream result.", responseCode);
+                LOGGER.error(getErrorStreamResultFromConnection(connection));
+                return null;
             }
             else
             {
@@ -79,12 +78,19 @@ public class HttpRequestHelper
         }
     }
     
-    private static String getInputStreamResultFromConnection(HttpURLConnection connection) throws IOException
+    private static byte[] getInputStreamResultFromConnection(HttpURLConnection connection) throws IOException
     {
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream())))
+        try(InputStream input = connection.getInputStream();
+            ByteArrayOutputStream output = new ByteArrayOutputStream())
         {
-            return reader.lines()
-                .collect(Collectors.joining());
+            byte[] chunk = new byte[4096];
+            int length;
+            
+            while((length = input.read()) > 0)
+            {
+                output.write(chunk, 0, length);
+            }
+            return output.toByteArray();
         }
         catch(IOException e)
         {
