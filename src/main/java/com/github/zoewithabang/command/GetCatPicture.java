@@ -87,11 +87,18 @@ public class GetCatPicture implements ICommand
         return args.size() == 0;
     }
     
-    public HttpResponse getCatPicture(String apiUrl, String dataFormat, String fileType) throws MalformedURLException, IOException
+    public HttpResponse getCatPicture(String apiUrl, String dataFormat, String fileType) throws MalformedURLException, IOException, IllegalStateException
     {
         try
         {
-            return HttpRequestHelper.performGetRequest(apiUrl, "format=" + dataFormat + "&type=" + fileType, null);
+            HttpResponse response = HttpRequestHelper.performGetRequest(apiUrl, "format=" + dataFormat + "&type=" + fileType, null);
+            
+            if(response == null)
+            {
+                throw new IllegalStateException("performGetRequest returned a null response.");
+            }
+            
+            return response;
         }
         catch(MalformedURLException e)
         {
@@ -103,6 +110,11 @@ public class GetCatPicture implements ICommand
             LOGGER.error("IOException on getting a cat picture from apiUrl '{}'.", apiUrl, e);
             throw e;
         }
+        catch(IllegalStateException e)
+        {
+            LOGGER.error("IllegalStateException on getting a cat picture from apiUrl '{}'.", apiUrl, e);
+            throw e;
+        }
     }
     
     private void postCatPicture(IChannel channel, String source, InputStream stream, String fileType)
@@ -112,6 +124,6 @@ public class GetCatPicture implements ICommand
         builder.appendField("Source", source, false);
         builder.withImage("attachment://cat." + fileType);
         
-        bot.sendEmbedMessageWithStream(channel, builder.build(), stream, "cat");
+        bot.sendEmbedMessageWithStream(channel, builder.build(), stream, "cat." + fileType);
     }
 }

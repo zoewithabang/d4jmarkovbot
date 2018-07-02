@@ -86,10 +86,11 @@ public class HttpRequestHelper
             byte[] chunk = new byte[4096];
             int length;
             
-            while((length = input.read()) > 0)
+            while((length = input.read(chunk, 0, chunk.length)) > 0)
             {
                 output.write(chunk, 0, length);
             }
+            
             return output.toByteArray();
         }
         catch(IOException e)
