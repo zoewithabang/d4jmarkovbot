@@ -58,7 +58,7 @@ public class GetCatPicture implements ICommand
 
         try
         {
-            catPicture = getCatPicture(CAT_API_SITE + ENDPOINT_IMAGES_GET, "html", fileType);
+            catPicture = getCatPicture(CAT_API_SITE + ENDPOINT_IMAGES_GET, "src", fileType);
         }
         catch(Exception e)
         {
