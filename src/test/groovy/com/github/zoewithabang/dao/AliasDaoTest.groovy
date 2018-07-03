@@ -80,7 +80,7 @@ class AliasDaoTest extends Specification
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 aliasDao.store(connection.getConnection(), alias)
-                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = thisIsATestAlias")
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = 'thisIsATestAlias'")
                 transaction.rollback()
             }
         }
@@ -102,7 +102,7 @@ class AliasDaoTest extends Specification
             connection.withTransaction() { transaction ->
                 connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('thisIsATestAlias', 'thisIsATestCommand', 'thisIsATestDescription')"
                 aliasDao.update(connection.getConnection(), alias)
-                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = thisIsATestAlias")
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = 'thisIsATestAlias'")
                 transaction.rollback()
             }
         }
@@ -124,7 +124,7 @@ class AliasDaoTest extends Specification
             connection.withTransaction() { transaction ->
                 connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('thisIsATestAlias', 'thisIsATestCommand', 'thisIsATestDescription')"
                 aliasDao.delete(connection.getConnection(), alias)
-                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = thisIsATestAlias")
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = 'thisIsATestAlias'")
                 transaction.rollback()
             }
         }
