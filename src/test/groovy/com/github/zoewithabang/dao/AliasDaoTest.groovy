@@ -36,20 +36,104 @@ class AliasDaoTest extends Specification
         dbDriver = "com.mysql.jdbc.Driver"
     }
 
+    def "get an alias"()
+    {
+        when:
+        def aliasName = "thisIsATestAlias"
+        def retrievedRows
+        Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
+            connection.withTransaction() { transaction ->
+                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('thisIsATestAlias', 'thisIsATestCommand', 'thisIsATestDescription'"
+                retrievedRows = aliasDao.get(connection.getConnection(), aliasName)
+                transaction.rollback()
+            }
+        }
+
+        then:
+        retrievedRows.size() == 1
+        retrievedRows.get(0).getProperty("alias") == "thisIsATestAlias"
+        retrievedRows.get(0).getProperty("command") == "thisIsATestCommand"
+        retrievedRows.get(0).getProperty("description") == "thisIsATestDescription"
+        notThrown(Exception)
+    }
+
+    def "get all aliases"()
+    {
+        when:
+        def retrievedRows
+        Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
+            connection.withTransaction() { transaction ->
+                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('thisIsATestAlias', 'thisIsATestCommand', 'thisIsATestDescription'"
+                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('thisIsAnotherTestAlias', 'thisIsAnotherTestCommand', 'thisIsAnotherTestDescription'"
+                retrievedRows = aliasDao.getAll(connection.getConnection())
+                transaction.rollback()
+            }
+        }
+
+        then:
+        retrievedRows.size() > 1
+        nowThrown(Exception)
+    }
+
     def "store an alias"()
     {
         when:
         def alias = new Alias("thisIsATestAlias", "thisIsATestCommand", "thisIsATestDescription")
-        def retrievedAlias
+        def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 aliasDao.store(connection.getConnection(), alias)
-                retrievedAlias = aliasDao.get(connection.getConnection(), "thisIsATestAlias")
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = thisIsATestAlias")
                 transaction.rollback()
             }
         }
+
         then:
-        retrievedAlias == alias
+        retrievedRows.size() == 1
+        retrievedRows.get(0).getProperty("alias") == "thisIsATestAlias"
+        retrievedRows.get(0).getProperty("command") == "thisIsATestCommand"
+        retrievedRows.get(0).getProperty("description") == "thisIsATestDescription"
+        notThrown(Exception)
+    }
+
+    def "update an alias"()
+    {
+        when:
+        def alias = new Alias("thisIsATestAlias", "thisIsAnUpdatedTestCommand", "thisIsAnUpdatedTestDescription")
+        def retrievedRows
+        Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
+            connection.withTransaction() { transaction ->
+                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('thisIsATestAlias', 'thisIsATestCommand', 'thisIsATestDescription'"
+                aliasDao.update(connection.getConnection(), alias)
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = thisIsATestAlias")
+                transaction.rollback()
+            }
+        }
+
+        then:
+        retrievedRows.size() == 1
+        retrievedRows.get(0).getProperty("alias") == "thisIsATestAlias"
+        retrievedRows.get(0).getProperty("command") == "thisIsAnUpdatedTestCommand"
+        retrievedRows.get(0).getProperty("description") == "thisIsAnUpdatedTestDescription"
+        notThrown(Exception)
+    }
+
+    def "delete an alias"()
+    {
+        when:
+        def alias = new Alias("thisIsATestAlias", "thisIsATestCommand", "thisIsATestDescription")
+        def retrievedRows
+        Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
+            connection.withTransaction() { transaction ->
+                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('thisIsATestAlias', 'thisIsATestCommand', 'thisIsATestDescription'"
+                aliasDao.delete(connection.getConnection(), alias)
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = thisIsATestAlias")
+                transaction.rollback()
+            }
+        }
+
+        then:
+        retrievedRows.size() == 0
         notThrown(Exception)
     }
 }
