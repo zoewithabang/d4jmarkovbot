@@ -134,8 +134,8 @@ public class MarkovChainBuilder
         String[] words = chain.split(" ");
         StringBuilder fixedChain = new StringBuilder();
         Stack<Character> danglingCharacters = new Stack<>();
-        String startingCharacters = "'\"[(";
-        String endingCharacters = "'\"])";
+        String startingCharacters = "'\"[(“";
+        String endingCharacters = "'\"])”";
         
         for(String word : words)
         {
@@ -191,6 +191,8 @@ public class MarkovChainBuilder
                 return '\'';
             case '"':
                 return '"';
+            case '“':
+                return '”';
             default:
                 throw new IllegalArgumentException("Did not recognize character " + startingCharacter);
         }
