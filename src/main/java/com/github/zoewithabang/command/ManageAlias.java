@@ -97,8 +97,7 @@ public class ManageAlias implements ICommand
             return false;
         }
         
-        String typeString = args.get(0);
-        args.remove(0);
+        String typeString = args.remove(0);
         
         switch(typeString)
         {
