@@ -62,6 +62,8 @@ public class ListCommands implements ICommand
             "Good for Markov chain posting so that you don't highlight everyone constantly!";
         String aliasesDesc = "List the currently stored aliases that I recognise.";
         String npDesc = "Show what's currently playing on ZeroTube!";
+        String catDesc = "Post a cat pic!";
+        String userDesc = "Add or clear users from being stored.";
         
         if(commands.contains(MarkovChain.COMMAND))
         {
@@ -82,6 +84,14 @@ public class ListCommands implements ICommand
         if(commands.contains(ZeroTubeNowPlaying.COMMAND))
         {
             builder.appendField(prefix + ZeroTubeNowPlaying.COMMAND, npDesc, false);
+        }
+        if(commands.contains(GetCatPicture.COMMAND))
+        {
+            builder.appendField(prefix + GetCatPicture.COMMAND, catDesc, false);
+        }
+        if(commands.contains(ManageUser.COMMAND))
+        {
+            builder.appendField(prefix + ManageUser.COMMAND, userDesc, false);
         }
     
         bot.sendEmbedMessage(channel, builder.build());
