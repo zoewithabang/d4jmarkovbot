@@ -89,7 +89,7 @@ class AliasDaoTest extends Specification
 
         then:
         retrievedRows.size() == 1
-        assert retrievedRows.find { it == alias } == 1
+        retrievedRows.get(0) == alias
         noExceptionThrown()
     }
 
@@ -110,7 +110,7 @@ class AliasDaoTest extends Specification
 
         then:
         retrievedRows.size() == 1
-        assert retrievedRows.find { it == alias } == 1
+        retrievedRows.get(0) == alias
         noExceptionThrown()
     }
 
