@@ -13,7 +13,7 @@ class DiscordHelperTest extends Specification
         def realUser = Mock(IUser)
         def realNicknamedUser = Mock(IUser)
 
-        guild.getUsers() >> [realUser]
+        guild.getUsers() >> [realUser, realNicknamedUser]
         realUser.getStringID() >> "realUser"
         realNicknamedUser.getStringID() >> "realNicknamedUser"
 
