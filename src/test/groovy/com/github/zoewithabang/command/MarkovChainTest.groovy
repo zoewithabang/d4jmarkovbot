@@ -2,9 +2,6 @@ package com.github.zoewithabang.command
 
 import spock.lang.Shared
 import spock.lang.Specification
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
-import sx.blah.discord.handle.obj.IGuild
-import sx.blah.discord.handle.obj.IUser
 
 class MarkovChainTest extends Specification
 {
@@ -35,25 +32,6 @@ class MarkovChainTest extends Specification
 
         then:
         !validationPassed
-    }
-
-    def "only args with valid user ids are added to user list"()
-    {
-        setup:
-        def messageReceivedEvent = Mock(MessageReceivedEvent)
-        def guild = Mock(IGuild)
-        def realUser = Mock(IUser)
-
-        messageReceivedEvent.getGuild() >> guild
-        guild.getUsers() >> [realUser]
-        realUser.getStringID() >> "realUser"
-
-        when:
-        def userList = markovChain.getUsers(["wrongSyntax", "<@notARealUser>", "<@realUser>"], messageReceivedEvent)
-
-        then:
-        userList.size() == 1
-        userList.get(0).getStringID() == realUser.getStringID()
     }
 
     def "a single trailing quotation mark will result in no seed words"()
