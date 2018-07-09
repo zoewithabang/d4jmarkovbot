@@ -82,6 +82,10 @@ public class ManageAlias implements ICommand
         {
             //SQLExceptions handled in their methods with logging and error messages, just returning here
             LOGGER.error("Manage Alias command failed.", e);
+            if(sendBotMessages)
+            {
+                bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 6001);
+            }
         }
     }
     
