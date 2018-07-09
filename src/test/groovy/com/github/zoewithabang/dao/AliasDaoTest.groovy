@@ -110,7 +110,7 @@ class AliasDaoTest extends Specification
 
         then:
         retrievedRows.size() == 1
-        (Alias)retrievedRows.getAt(0) == alias
+        (Alias)retrievedRows.getAt(0) == updatedAlias
         noExceptionThrown()
     }
 
