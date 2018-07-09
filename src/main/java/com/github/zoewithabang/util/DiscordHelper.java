@@ -7,6 +7,8 @@ import sx.blah.discord.handle.obj.IUser;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DiscordHelper
 {
@@ -51,6 +53,14 @@ public class DiscordHelper
         }
         
         return specifiedUser;
+    }
+    
+    public static List<IUser> getUsersFromMarkdownIds(IGuild server, List<String> ids)
+    {
+        return ids.stream()
+            .map(id -> DiscordHelper.getUserFromMarkdownId(server, id))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
     
     public static Color getColorOfTopRoleOfUser(IUser user, IGuild guild)

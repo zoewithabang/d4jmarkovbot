@@ -181,7 +181,7 @@ public class MarkovChain implements ICommand
             
             commandType = MarkovChainCommandType.fromString(args.remove(0));
             
-            users = getUsers(args, event);
+            users = DiscordHelper.getUsersFromMarkdownIds(event.getGuild(), args);
             validateUsers(users, commandType);
             
             seedWords = getSeedWords(args);
@@ -194,14 +194,6 @@ public class MarkovChain implements ICommand
         
         LOGGER.debug("Validation successful, users '{}' and seed words '{}'.", users, seedWords);
         return true;
-    }
-    
-    protected List<IUser> getUsers(List<String> args, MessageReceivedEvent event)
-    {
-        return args.stream()
-            .map(arg -> DiscordHelper.getUserFromMarkdownId(event.getGuild(), arg))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
     }
     
     protected List<String> getSeedWords(List<String> args)
