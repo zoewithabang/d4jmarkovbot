@@ -57,7 +57,7 @@ class AliasDaoTest extends Specification
         when:
         def alias1 = new Alias("thisIsATestAlias", "thisIsATestCommand", "thisIsATestDescription")
         def alias2 = new Alias("thisIsAnotherTestAlias", "thisIsAnotherTestCommand", "thisIsAnotherTestDescription")
-        List<Alias> retrievedRows
+        def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('" + alias1.getAlias() + "', '" + alias1.getCommand() + "', '" + alias1.getDescription() + "')"
@@ -78,7 +78,7 @@ class AliasDaoTest extends Specification
     {
         when:
         def alias = new Alias("thisIsATestAlias", "thisIsATestCommand", "thisIsATestDescription")
-        List<Alias> retrievedRows
+        def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 aliasDao.store(connection.getConnection(), alias)
@@ -89,7 +89,7 @@ class AliasDaoTest extends Specification
 
         then:
         retrievedRows.size() == 1
-        retrievedRows.contains(alias) == true
+        assert retrievedRows.find { it == alias } == 1
         noExceptionThrown()
     }
 
@@ -98,7 +98,7 @@ class AliasDaoTest extends Specification
         when:
         def alias = new Alias("thisIsATestAlias", "thisIsATestCommand", "thisIsATestDescription")
         def updatedAlias = new Alias("thisIsATestAlias", "thisIsAnUpdatedTestCommand", "thisIsAnUpdatedTestDescription")
-        List<Alias> retrievedRows
+        def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('" + alias.getAlias() + "', '" + alias.getCommand() + "', '" + alias.getDescription() + "')"
@@ -110,7 +110,7 @@ class AliasDaoTest extends Specification
 
         then:
         retrievedRows.size() == 1
-        retrievedRows.contains(alias) == true
+        assert retrievedRows.find { it == alias } == 1
         noExceptionThrown()
     }
 
@@ -118,7 +118,7 @@ class AliasDaoTest extends Specification
     {
         when:
         def alias = new Alias("thisIsATestAlias", "thisIsATestCommand", "thisIsATestDescription")
-        List<Alias> retrievedRows
+        def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('" + alias.getAlias() + "', '" + alias.getCommand() + "', '" + alias.getDescription() + "')"
