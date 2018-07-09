@@ -22,7 +22,7 @@ class DiscordHelperTest extends Specification
 
         then:
         userList.size() == 2
-        userList.contains(realUser.getStringID())
-        userList.contains(realNicknamedUser.getStringID())
+        userList.contains(realUser)
+        userList.contains(realNicknamedUser)
     }
 }
