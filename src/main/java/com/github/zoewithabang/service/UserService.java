@@ -20,6 +20,19 @@ public class UserService implements IService
         userDao = new UserDao(botProperties);
     }
     
+    public boolean userIsStored(String userId) throws SQLException
+    {
+        try(Connection connection = userDao.getConnection(database))
+        {
+            return userDao.get(connection, userId) != null;
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting User for ID '{}'.", userId, e);
+            throw e;
+        }
+    }
+    
     public UserData getUserWithMessages(String userId) throws SQLException
     {
         try(Connection connection = userDao.getConnection(database))
@@ -33,11 +46,11 @@ public class UserService implements IService
         }
     }
     
-    public UserData storeNewMessageTrackedUser(String userId) throws SQLException
+    public UserData storeNewUser(String userId, boolean tracked) throws SQLException
     {
         try(Connection connection = userDao.getConnection(database))
         {
-            UserData user = new UserData(userId, true);
+            UserData user = new UserData(userId, tracked);
             userDao.store(connection, user);
             return user;
         }
@@ -59,6 +72,20 @@ public class UserService implements IService
         catch(SQLException e)
         {
             LOGGER.error("SQLException on updating User for ID '{}'.", userId, e);
+            throw e;
+        }
+    }
+    
+    public void deleteUser(String userId) throws SQLException
+    {
+        try(Connection connection = userDao.getConnection(database))
+        {
+            UserData user = new UserData(userId, false);
+            userDao.delete(connection, user);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on deleting User with ID '{}'.", userId, e);
             throw e;
         }
     }
