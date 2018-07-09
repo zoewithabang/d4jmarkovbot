@@ -186,7 +186,7 @@ public class GetAllMessagesFromUser implements ICommand
         {
             try
             {
-                userService.storeNewMessageTrackedUser(userId);
+                userService.storeNewUser(userId, true);
                 LOGGER.debug("Stored a new message tracked user for ID '{}'.", userId);
             }
             catch(SQLException e)
