@@ -61,6 +61,7 @@ public class ZeroBot implements IBot
         commands.put(ListCommands.COMMAND, ListCommands.class);
         commands.put(ManageUser.COMMAND, ManageUser.class);
         commands.put(ManageCommand.COMMAND, ManageCommand.class);
+        commands.put(GetRank.COMMAND, GetRank.class);
         
         //scheduled tasks
         taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlayingPresence(this, properties), 5, 2, TimeUnit.SECONDS);
