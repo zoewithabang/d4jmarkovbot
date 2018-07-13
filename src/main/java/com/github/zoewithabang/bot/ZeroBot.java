@@ -226,14 +226,19 @@ public class ZeroBot implements IBot
             if(commands.containsKey(command))
             {
                 LOGGER.debug("Received command '{}', checking permissions.", command);
-                if(authorHasPermissionsForCommand(event.getAuthor(), command))
+                
+                if(!commandIsEnabled(command))
                 {
-                    runCommand(command, event, args, true);
+                    sendMessage(event.getChannel(), "This command is disabled!");
+                    return;
                 }
-                else
+                if(!authorHasPermissionsForCommand(event.getAuthor(), command))
                 {
                     sendMessage(event.getChannel(), "You do not have permission to run this command!");
+                    return;
                 }
+    
+                runCommand(command, event, args, true);
             }
             else
             {
@@ -275,6 +280,19 @@ public class ZeroBot implements IBot
         catch(SQLException e)
         {
             LOGGER.error("SQLException on checking if author {} has permissions for command {}.", author.getStringID(), command);
+            throw e;
+        }
+    }
+    
+    private boolean commandIsEnabled(String command) throws SQLException
+    {
+        try
+        {
+            return commandService.getWithCommand(command).getActive();
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on checking if command {} is enabled.", command);
             throw e;
         }
     }
