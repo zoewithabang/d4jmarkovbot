@@ -92,6 +92,7 @@ public class ListCommands implements ICommand
         String commandDesc = "Enable/disable commands and edit their assigned permission ranks.";
         String commandsDesc = "Show this list of commands!";
         String rankDesc = "Get your own or another user's permission rank on the server.";
+        String postsDesc = "Get the posts in this server for a user (for Markov chains).";
     
         String rankString;
         
@@ -99,7 +100,7 @@ public class ListCommands implements ICommand
     
         builder.withAuthorName("List of commands:");
         
-        //Order: alias, aliases, cat, command, commands, markov, music, np, rank, user
+        //Order: alias, aliases, cat, command, commands, getposts, markov, music, np, rank, user
         
         //alias
         if(isActiveCommand(ManageAlias.COMMAND))
@@ -127,6 +128,12 @@ public class ListCommands implements ICommand
         }
         //commands, this
         builder.appendField(prefix + ListCommands.COMMAND, commandsDesc, false);
+        //getposts
+        if(isActiveCommand(GetAllMessagesFromUser.COMMAND))
+        {
+            rankString = getRankStringForCommandName(GetAllMessagesFromUser.COMMAND);
+            builder.appendField(prefix + GetAllMessagesFromUser.COMMAND + rankString, postsDesc, false);
+        }
         //markov
         if(isActiveCommand(MarkovChain.COMMAND))
         {
