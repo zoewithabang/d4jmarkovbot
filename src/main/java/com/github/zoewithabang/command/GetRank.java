@@ -48,7 +48,7 @@ public class GetRank implements ICommand
         
         try
         {
-            postUserRank(eventChannel, user);
+            postUserRank(event, user);
         }
         catch(SQLException e)
         {
@@ -103,7 +103,7 @@ public class GetRank implements ICommand
         return userList.get(0);
     }
     
-    private void postUserRank(IChannel channel, IUser user) throws SQLException
+    private void postUserRank(MessageReceivedEvent event, IUser user) throws SQLException
     {
         String userId = user.getStringID();
         int rank;
@@ -119,10 +119,10 @@ public class GetRank implements ICommand
         }
     
         EmbedBuilder builder = new EmbedBuilder();
-        String title = "<@" + userId + ">";
+        String title = user.getDisplayName(event.getGuild());
         String content = "Rank " + rank;
         builder.appendField(title, content, false);
         
-        bot.sendEmbedMessage(channel, builder.build());
+        bot.sendEmbedMessage(event.getChannel(), builder.build());
     }
 }
