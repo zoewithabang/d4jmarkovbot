@@ -63,4 +63,17 @@ public class CommandService implements IService
             throw e;
         }
     }
+    
+    public CommandInfo getWithCommand(String commandName) throws SQLException
+    {
+        try(Connection connection = commandDao.getConnection(database))
+        {
+            return commandDao.get(connection, commandName);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting Command {}.", commandName, e);
+            throw e;
+        }
+    }
 }

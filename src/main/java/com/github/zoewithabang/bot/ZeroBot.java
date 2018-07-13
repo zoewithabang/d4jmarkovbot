@@ -3,7 +3,9 @@ package com.github.zoewithabang.bot;
 import com.github.zoewithabang.command.*;
 import com.github.zoewithabang.model.Alias;
 import com.github.zoewithabang.service.AliasService;
+import com.github.zoewithabang.service.CommandService;
 import com.github.zoewithabang.service.OptionService;
+import com.github.zoewithabang.service.UserService;
 import com.github.zoewithabang.task.ZeroTubeNowPlayingPresence;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -33,6 +35,8 @@ public class ZeroBot implements IBot
     private ScheduledExecutorService taskScheduler;
     private AliasService aliasService;
     private OptionService optionService;
+    private UserService userService;
+    private CommandService commandService;
     
     public ZeroBot(IDiscordClient client, Properties properties)
     {
@@ -43,6 +47,8 @@ public class ZeroBot implements IBot
         taskScheduler = Executors.newScheduledThreadPool(1);
         aliasService = new AliasService(properties);
         optionService = new OptionService(properties);
+        userService = new UserService(properties);
+        commandService = new CommandService(properties);
         
         //called commands
         commands.put(GetAllMessagesFromUser.COMMAND, GetAllMessagesFromUser.class);
@@ -217,8 +223,15 @@ public class ZeroBot implements IBot
         {
             if(commands.containsKey(command))
             {
-                LOGGER.debug("Received command, running '{}'.", command);
-                runCommand(command, event, args, true);
+                LOGGER.debug("Received command '{}', checking permissions.", command);
+                if(authorHasPermissionsForCommand(event.getAuthor(), command))
+                {
+                    runCommand(command, event, args, true);
+                }
+                else
+                {
+                    sendMessage(event.getChannel(), "You do not have permission to run this command!");
+                }
             }
             else
             {
@@ -244,6 +257,22 @@ public class ZeroBot implements IBot
         {
             LOGGER.error("Uncaught Exception when executing command '{}', TROUBLESHOOT THIS!!!", command, e);
             postErrorMessage(event.getChannel(), true, null, null);
+        }
+    }
+    
+    private boolean authorHasPermissionsForCommand(IUser author, String command) throws SQLException
+    {
+        try
+        {
+            int authorRank = userService.getUser(author.getStringID()).getPermissionRank();
+            int commandRank = commandService.getWithCommand(command).getPermissionRank();
+            
+            return (authorRank >= commandRank);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on checking if author {} has permissions for command {}.", author.getStringID(), command);
+            throw e;
         }
     }
     
