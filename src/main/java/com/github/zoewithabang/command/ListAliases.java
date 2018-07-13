@@ -32,7 +32,7 @@ public class ListAliases implements ICommand
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
         IChannel eventChannel = event.getChannel();
-        List<Alias> aliases = new ArrayList<>();
+        List<Alias> aliases;
         
         if(!validateArgs(event, args))
         {
@@ -52,6 +52,7 @@ public class ListAliases implements ICommand
         catch(SQLException e)
         {
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 3001);
+            return;
         }
         
         postAliasesMessage(eventChannel, aliases);
