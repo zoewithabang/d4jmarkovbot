@@ -49,13 +49,6 @@ public class GetAllMessagesFromUser implements ICommand
         UserData storedUser;
         List<IMessage> allUserMessages;
         boolean userHasStoredMessages;
-    
-        //TODO: placeholder, add actual permissions system later
-        if(!event.getAuthor().getStringID().equals("83126901098414080"))
-        {
-            bot.sendMessage(eventChannel, "You do not have permission to use this command!");
-            return;
-        }
         
         if(!validateArgs(event, args))
         {
