@@ -122,6 +122,7 @@ public class GetRank implements ICommand
         String title = user.getDisplayName(event.getGuild());
         String content = "Rank " + rank;
         builder.appendField(title, content, false);
+        builder.withThumbnail(user.getAvatarURL());
         
         bot.sendEmbedMessage(event.getChannel(), builder.build());
     }
