@@ -67,7 +67,7 @@ public class ManageUser implements ICommand
             {
                 LOGGER.debug("Sending messages about proper usage.");
                 bot.sendMessage(eventChannel, "Usage for storing details for a user: `" + prefix + COMMAND + " add @User`");
-                bot.sendMessage(eventChannel, "Usage for editing permissions rank of a user: `" + prefix + COMMAND + " setrank @User 0-255");
+                bot.sendMessage(eventChannel, "Usage for editing permissions rank of a user: `" + prefix + COMMAND + " setrank @User 0-255`");
                 bot.sendMessage(eventChannel, "Usage for clearing details for a user: `" + prefix + COMMAND + " clear @User`");
             }
             return;
