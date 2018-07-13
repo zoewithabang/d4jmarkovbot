@@ -20,7 +20,7 @@ import java.util.*;
 
 public class GetAllMessagesFromUser implements ICommand
 {
-    public static final String COMMAND = "get";
+    public static final String COMMAND = "getposts";
     private IBot bot;
     private Properties botProperties;
     private String prefix;
@@ -186,7 +186,7 @@ public class GetAllMessagesFromUser implements ICommand
         {
             try
             {
-                userService.storeNewUser(userId, true);
+                userService.storeNewUser(userId, true, 0);
                 LOGGER.debug("Stored a new message tracked user for ID '{}'.", userId);
             }
             catch(SQLException e)
@@ -197,9 +197,10 @@ public class GetAllMessagesFromUser implements ICommand
         }
         else if(!storedUser.getTracked())
         {
+            storedUser.setTracked(true);
             try
             {
-                userService.updateUserForMessageTracking(userId);
+                userService.updateUser(storedUser);
                 LOGGER.debug("Updated an existing user with ID '{}' for message tracking.", userId);
             }
             catch(SQLException e)
