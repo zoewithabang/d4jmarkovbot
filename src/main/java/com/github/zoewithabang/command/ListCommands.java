@@ -1,10 +1,13 @@
 package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
+import com.github.zoewithabang.model.CommandInfo;
+import com.github.zoewithabang.service.CommandService;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,12 +17,16 @@ public class ListCommands implements ICommand
     private IBot bot;
     private Properties botProperties;
     private String prefix;
+    private CommandService commandService;
+    private List<String> commands;
+    private List<CommandInfo> commandInfos;
     
     public ListCommands(IBot bot, Properties botProperties)
     {
         this.bot = bot;
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
+        commandService = new CommandService(botProperties);
     }
     
     @Override
@@ -33,14 +40,22 @@ public class ListCommands implements ICommand
             if(sendBotMessages)
             {
                 LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + "' to list the currently recognised commands.");
+                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + "' to list the currently active commands.");
             }
             return;
         }
         
-        List<String> commands = bot.getCommandList();
+        try
+        {
+            fetchCommandData();
+        }
+        catch(Exception e)
+        {
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 10001);
+            return;
+        }
         
-        postCommandsMessage(eventChannel, commands);
+        postCommandsMessage(eventChannel);
     }
     
     @Override
@@ -49,12 +64,22 @@ public class ListCommands implements ICommand
         return args.size() == 0;
     }
     
-    private void postCommandsMessage(IChannel channel, List<String> commands)
+    private void fetchCommandData() throws SQLException
     {
-        EmbedBuilder builder = new EmbedBuilder();
+        try
+        {
+            commands = bot.getCommandList();
+            commandInfos = commandService.getAll();
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on fetching command data.", e);
+            throw e;
+        }
+    }
     
-        builder.withAuthorName("List of commands:");
-        
+    private void postCommandsMessage(IChannel channel)
+    {
         String markovDesc = "Posts a Markov chain message built from user posts in the server.\n" +
             "Has options for generating messages from a single user's posts, multiple users or the entire server.";
         String musicDesc = "Links the ZeroTube to get people to join you in the music zone!";
@@ -63,37 +88,109 @@ public class ListCommands implements ICommand
         String aliasesDesc = "List the currently stored aliases that I recognise.";
         String npDesc = "Show what's currently playing on ZeroTube!";
         String catDesc = "Post a cat pic!";
-        String userDesc = "Add or clear users from being stored.";
+        String userDesc = "Add/clear users from being stored and edit their assigned permission ranks.";
+        String commandDesc = "Enable/disable commands and edit their assigned permission ranks.";
+        String rankDesc = "Get your own or another user's permission rank on the server.";
+    
+        String rankString;
         
-        if(commands.contains(MarkovChain.COMMAND))
+        EmbedBuilder builder = new EmbedBuilder();
+    
+        builder.withAuthorName("List of commands:");
+        
+        if(isActiveCommand(MarkovChain.COMMAND))
         {
-            builder.appendField(prefix + MarkovChain.COMMAND, markovDesc, false);
+            rankString = getRankStringForCommandName(MarkovChain.COMMAND);
+            builder.appendField(prefix + MarkovChain.COMMAND + rankString, markovDesc, false);
         }
-        if(commands.contains(GetZeroTube.COMMAND))
+        if(isActiveCommand(GetZeroTube.COMMAND))
         {
-            builder.appendField(prefix + GetZeroTube.COMMAND, musicDesc, false);
+            rankString = getRankStringForCommandName(GetZeroTube.COMMAND);
+            builder.appendField(prefix + GetZeroTube.COMMAND + rankString, musicDesc, false);
         }
-        if(commands.contains(ManageAlias.COMMAND))
+        if(isActiveCommand(ManageAlias.COMMAND))
         {
-            builder.appendField(prefix + ManageAlias.COMMAND, aliasDesc, false);
+            rankString = getRankStringForCommandName(ManageAlias.COMMAND);
+            builder.appendField(prefix + ManageAlias.COMMAND + rankString, aliasDesc, false);
         }
-        if(commands.contains(ListAliases.COMMAND))
+        if(isActiveCommand(ListAliases.COMMAND))
         {
-            builder.appendField(prefix + ListAliases.COMMAND, aliasesDesc, false);
+            rankString = getRankStringForCommandName(ListAliases.COMMAND);
+            builder.appendField(prefix + ListAliases.COMMAND + rankString, aliasesDesc, false);
         }
-        if(commands.contains(ZeroTubeNowPlaying.COMMAND))
+        if(isActiveCommand(ZeroTubeNowPlaying.COMMAND))
         {
-            builder.appendField(prefix + ZeroTubeNowPlaying.COMMAND, npDesc, false);
+            rankString = getRankStringForCommandName(ZeroTubeNowPlaying.COMMAND);
+            builder.appendField(prefix + ZeroTubeNowPlaying.COMMAND + rankString, npDesc, false);
         }
-        if(commands.contains(GetCatPicture.COMMAND))
+        if(isActiveCommand(GetCatPicture.COMMAND))
         {
-            builder.appendField(prefix + GetCatPicture.COMMAND, catDesc, false);
+            rankString = getRankStringForCommandName(GetCatPicture.COMMAND);
+            builder.appendField(prefix + GetCatPicture.COMMAND + rankString, catDesc, false);
         }
-        if(commands.contains(ManageUser.COMMAND))
+        if(isActiveCommand(ManageUser.COMMAND))
         {
-            builder.appendField(prefix + ManageUser.COMMAND, userDesc, false);
+            rankString = getRankStringForCommandName(ManageUser.COMMAND);
+            builder.appendField(prefix + ManageUser.COMMAND + rankString, userDesc, false);
+        }
+        if(isActiveCommand(ManageCommand.COMMAND))
+        {
+            rankString = getRankStringForCommandName(ManageCommand.COMMAND);
+            builder.appendField(prefix + ManageCommand.COMMAND + rankString, commandDesc, false);
+        }
+        if(isActiveCommand(GetRank.COMMAND))
+        {
+            rankString = getRankStringForCommandName(GetRank.COMMAND);
+            builder.appendField(prefix + GetRank.COMMAND + rankString, rankDesc, false);
         }
     
         bot.sendEmbedMessage(channel, builder.build());
+    }
+    
+    private boolean isActiveCommand(String command)
+    {
+        if(!commands.contains(command))
+        {
+            LOGGER.debug("{} is not a stored command in the bot's command list.", command);
+            return false;
+        }
+        
+        if(commandInfos.stream()
+            .noneMatch
+                (
+                    commandInfo -> commandInfo.getCommand()
+                        .equals(command)
+                        &&
+                        commandInfo.getActive()
+                )
+            )
+        {
+            LOGGER.debug("{} is not an active command.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private String getRankStringForCommandName(String command)
+    {
+        int rank = commandInfos.stream()
+            .filter
+                (
+                    commandInfo -> commandInfo.getCommand()
+                        .equals(command)
+                )
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("No command found called " + command))
+            .getPermissionRank();
+        
+        if(rank > 0)
+        {
+            return " [Rank " + rank + "]";
+        }
+        else
+        {
+            return "";
+        }
     }
 }
