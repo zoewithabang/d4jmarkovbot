@@ -88,11 +88,11 @@ class DiscordHelperTest extends Specification
         def andAnotherRole = Mock(IRole)
 
         user.getRolesForGuild(guild) >> [anotherRole, topRole, andAnotherRole]
-        topRole.getPosition() >> 0
+        topRole.getPosition() >> 2
         topRole.getColor() >> Color.MAGENTA
         anotherRole.getPosition() >> 1
         anotherRole.getColor() >> Color.RED
-        andAnotherRole.getPosition() >> 2
+        andAnotherRole.getPosition() >> 0
         andAnotherRole.getColor() >> Color.ORANGE
 
         when:
