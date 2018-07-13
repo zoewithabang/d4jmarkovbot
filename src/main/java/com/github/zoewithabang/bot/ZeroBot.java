@@ -2,6 +2,7 @@ package com.github.zoewithabang.bot;
 
 import com.github.zoewithabang.command.*;
 import com.github.zoewithabang.model.Alias;
+import com.github.zoewithabang.model.UserData;
 import com.github.zoewithabang.service.AliasService;
 import com.github.zoewithabang.service.CommandService;
 import com.github.zoewithabang.service.OptionService;
@@ -265,7 +266,8 @@ public class ZeroBot implements IBot
     {
         try
         {
-            int authorRank = userService.getUser(author.getStringID()).getPermissionRank();
+            UserData authorData = userService.getUser(author.getStringID());
+            int authorRank = authorData != null ? authorData.getPermissionRank() : 0;
             int commandRank = commandService.getWithCommand(command).getPermissionRank();
             
             return (authorRank >= commandRank);
