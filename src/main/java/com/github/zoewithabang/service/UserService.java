@@ -33,11 +33,11 @@ public class UserService implements IService
         }
     }
     
-    public UserData getUserWithMessages(String userId) throws SQLException
+    public UserData getUser(String userId) throws SQLException
     {
         try(Connection connection = userDao.getConnection(database))
         {
-            return userDao.getWithMessages(connection, userId);
+            return userDao.get(connection, userId);
         }
         catch(SQLException e)
         {
@@ -46,11 +46,24 @@ public class UserService implements IService
         }
     }
     
-    public UserData storeNewUser(String userId, boolean tracked) throws SQLException
+    public UserData getUserWithMessages(String userId) throws SQLException
     {
         try(Connection connection = userDao.getConnection(database))
         {
-            UserData user = new UserData(userId, tracked);
+            return userDao.getWithMessages(connection, userId);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting User and messages for ID '{}'.", userId, e);
+            throw e;
+        }
+    }
+    
+    public UserData storeNewUser(String userId, boolean tracked, int permissionRank) throws SQLException
+    {
+        try(Connection connection = userDao.getConnection(database))
+        {
+            UserData user = new UserData(userId, tracked, permissionRank);
             userDao.store(connection, user);
             return user;
         }
@@ -61,31 +74,44 @@ public class UserService implements IService
         }
     }
     
-    public UserData updateUserForMessageTracking(String userId) throws SQLException
+    public void updateUser(UserData user) throws SQLException
     {
         try(Connection connection = userDao.getConnection(database))
         {
-            UserData user = new UserData(userId, true);
             userDao.update(connection, user);
-            return user;
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on updating User for ID '{}'.", userId, e);
+            LOGGER.error("SQLException on updating User '{}'.", user, e);
             throw e;
         }
     }
     
-    public void deleteUser(String userId) throws SQLException
+    public void deleteUserWithId(String userId) throws SQLException
     {
         try(Connection connection = userDao.getConnection(database))
         {
-            UserData user = new UserData(userId, false);
+            UserData user = new UserData(userId, false, 0);
             userDao.delete(connection, user);
         }
         catch(SQLException e)
         {
             LOGGER.error("SQLException on deleting User with ID '{}'.", userId, e);
+            throw e;
+        }
+    }
+    
+    public void updateRankWithId(String userId, int rank) throws SQLException
+    {
+        try(Connection connection = userDao.getConnection(database))
+        {
+            UserData user = userDao.get(connection, userId);
+            user.setPermissionRank(rank);
+            userDao.update(connection, user);
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on updating rank of the User ID {} to {}.", userId, rank, e);
             throw e;
         }
     }

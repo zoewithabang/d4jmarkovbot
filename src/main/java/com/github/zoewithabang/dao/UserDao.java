@@ -31,7 +31,8 @@ public class UserDao extends Dao<UserData, String>
             {
                 String userId = resultSet.getString("id");
                 Boolean userTracked = resultSet.getBoolean("tracked");
-                user = new UserData(userId, userTracked);
+                Integer permissionRank = resultSet.getInt("permission_rank");
+                user = new UserData(userId, userTracked, permissionRank);
             }
             
             return user;
@@ -57,7 +58,8 @@ public class UserDao extends Dao<UserData, String>
             {
                 String userId = resultSet.getString("id");
                 Boolean userTracked = resultSet.getBoolean("tracked");
-                userList.add(new UserData(userId, userTracked));
+                Integer permissionRank = resultSet.getInt("permission_rank");
+                userList.add(new UserData(userId, userTracked, permissionRank));
             }
             
             return userList;
@@ -72,12 +74,13 @@ public class UserDao extends Dao<UserData, String>
     @Override
     public void store(Connection connection, UserData user) throws SQLException
     {
-        String query = "INSERT INTO users (id, tracked) VALUES (?, ?);";
+        String query = "INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?);";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
             statement.setString(1, user.getId());
             statement.setBoolean(2, user.getTracked());
+            statement.setInt(3, user.getPermissionRank());
             
             statement.executeUpdate();
         }
@@ -91,12 +94,13 @@ public class UserDao extends Dao<UserData, String>
     @Override
     public void update(Connection connection, UserData user) throws SQLException
     {
-        String query = "UPDATE users SET tracked = ? WHERE id = ?;";
+        String query = "UPDATE users SET tracked = ?, permission_rank = ? WHERE id = ?;";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
             statement.setBoolean(1, user.getTracked());
-            statement.setString(2, user.getId());
+            statement.setInt(2, user.getPermissionRank());
+            statement.setString(3, user.getId());
             
             statement.executeUpdate();
         }
@@ -130,6 +134,7 @@ public class UserDao extends Dao<UserData, String>
         String query = "SELECT " +
             "users.id AS users_id, " +
             "users.tracked AS users_tracked, " +
+            "users.permission_rank AS users_permission_rank, " +
             "messages.id AS messages_id, " +
             "messages.content AS messages_content, " +
             "messages.timestamp AS messages_timestamp " +
@@ -149,6 +154,7 @@ public class UserDao extends Dao<UserData, String>
             {
                 user.setId(resultSet.getString("users_id"));
                 user.setTracked(resultSet.getBoolean("users_tracked"));
+                user.setPermissionRank(resultSet.getInt("users_permission_rank"));
     
                 do
                 {
