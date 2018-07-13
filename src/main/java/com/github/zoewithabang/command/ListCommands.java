@@ -90,6 +90,7 @@ public class ListCommands implements ICommand
         String catDesc = "Post a cat pic!";
         String userDesc = "Add/clear users from being stored and edit their assigned permission ranks.";
         String commandDesc = "Enable/disable commands and edit their assigned permission ranks.";
+        String commandsDesc = "Show this list of commands!";
         String rankDesc = "Get your own or another user's permission rank on the server.";
     
         String rankString;
@@ -98,52 +99,65 @@ public class ListCommands implements ICommand
     
         builder.withAuthorName("List of commands:");
         
-        if(isActiveCommand(MarkovChain.COMMAND))
-        {
-            rankString = getRankStringForCommandName(MarkovChain.COMMAND);
-            builder.appendField(prefix + MarkovChain.COMMAND + rankString, markovDesc, false);
-        }
-        if(isActiveCommand(GetZeroTube.COMMAND))
-        {
-            rankString = getRankStringForCommandName(GetZeroTube.COMMAND);
-            builder.appendField(prefix + GetZeroTube.COMMAND + rankString, musicDesc, false);
-        }
+        //Order: alias, aliases, cat, command, commands, markov, music, np, rank, user
+        
+        //alias
         if(isActiveCommand(ManageAlias.COMMAND))
         {
             rankString = getRankStringForCommandName(ManageAlias.COMMAND);
             builder.appendField(prefix + ManageAlias.COMMAND + rankString, aliasDesc, false);
         }
+        //aliases
         if(isActiveCommand(ListAliases.COMMAND))
         {
             rankString = getRankStringForCommandName(ListAliases.COMMAND);
             builder.appendField(prefix + ListAliases.COMMAND + rankString, aliasesDesc, false);
         }
-        if(isActiveCommand(ZeroTubeNowPlaying.COMMAND))
-        {
-            rankString = getRankStringForCommandName(ZeroTubeNowPlaying.COMMAND);
-            builder.appendField(prefix + ZeroTubeNowPlaying.COMMAND + rankString, npDesc, false);
-        }
+        //cat
         if(isActiveCommand(GetCatPicture.COMMAND))
         {
             rankString = getRankStringForCommandName(GetCatPicture.COMMAND);
             builder.appendField(prefix + GetCatPicture.COMMAND + rankString, catDesc, false);
         }
-        if(isActiveCommand(ManageUser.COMMAND))
-        {
-            rankString = getRankStringForCommandName(ManageUser.COMMAND);
-            builder.appendField(prefix + ManageUser.COMMAND + rankString, userDesc, false);
-        }
+        //command
         if(isActiveCommand(ManageCommand.COMMAND))
         {
             rankString = getRankStringForCommandName(ManageCommand.COMMAND);
             builder.appendField(prefix + ManageCommand.COMMAND + rankString, commandDesc, false);
         }
+        //commands, this
+        builder.appendField(prefix + ListCommands.COMMAND, commandsDesc, false);
+        //markov
+        if(isActiveCommand(MarkovChain.COMMAND))
+        {
+            rankString = getRankStringForCommandName(MarkovChain.COMMAND);
+            builder.appendField(prefix + MarkovChain.COMMAND + rankString, markovDesc, false);
+        }
+        //music
+        if(isActiveCommand(GetZeroTube.COMMAND))
+        {
+            rankString = getRankStringForCommandName(GetZeroTube.COMMAND);
+            builder.appendField(prefix + GetZeroTube.COMMAND + rankString, musicDesc, false);
+        }
+        //np
+        if(isActiveCommand(ZeroTubeNowPlaying.COMMAND))
+        {
+            rankString = getRankStringForCommandName(ZeroTubeNowPlaying.COMMAND);
+            builder.appendField(prefix + ZeroTubeNowPlaying.COMMAND + rankString, npDesc, false);
+        }
+        //rank
         if(isActiveCommand(GetRank.COMMAND))
         {
             rankString = getRankStringForCommandName(GetRank.COMMAND);
             builder.appendField(prefix + GetRank.COMMAND + rankString, rankDesc, false);
         }
-    
+        //user
+        if(isActiveCommand(ManageUser.COMMAND))
+        {
+            rankString = getRankStringForCommandName(ManageUser.COMMAND);
+            builder.appendField(prefix + ManageUser.COMMAND + rankString, userDesc, false);
+        }
+        
         bot.sendEmbedMessage(channel, builder.build());
     }
     
