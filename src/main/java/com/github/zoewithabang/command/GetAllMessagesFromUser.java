@@ -44,7 +44,7 @@ public class GetAllMessagesFromUser implements ICommand
         
         IChannel eventChannel = event.getChannel();
         IGuild server = event.getGuild();
-        String userIdMarkdown;
+        String userName;
         String userId;
         UserData storedUser;
         List<IMessage> allUserMessages;
@@ -61,12 +61,12 @@ public class GetAllMessagesFromUser implements ICommand
             return;
         }
     
-        userIdMarkdown = args.get(0);
+        userName = user.getDisplayName(server);
         userId = user.getStringID();
         
         if(sendBotMessages)
         {
-            bot.sendMessage(event.getChannel(), "Retrieving messages for " + userIdMarkdown + ", please wait...");
+            bot.sendMessage(eventChannel, "Retrieving messages for " + userName + ", please wait...");
         }
         
         try
@@ -114,7 +114,7 @@ public class GetAllMessagesFromUser implements ICommand
             return;
         }
         
-        bot.sendMessage(event.getChannel(), "Hey, I should have all the messages posted by " + userIdMarkdown + " now!");
+        bot.sendMessage(eventChannel, "Hey, I should have all the messages posted by " + userName + " now!");
     }
     
     public boolean validateArgs(MessageReceivedEvent event, List<String> args)
