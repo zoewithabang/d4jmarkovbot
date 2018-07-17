@@ -5,6 +5,7 @@ import com.github.zoewithabang.model.CyTubeMedia;
 import com.github.zoewithabang.util.CyTubeHelper;
 import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.StatusType;
+import sx.blah.discord.util.DiscordException;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +49,10 @@ public class ZeroTubeNowPlayingPresence implements ITask
         catch(IllegalStateException e)
         {
             LOGGER.error("IllegalStateException in getting latest now playing CyTube media.");
+        }
+        catch(DiscordException e)
+        {
+            LOGGER.warn("DiscordException on updating now playing presence, probably not logged in and ready?");
         }
     }
 }

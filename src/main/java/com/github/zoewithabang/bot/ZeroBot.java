@@ -63,9 +63,6 @@ public class ZeroBot implements IBot
         commands.put(ManageUser.COMMAND, ManageUser.class);
         commands.put(ManageCommand.COMMAND, ManageCommand.class);
         commands.put(GetRank.COMMAND, GetRank.class);
-        
-        //scheduled tasks
-        taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlayingPresence(this, properties), 5, 2, TimeUnit.SECONDS);
     }
     
     @EventSubscriber
@@ -73,7 +70,11 @@ public class ZeroBot implements IBot
     {
         try
         {
+            //one off tasks
             updateNickname(optionService.getOptionValue("name"));
+    
+            //scheduled tasks
+            taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlayingPresence(this, properties), 2, 2, TimeUnit.SECONDS);
         }
         catch(SQLException e)
         {
@@ -159,7 +160,6 @@ public class ZeroBot implements IBot
     {
         LOGGER.debug("Updating bot presence to status '{}', activity '{}', text '{}'.", status.name(), activity.name(), text);
         RequestBuffer.request(() -> client.changePresence(status, activity, text));
-        
     }
     
     @Override
