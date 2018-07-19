@@ -1,5 +1,6 @@
 token=inserttokenhere
 prefix=!
+colour=#000000
 dbuser=username
 dbpassword=password
 dbaddress=localhost

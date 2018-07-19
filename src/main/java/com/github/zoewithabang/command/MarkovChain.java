@@ -48,6 +48,7 @@ public class MarkovChain implements ICommand
     private OptionService optionService;
     private Random random;
     
+    private final int MARKOV_PREFIX_SIZE = 2;
     private int desiredMessageCount;
     private int maxOutputLength;
     private MarkovChainCommandType commandType;
@@ -75,11 +76,7 @@ public class MarkovChain implements ICommand
         {
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending message about failed validation.");
-                bot.sendMessage(eventChannel, "Usage for single user: `" + prefix + COMMAND + " single @User` to make me send a message that User would totally say.");
-                bot.sendMessage(eventChannel, "Usage for user mashups: `" + prefix + COMMAND + " mashup @User1 @User2 @User3 etc` to make me Frankenstein those users together for a post they would totally say.");
-                bot.sendMessage(eventChannel, "Usage for server: `" + prefix + COMMAND + " server` to Frankenstein the whole server together for a post.");
-                bot.sendMessage(eventChannel, "For any of the above commands, put words after them in quotes like \"hello there\" to try to start the sentences with them!");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -112,7 +109,7 @@ public class MarkovChain implements ICommand
         
         try
         {
-            markovChainBuilder = new MarkovChainBuilder(storedMessages, 2);
+            markovChainBuilder = new MarkovChainBuilder(storedMessages, MARKOV_PREFIX_SIZE);
         }
         catch(Exception e)
         {
@@ -164,6 +161,7 @@ public class MarkovChain implements ICommand
         }
     }
     
+    @Override
     public boolean validateArgs(MessageReceivedEvent event, List<String> initialArgs)
     {
         LOGGER.debug("Validating args in MarkovChain");
@@ -194,6 +192,29 @@ public class MarkovChain implements ICommand
         
         LOGGER.debug("Validation successful, users '{}' and seed words '{}'.", users, seedWords);
         return true;
+    }
+    
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title1 = prefix + COMMAND + " single @User";
+        String content1 = "Post a message that totally sounds like a given user.";
+        String title2 = prefix + COMMAND + " mashup @User1 @User2 @User3";
+        String content2 = "Post a message that the Frankenstein'd combination of 2 or more given users would totally say.";
+        String title3 = prefix + COMMAND + " server";
+        String content3 = "Frankstein the whole server together for a post.";
+        String title4 = "Additional notes:";
+        String content4 = "Users must have their posts stored before this command can be used for them." + "\n"
+            + "For any of the above commands, append one or more seed words in quotes like `" + prefix + COMMAND + " server \"I love\"` to pick the sentence start!";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title1, content1, false);
+        builder.appendField(title2, content2, false);
+        builder.appendField(title3, content3, false);
+        builder.appendField(title4, content4, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        
+        bot.sendEmbedMessage(channel, builder.build());
     }
     
     protected List<String> getSeedWords(List<String> args)
@@ -305,7 +326,7 @@ public class MarkovChain implements ICommand
                 break;
             
             case SERVER:
-                colour = Color.BLACK;
+                colour = Color.decode(botProperties.getProperty("colour"));
                 thumbnail = server.getIconURL();
                 nameBuilder.append("Everybody says:");
                 break;

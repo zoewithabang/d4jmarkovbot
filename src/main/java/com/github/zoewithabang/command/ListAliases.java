@@ -7,8 +7,8 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -39,8 +39,7 @@ public class ListAliases implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + "' to list the currently stored alias commands.");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -69,6 +68,7 @@ public class ListAliases implements ICommand
         EmbedBuilder builder = new EmbedBuilder();
         
         builder.withAuthorName("List of aliases:");
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
     
         for(Alias alias : aliases)
         {
@@ -76,6 +76,19 @@ public class ListAliases implements ICommand
             String content = prefix + alias.getCommand() + "\n" + alias.getDescription();
             builder.appendField(title, content, false);
         }
+        
+        bot.sendEmbedMessage(channel, builder.build());
+    }
+    
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title = prefix + COMMAND;
+        String content = "List the currently stored command aliases.";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title, content, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
         
         bot.sendEmbedMessage(channel, builder.build());
     }

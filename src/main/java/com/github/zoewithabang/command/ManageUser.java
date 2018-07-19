@@ -6,7 +6,9 @@ import com.github.zoewithabang.util.DiscordHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -65,10 +67,7 @@ public class ManageUser implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending messages about proper usage.");
-                bot.sendMessage(eventChannel, "Usage for storing details for a user: `" + prefix + COMMAND + " add @User`");
-                bot.sendMessage(eventChannel, "Usage for editing permissions rank of a user: `" + prefix + COMMAND + " setrank @User 0-255`");
-                bot.sendMessage(eventChannel, "Usage for clearing details for a user: `" + prefix + COMMAND + " clear @User`");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -95,10 +94,7 @@ public class ManageUser implements ICommand
         {
             //SQLExceptions handled in their methods with logging and error messages, just returning here
             LOGGER.error("Manage User command failed.", e);
-            if(sendBotMessages)
-            {
-                bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 7001);
-            }
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 7001);
         }
     }
     
@@ -133,6 +129,25 @@ public class ManageUser implements ICommand
             LOGGER.error("Arg validation failed.", e);
             return false;
         }
+    }
+    
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title1 = prefix + COMMAND + " add @User";
+        String content1 = "Store the details of a user.";
+        String title2 = prefix + COMMAND + " setrank @User 0-255";
+        String content2 = "Set the rank of a stored user.";
+        String title3 = prefix + COMMAND + " clear @User";
+        String content3 = "Clear the details of a user. Also clears any stored posts from the user.";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title1, content1, false);
+        builder.appendField(title2, content2, false);
+        builder.appendField(title3, content3, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        
+        bot.sendEmbedMessage(channel, builder.build());
     }
     
     private IUser validateUser(List<IUser> userList)

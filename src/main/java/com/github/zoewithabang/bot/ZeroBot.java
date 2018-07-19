@@ -7,7 +7,7 @@ import com.github.zoewithabang.service.AliasService;
 import com.github.zoewithabang.service.CommandService;
 import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.service.UserService;
-import com.github.zoewithabang.task.ZeroTubeNowPlayingPresence;
+import com.github.zoewithabang.task.CyTubeNowPlayingPresence;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -54,11 +54,11 @@ public class ZeroBot implements IBot
         //called commands
         commands.put(GetAllMessagesFromUser.COMMAND, GetAllMessagesFromUser.class);
         commands.put(MarkovChain.COMMAND, MarkovChain.class);
-        commands.put(GetZeroTube.COMMAND, GetZeroTube.class);
+        commands.put(GetCyTube.COMMAND, GetCyTube.class);
         commands.put(ManageAlias.COMMAND, ManageAlias.class);
         commands.put(ListAliases.COMMAND, ListAliases.class);
         commands.put(GetCatPicture.COMMAND, GetCatPicture.class);
-        commands.put(ZeroTubeNowPlaying.COMMAND, ZeroTubeNowPlaying.class);
+        commands.put(CyTubeNowPlaying.COMMAND, CyTubeNowPlaying.class);
         commands.put(ListCommands.COMMAND, ListCommands.class);
         commands.put(ManageUser.COMMAND, ManageUser.class);
         commands.put(ManageCommand.COMMAND, ManageCommand.class);
@@ -74,7 +74,7 @@ public class ZeroBot implements IBot
             updateNickname(optionService.getOptionValue("name"));
     
             //scheduled tasks
-            taskScheduler.scheduleAtFixedRate(new ZeroTubeNowPlayingPresence(this, properties), 2, 2, TimeUnit.SECONDS);
+            taskScheduler.scheduleAtFixedRate(new CyTubeNowPlayingPresence(this, properties), 2, 2, TimeUnit.SECONDS);
         }
         catch(SQLException e)
         {

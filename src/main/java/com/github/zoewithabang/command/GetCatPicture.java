@@ -7,12 +7,11 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -48,8 +47,7 @@ public class GetCatPicture implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + "' to get a cat!");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -85,6 +83,19 @@ public class GetCatPicture implements ICommand
     public boolean validateArgs(MessageReceivedEvent event, List<String> args)
     {
         return args.size() == 0;
+    }
+    
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title = prefix + COMMAND;
+        String content = "Get a cat picture!";
+    
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title, content, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+    
+        bot.sendEmbedMessage(channel, builder.build());
     }
     
     public HttpResponse getCatPicture(String apiUrl, String dataFormat, String fileType) throws MalformedURLException, IOException, IllegalStateException
@@ -123,6 +134,7 @@ public class GetCatPicture implements ICommand
         
         builder.withImage("attachment://cat." + fileType);
         builder.withFooterText(source);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
         
         bot.sendEmbedMessageWithStream(channel, builder.build(), stream, "cat." + fileType);
     }

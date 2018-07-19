@@ -4,7 +4,9 @@ import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.service.AliasService;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -46,10 +48,7 @@ public class ManageAlias implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending messages about proper usage.");
-                bot.sendMessage(eventChannel, "Usage for adding an alias: `" + prefix + COMMAND + " add aliasName \"command to run\" \"description of this alias\"`.");
-                bot.sendMessage(eventChannel, "Usage for updating an alias: `" + prefix + COMMAND + " update aliasName \"command to run\" \"description of this alias\"`.");
-                bot.sendMessage(eventChannel, "Usage for deleting an alias: `" + prefix + COMMAND + " delete aliasName`.");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -90,6 +89,7 @@ public class ManageAlias implements ICommand
     }
     
     //only validates the type of alias command, validating each of them separately for clarity
+    @Override
     public boolean validateArgs(MessageReceivedEvent event, List<String> args)
     {
         LOGGER.debug("Validating args in ManageAlias");
@@ -120,6 +120,25 @@ public class ManageAlias implements ICommand
         }
         
         return true;
+    }
+    
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title1 = prefix + COMMAND + " add aliasName \"command to run\" \"description of alias\"";
+        String content1 = "Add an alias to run a command.";
+        String title2 = prefix + COMMAND + " update aliasName \"updated command to run\" \"updated description of alias\"";
+        String content2 = "Update an existing command.";
+        String title3 = prefix + COMMAND + " delete aliasName";
+        String content3 = "Delete an existing command.";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title1, content1, false);
+        builder.appendField(title2, content2, false);
+        builder.appendField(title3, content3, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        
+        bot.sendEmbedMessage(channel, builder.build());
     }
     
     private boolean validateAdd(IChannel eventChannel, List<String> args, boolean sendBotMessages) throws SQLException

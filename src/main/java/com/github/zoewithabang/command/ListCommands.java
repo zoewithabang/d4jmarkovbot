@@ -7,6 +7,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -39,8 +40,7 @@ public class ListCommands implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + "' to list the currently active commands.");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -64,6 +64,19 @@ public class ListCommands implements ICommand
         return args.size() == 0;
     }
     
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title = prefix + COMMAND;
+        String content = "List the currently active commands.";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title, content, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        
+        bot.sendEmbedMessage(channel, builder.build());
+    }
+    
     private void fetchCommandData() throws SQLException
     {
         try
@@ -82,11 +95,11 @@ public class ListCommands implements ICommand
     {
         String markovDesc = "Posts a Markov chain message built from user posts in the server.\n" +
             "Has options for generating messages from a single user's posts, multiple users or the entire server.";
-        String musicDesc = "Links the ZeroTube to get people to join you in the music zone!";
+        String musicDesc = "Invite people to join you in the music zone with a handy link!";
         String aliasDesc = "Add, update or delete aliases for commands.\n" +
             "Good for Markov chain posting so that you don't highlight everyone constantly!";
         String aliasesDesc = "List the currently stored aliases that I recognise.";
-        String npDesc = "Show what's currently playing on ZeroTube!";
+        String npDesc = "Show what's currently playing! \uD83C\uDFB5";
         String catDesc = "Post a cat pic!";
         String userDesc = "Add/clear users from being stored and edit their assigned permission ranks.";
         String commandDesc = "Enable/disable commands and edit their assigned permission ranks.";
@@ -99,6 +112,7 @@ public class ListCommands implements ICommand
         EmbedBuilder builder = new EmbedBuilder();
     
         builder.withAuthorName("List of commands:");
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
         
         //Order: alias, aliases, cat, command, commands, getposts, markov, music, np, rank, user
         
@@ -141,16 +155,16 @@ public class ListCommands implements ICommand
             builder.appendField(prefix + MarkovChain.COMMAND + rankString, markovDesc, false);
         }
         //music
-        if(isActiveCommand(GetZeroTube.COMMAND))
+        if(isActiveCommand(GetCyTube.COMMAND))
         {
-            rankString = getRankStringForCommandName(GetZeroTube.COMMAND);
-            builder.appendField(prefix + GetZeroTube.COMMAND + rankString, musicDesc, false);
+            rankString = getRankStringForCommandName(GetCyTube.COMMAND);
+            builder.appendField(prefix + GetCyTube.COMMAND + rankString, musicDesc, false);
         }
         //np
-        if(isActiveCommand(ZeroTubeNowPlaying.COMMAND))
+        if(isActiveCommand(CyTubeNowPlaying.COMMAND))
         {
-            rankString = getRankStringForCommandName(ZeroTubeNowPlaying.COMMAND);
-            builder.appendField(prefix + ZeroTubeNowPlaying.COMMAND + rankString, npDesc, false);
+            rankString = getRankStringForCommandName(CyTubeNowPlaying.COMMAND);
+            builder.appendField(prefix + CyTubeNowPlaying.COMMAND + rankString, npDesc, false);
         }
         //rank
         if(isActiveCommand(GetRank.COMMAND))

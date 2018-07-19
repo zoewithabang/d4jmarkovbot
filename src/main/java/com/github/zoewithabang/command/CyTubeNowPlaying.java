@@ -7,13 +7,13 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
 
-public class ZeroTubeNowPlaying implements ICommand
+public class CyTubeNowPlaying implements ICommand
 {
     public static final String COMMAND = "np";
     private IBot bot;
@@ -22,7 +22,7 @@ public class ZeroTubeNowPlaying implements ICommand
     private File log;
     private String url;
     
-    public ZeroTubeNowPlaying(IBot bot, Properties botProperties)
+    public CyTubeNowPlaying(IBot bot, Properties botProperties)
     {
         this.bot = bot;
         this.botProperties = botProperties;
@@ -42,8 +42,7 @@ public class ZeroTubeNowPlaying implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(event.getChannel(), "Usage: '" + prefix + COMMAND + "' to show everyone what's on in the music zone!");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -65,8 +64,6 @@ public class ZeroTubeNowPlaying implements ICommand
             return;
         }
         
-        //uD83C and uDFB5 make a musical note emoji
-        String message = " " + nowPlaying.getTitle() + " (" + nowPlaying.getFullServiceName() + " at <" + nowPlaying.getFullUrl() + ">) \uD83C\uDFB5";
         postNowPlayingMessage(event, nowPlaying);
     }
     
@@ -76,12 +73,27 @@ public class ZeroTubeNowPlaying implements ICommand
         return args.size() == 0;
     }
     
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title = prefix + COMMAND;
+        String content = "Show what's currently on in the music zone!";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title, content, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        
+        bot.sendEmbedMessage(channel, builder.build());
+    }
+    
     private void postNowPlayingMessage(MessageReceivedEvent event, CyTubeMedia nowPlaying)
     {
-        String links = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ") || [ZeroTube](" + url + ")";
+        String links = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ") || [Tune in~](" + url + ")";
         EmbedBuilder builder = new EmbedBuilder();
     
+        //uD83C and uDFB5 make a musical note emoji
         builder.appendField(nowPlaying.getTitle(), links + " \uD83C\uDFB5", false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
     
         LOGGER.debug("Sending now playing message with now playing data '{}'.", nowPlaying);
     

@@ -11,12 +11,15 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageHistory;
 import sx.blah.discord.util.RequestBuffer;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
+import java.util.List;
 
 public class GetAllMessagesFromUser implements ICommand
 {
@@ -55,8 +58,7 @@ public class GetAllMessagesFromUser implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending message about proper usage.");
-                bot.sendMessage(eventChannel, "Usage: '" + prefix + COMMAND + " @User' to make me get the messages of someone called User.");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -133,6 +135,19 @@ public class GetAllMessagesFromUser implements ICommand
         user = DiscordHelper.getUserFromMarkdownId(event.getGuild(), id);
         
         return user != null;
+    }
+    
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title = prefix + COMMAND + " @User";
+        String content = "Store the messages of a given user.";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title, content, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        
+        bot.sendEmbedMessage(channel, builder.build());
     }
     
     private UserData findStoredUser(String userId) throws SQLException

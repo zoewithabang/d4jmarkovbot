@@ -11,14 +11,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ZeroTubeNowPlayingPresence implements ITask
+public class CyTubeNowPlayingPresence implements ITask
 {
     private IBot bot;
     private Properties botProperties;
     private File log;
     private String latestNowPlaying;
     
-    public ZeroTubeNowPlayingPresence(IBot bot, Properties botProperties)
+    public CyTubeNowPlayingPresence(IBot bot, Properties botProperties)
     {
         this.bot = bot;
         this.botProperties = botProperties;

@@ -7,7 +7,9 @@ import com.github.zoewithabang.service.UserService;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -66,10 +68,7 @@ public class ManageCommand implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending messages about proper usage.");
-                bot.sendMessage(eventChannel, "Usage for setting the rank of a command: `" + prefix + COMMAND + " setrank command 0-255`.");
-                bot.sendMessage(eventChannel, "Usage for enabling a command: `" + prefix + COMMAND + " enable command`.");
-                bot.sendMessage(eventChannel, "Usage for disabling a command: `" + prefix + COMMAND + " disable command`.");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -128,6 +127,25 @@ public class ManageCommand implements ICommand
             LOGGER.error("Arg validation failed.", e);
             return false;
         }
+    }
+    
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title1 = prefix + COMMAND + " setrank commandName 0-255";
+        String content1 = "Set the permissions rank required to run a command, from 0 (everyone) to 255.";
+        String title2 = prefix + COMMAND + " enable commandName";
+        String content2 = "Enable a command for use.";
+        String title3 = prefix + COMMAND + " disable commandName";
+        String content3 = "Disable a command to prevent use.";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title1, content1, false);
+        builder.appendField(title2, content2, false);
+        builder.appendField(title3, content3, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        
+        bot.sendEmbedMessage(channel, builder.build());
     }
     
     private String validateCommandName(String arg) throws SQLException, IllegalArgumentException

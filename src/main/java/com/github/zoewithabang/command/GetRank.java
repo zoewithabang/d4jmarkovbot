@@ -8,6 +8,7 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -39,9 +40,7 @@ public class GetRank implements ICommand
             LOGGER.debug("Validation failed.");
             if(sendBotMessages)
             {
-                LOGGER.debug("Sending messages about proper usage.");
-                bot.sendMessage(eventChannel, "Usage for finding your own rank: `" + prefix + COMMAND + "`");
-                bot.sendMessage(eventChannel, "Usage for finding someone else's rank: `" + prefix + COMMAND + " @User");
+                postUsageMessage(eventChannel);
             }
             return;
         }
@@ -53,10 +52,7 @@ public class GetRank implements ICommand
         catch(SQLException e)
         {
             LOGGER.error("Get Rank command failed.", e);
-            if(sendBotMessages)
-            {
-                bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 9001);
-            }
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 9001);
         }
     }
     
@@ -93,6 +89,22 @@ public class GetRank implements ICommand
         }
     }
     
+    @Override
+    public void postUsageMessage(IChannel channel)
+    {
+        String title1 = prefix + COMMAND;
+        String content1 = "Get your permissions rank for bot commands.";
+        String title2 = prefix + COMMAND + " @User";
+        String content2 = "Get the permissions rank of a specified user for bot commands.";
+        
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.appendField(title1, content1, false);
+        builder.appendField(title2, content2, false);
+        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        
+        bot.sendEmbedMessage(channel, builder.build());
+    }
+    
     private IUser validateUser(List<IUser> userList)
     {
         if(userList.size() != 1)
@@ -123,6 +135,7 @@ public class GetRank implements ICommand
         String content = "Rank " + rank;
         builder.appendField(title, content, false);
         builder.withThumbnail(user.getAvatarURL());
+        builder.withColor(DiscordHelper.getColorOfTopRoleOfUser(user, event.getGuild()));
         
         bot.sendEmbedMessage(event.getChannel(), builder.build());
     }
