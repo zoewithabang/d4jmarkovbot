@@ -71,7 +71,6 @@ public class Alias implements IModel
     @Override
     public int hashCode()
     {
-        
         return Objects.hash(alias, command, description);
     }
 }

@@ -91,4 +91,14 @@ public class CyTubeMedia implements IModel
     {
         return Objects.hash(title, service, url);
     }
+    
+    @Override
+    public String toString()
+    {
+        return "CyTubeMedia{" +
+            "title='" + title + '\'' +
+            ", service='" + service + '\'' +
+            ", url='" + url + '\'' +
+            '}';
+    }
 }

@@ -1,5 +1,7 @@
 package com.github.zoewithabang.model;
 
+import java.util.Objects;
+
 public class MessageData implements IModel
 {
     private String id;
@@ -66,5 +68,23 @@ public class MessageData implements IModel
             ", content='" + content + '\'' +
             ", timestamp=" + timestamp +
             '}';
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+        MessageData that = (MessageData) o;
+        return Objects.equals(id, that.id) &&
+            Objects.equals(userId, that.userId) &&
+            Objects.equals(content, that.content) &&
+            Objects.equals(timestamp, that.timestamp);
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, userId, content, timestamp);
     }
 }

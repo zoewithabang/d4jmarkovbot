@@ -69,8 +69,8 @@ class AliasDaoTest extends Specification
 
         then:
         retrievedRows.size() >= 2
-        retrievedRows.contains(alias1) == true
-        retrievedRows.contains(alias2) == true
+        retrievedRows.contains(alias1)
+        retrievedRows.contains(alias2)
         noExceptionThrown()
     }
 

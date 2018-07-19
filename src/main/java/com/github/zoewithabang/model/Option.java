@@ -1,5 +1,7 @@
 package com.github.zoewithabang.model;
 
+import java.util.Objects;
+
 public class Option implements IModel
 {
     private String key;
@@ -40,5 +42,21 @@ public class Option implements IModel
             "key='" + key + '\'' +
             ", value='" + value + '\'' +
             '}';
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+        Option option = (Option) o;
+        return Objects.equals(key, option.key) &&
+            Objects.equals(value, option.value);
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(key, value);
     }
 }
