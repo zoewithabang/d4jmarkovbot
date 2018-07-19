@@ -72,9 +72,12 @@ public class MarkovChainBuilder
             .filter(key -> Arrays.asList(key.toLowerCase().split(" ")).contains(seed.toLowerCase()))
             .collect(Collectors.toList());
         
-        if (matchingSeeds.isEmpty()) {
+        if(matchingSeeds.isEmpty())
+        {
             return "";
-        } else {
+        }
+        else
+        {
             return matchingSeeds.get(random.nextInt(matchingSeeds.size()));
         }
     }
@@ -115,15 +118,15 @@ public class MarkovChainBuilder
             return chain;
         }
         
-        String sanitizedChain = chain; // = chain.substring(0, 1).toUpperCase() + chain.substring(1); <-- enable for capitalization
+        String sanitizedChain = chain; // = chain.substring(0, 1).toUpperCase() + chain.substring(1); <-- change for capitalisation
         sanitizedChain = fixDanglingCharacters(sanitizedChain);
     
-        Pattern endsInPunctuation = Pattern.compile(".*\\p{Punct}", Pattern.MULTILINE);
+        /*Pattern endsInPunctuation = Pattern.compile(".*\\p{Punct}", Pattern.MULTILINE);
         
         if(!endsInPunctuation.matcher(sanitizedChain).find())
         {
             sanitizedChain += ".";
-        }
+        }*/ //uncomment this block to ensure sentences end in punctuation
         
         return sanitizedChain;
     }
