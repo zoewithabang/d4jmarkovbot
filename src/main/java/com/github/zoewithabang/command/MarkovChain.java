@@ -4,6 +4,7 @@ import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.service.MessageService;
 import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.util.DiscordHelper;
+import com.github.zoewithabang.util.MarkovChainBuilder;
 import org.apache.commons.lang3.StringUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
@@ -14,7 +15,6 @@ import sx.blah.discord.util.EmbedBuilder;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 enum MarkovChainCommandType
 {

@@ -1,4 +1,4 @@
-package com.github.zoewithabang.command
+package com.github.zoewithabang.util
 
 import spock.lang.Specification
 

@@ -1,6 +1,5 @@
-package com.github.zoewithabang.command;
+package com.github.zoewithabang.util;
 
-import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -15,13 +14,13 @@ public class MarkovChainBuilder
     private final int prefixSize;
     private final Random random = new Random();
     
-    MarkovChainBuilder(List<String> storedMessages, int prefixSize)
+    public MarkovChainBuilder(List<String> storedMessages, int prefixSize)
     {
         this.prefixSize = prefixSize;
         this.markovTable = buildMarkovTable(storedMessages);
     }
     
-    String generateChain(List<String> seedWords, int maxOutputSize)
+    public String generateChain(List<String> seedWords, int maxOutputSize)
     {
         return sanitizeChain(generateChainFromSeedWords(seedWords, maxOutputSize));
     }
