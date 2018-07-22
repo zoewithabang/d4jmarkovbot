@@ -38,7 +38,7 @@ public class ListCommands implements ICommand
     
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed for ListCommands.");
+            LOGGER.warn("Validation failed for ListCommands.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);

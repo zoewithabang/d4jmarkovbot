@@ -39,7 +39,7 @@ public class CyTubeNowPlaying implements ICommand
         
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed for CyTubeNowPlaying.");
+            LOGGER.warn("Validation failed for CyTubeNowPlaying.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);

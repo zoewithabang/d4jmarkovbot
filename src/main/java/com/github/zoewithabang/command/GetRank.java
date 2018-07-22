@@ -37,7 +37,7 @@ public class GetRank implements ICommand
     
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed for GetRank.");
+            LOGGER.warn("Validation failed for GetRank.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);

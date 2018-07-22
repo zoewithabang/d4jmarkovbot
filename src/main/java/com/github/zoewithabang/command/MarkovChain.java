@@ -76,7 +76,7 @@ public class MarkovChain implements ICommand
         {
             if(sendBotMessages)
             {
-                LOGGER.debug("Validation failed for MarkovChain.");
+                LOGGER.warn("Validation failed for MarkovChain.");
                 postUsageMessage(eventChannel);
             }
             return;

@@ -45,7 +45,7 @@ public class ManageAlias implements ICommand
         
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed for ManageAlias.");
+            LOGGER.warn("Validation failed for ManageAlias.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);

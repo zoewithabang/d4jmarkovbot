@@ -36,7 +36,7 @@ public class ListAliases implements ICommand
         
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed for ListAliases.");
+            LOGGER.warn("Validation failed for ListAliases.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);
