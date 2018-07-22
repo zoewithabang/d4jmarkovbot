@@ -64,7 +64,7 @@ public class ManageUser implements ICommand
         
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed.");
+            LOGGER.debug("Validation failed for ManageUser.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);

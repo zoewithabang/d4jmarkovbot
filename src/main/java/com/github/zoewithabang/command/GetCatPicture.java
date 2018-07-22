@@ -44,7 +44,7 @@ public class GetCatPicture implements ICommand
         
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed.");
+            LOGGER.debug("Validation failed for GetCatPicture.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);

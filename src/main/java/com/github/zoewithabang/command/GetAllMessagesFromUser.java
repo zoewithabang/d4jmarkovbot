@@ -55,7 +55,7 @@ public class GetAllMessagesFromUser implements ICommand
         
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed.");
+            LOGGER.debug("Validation failed for GetAllMessagesFromUser.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);

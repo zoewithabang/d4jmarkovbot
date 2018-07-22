@@ -32,7 +32,7 @@ public class GetCyTube implements ICommand
         
         if(!validateArgs(event, args))
         {
-            LOGGER.debug("Validation failed.");
+            LOGGER.debug("Validation failed for GetCyTube.");
             if(sendBotMessages)
             {
                 postUsageMessage(eventChannel);
