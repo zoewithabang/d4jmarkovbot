@@ -119,6 +119,7 @@ public class GetAllMessagesFromUser implements ICommand
         bot.sendMessage(eventChannel, "Hey, I should have all the messages posted by " + userName + " now!");
     }
     
+    @Override
     public boolean validateArgs(MessageReceivedEvent event, List<String> args)
     {
         LOGGER.debug("Validating args in GetAllMessagesFromUser");
