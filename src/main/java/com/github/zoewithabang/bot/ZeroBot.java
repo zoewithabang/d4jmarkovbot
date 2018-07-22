@@ -50,19 +50,6 @@ public class ZeroBot implements IBot
         optionService = new OptionService(properties);
         userService = new UserService(properties);
         commandService = new CommandService(properties);
-        
-        //called commands
-        commands.put(GetAllMessagesFromUser.COMMAND, GetAllMessagesFromUser.class);
-        commands.put(MarkovChain.COMMAND, MarkovChain.class);
-        commands.put(GetCyTube.COMMAND, GetCyTube.class);
-        commands.put(ManageAlias.COMMAND, ManageAlias.class);
-        commands.put(ListAliases.COMMAND, ListAliases.class);
-        commands.put(GetCatPicture.COMMAND, GetCatPicture.class);
-        commands.put(CyTubeNowPlaying.COMMAND, CyTubeNowPlaying.class);
-        commands.put(ListCommands.COMMAND, ListCommands.class);
-        commands.put(ManageUser.COMMAND, ManageUser.class);
-        commands.put(ManageCommand.COMMAND, ManageCommand.class);
-        commands.put(GetRank.COMMAND, GetRank.class);
     }
     
     @EventSubscriber
@@ -71,6 +58,7 @@ public class ZeroBot implements IBot
         try
         {
             //one off tasks
+            registerCommands();
             updateNickname(optionService.getOptionValue("name"));
     
             //scheduled tasks
@@ -78,7 +66,8 @@ public class ZeroBot implements IBot
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException on getting bot name from database.", e);
+            LOGGER.error("SQLException on setting up ZeroBot, exiting...", e);
+            client.logout();
         }
     }
     
@@ -210,9 +199,35 @@ public class ZeroBot implements IBot
     }
     
     @Override
-    public List<String> getCommandList()
+    public Map<String, Class> getCommands()
     {
-        return new ArrayList<>(commands.keySet());
+        return commands;
+    }
+    
+    @Override
+    public void registerCommands()
+    {
+        try
+        {
+            List<String> activeCommands = commandService.getAllActiveCommandNames();
+            
+            if(activeCommands.contains(GetAllMessagesFromUser.COMMAND)) { commands.put(GetAllMessagesFromUser.COMMAND, GetAllMessagesFromUser.class); }
+            if(activeCommands.contains(MarkovChain.COMMAND)) { commands.put(MarkovChain.COMMAND, MarkovChain.class); }
+            if(activeCommands.contains(GetCyTube.COMMAND)) { commands.put(GetCyTube.COMMAND, GetCyTube.class); }
+            if(activeCommands.contains(ManageAlias.COMMAND)) { commands.put(ManageAlias.COMMAND, ManageAlias.class); }
+            if(activeCommands.contains(ListAliases.COMMAND)) { commands.put(ListAliases.COMMAND, ListAliases.class); }
+            if(activeCommands.contains(GetCatPicture.COMMAND)) { commands.put(GetCatPicture.COMMAND, GetCatPicture.class); }
+            if(activeCommands.contains(CyTubeNowPlaying.COMMAND)) { commands.put(CyTubeNowPlaying.COMMAND, CyTubeNowPlaying.class); }
+            if(activeCommands.contains(ListCommands.COMMAND)) { commands.put(ListCommands.COMMAND, ListCommands.class); }
+            if(activeCommands.contains(ManageUser.COMMAND)) { commands.put(ManageUser.COMMAND, ManageUser.class); }
+            if(activeCommands.contains(ManageCommand.COMMAND)) { commands.put(ManageCommand.COMMAND, ManageCommand.class); }
+            if(activeCommands.contains(GetRank.COMMAND)) { commands.put(GetRank.COMMAND, GetRank.class); }
+            if(activeCommands.contains(HelpMessage.COMMAND)) { commands.put(HelpMessage.COMMAND, HelpMessage.class); }
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException occurred while registering commands.");
+        }
     }
     
     private void attemptCommand(MessageReceivedEvent event, ArrayList<String> args)

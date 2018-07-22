@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class CommandService implements IService
 {
@@ -74,6 +75,17 @@ public class CommandService implements IService
         {
             LOGGER.error("SQLException on getting Command {}.", commandName, e);
             throw e;
+        }
+    }
+    
+    public List<String> getAllActiveCommandNames() throws SQLException
+    {
+        try(Connection connection = commandDao.getConnection(database))
+        {
+            return commandDao.getAllCommandsWithActive(connection, true)
+                .stream()
+                .map(CommandInfo::getCommand)
+                .collect(Collectors.toList());
         }
     }
 }

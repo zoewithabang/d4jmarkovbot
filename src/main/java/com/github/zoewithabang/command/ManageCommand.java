@@ -232,6 +232,7 @@ public class ManageCommand implements ICommand
         try
         {
             commandService.setCommandState(commandName, enabled);
+            bot.registerCommands();
             LOGGER.debug("Changed state of command {} to {}.", commandName, enabledString);
             if(sendBotMessages)
             {

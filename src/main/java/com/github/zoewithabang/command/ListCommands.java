@@ -11,6 +11,7 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 public class ListCommands implements ICommand
 {
@@ -19,7 +20,7 @@ public class ListCommands implements ICommand
     private Properties botProperties;
     private String prefix;
     private CommandService commandService;
-    private List<String> commands;
+    private Set<String> commands;
     private List<CommandInfo> commandInfos;
     
     public ListCommands(IBot bot, Properties botProperties)
@@ -81,7 +82,7 @@ public class ListCommands implements ICommand
     {
         try
         {
-            commands = bot.getCommandList();
+            commands = bot.getCommands().keySet();
             commandInfos = commandService.getAll();
         }
         catch(SQLException e)

@@ -129,4 +129,31 @@ public class CommandDao extends Dao<CommandInfo, String>
             throw e;
         }
     }
+    
+    public List<CommandInfo> getAllCommandsWithActive(Connection connection, boolean active) throws SQLException
+    {
+        String query = "SELECT * FROM commands WHERE active = ?;";
+        
+        try(PreparedStatement statement = connection.prepareStatement(query))
+        {
+            statement.setBoolean(1, active);
+            
+            ResultSet resultSet = statement.executeQuery();
+            List<CommandInfo> commandList = new ArrayList<>();
+            
+            while(resultSet.next())
+            {
+                String command = resultSet.getString("command");
+                Integer permissionRank = resultSet.getInt("permission_rank");
+                commandList.add(new CommandInfo(command, active, permissionRank));
+            }
+            
+            return commandList;
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException on getting all Commands with active '{}'.", active, e);
+            throw e;
+        }
+    }
 }

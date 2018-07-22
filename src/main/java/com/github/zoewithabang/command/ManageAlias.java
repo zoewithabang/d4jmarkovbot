@@ -180,7 +180,7 @@ public class ManageAlias implements ICommand
         
         aliasDescription = argGroups[3].trim();
         
-        if(bot.getCommandList().contains(aliasName))
+        if(bot.getCommands().keySet().contains(aliasName))
         {
             LOGGER.warn("Command with the name '{}' already exists, aborting request to add alias.", aliasName);
             if(sendBotMessages)
