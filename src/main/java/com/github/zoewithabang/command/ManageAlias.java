@@ -160,24 +160,8 @@ public class ManageAlias implements ICommand
             return false;
         }
         
-        if(argGroups[0].startsWith(prefix))
-        {
-            aliasName = argGroups[0].substring(prefix.length()).trim();
-        }
-        else
-        {
-            aliasName = argGroups[0].trim();
-        }
-    
-        if(argGroups[1].startsWith(prefix))
-        {
-            aliasCommand = argGroups[1].substring(prefix.length()).trim();
-        }
-        else
-        {
-            aliasCommand = argGroups[1].trim();
-        }
-        
+        aliasName = trimAndRemovePrefix(argGroups[0]);
+        aliasCommand = trimAndRemovePrefix(argGroups[1]);
         aliasDescription = argGroups[3].trim();
         
         if(bot.getCommands().keySet().contains(aliasName))
@@ -232,24 +216,8 @@ public class ManageAlias implements ICommand
             return false;
         }
     
-        if(argGroups[0].startsWith(prefix))
-        {
-            aliasName = argGroups[0].substring(prefix.length()).trim();
-        }
-        else
-        {
-            aliasName = argGroups[0].trim();
-        }
-    
-        if(argGroups[1].startsWith(prefix))
-        {
-            aliasCommand = argGroups[1].substring(prefix.length()).trim();
-        }
-        else
-        {
-            aliasCommand = argGroups[1].trim();
-        }
-        
+        aliasName = trimAndRemovePrefix(argGroups[0]);
+        aliasCommand = trimAndRemovePrefix(argGroups[1]);
         aliasDescription = argGroups[3].trim();
     
         try
@@ -380,6 +348,18 @@ public class ManageAlias implements ICommand
         if(sendBotMessages)
         {
             bot.sendMessage(eventChannel, "Alias deleted!");
+        }
+    }
+    
+    private String trimAndRemovePrefix(String str)
+    {
+        if(str.startsWith(prefix))
+        {
+            return str.substring(prefix.length()).trim();
+        }
+        else
+        {
+            return str.trim();
         }
     }
 }
