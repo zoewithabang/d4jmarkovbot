@@ -35,3 +35,11 @@ CREATE TABLE IF NOT EXISTS `options` (
   `value` text NOT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `tasks` (
+  `task` varchar(255) NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  `initial_delay` int NOT NULL,
+  `period` int NOT NULL,
+  PRIMARY KEY (`task`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

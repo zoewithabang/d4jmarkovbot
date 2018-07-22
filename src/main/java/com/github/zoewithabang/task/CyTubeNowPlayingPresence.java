@@ -13,6 +13,7 @@ import java.util.Properties;
 
 public class CyTubeNowPlayingPresence implements ITask
 {
+    public static String TASK = "cytubeNp";
     private IBot bot;
     private Properties botProperties;
     private File log;

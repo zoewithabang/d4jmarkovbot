@@ -2,11 +2,9 @@ package com.github.zoewithabang.bot;
 
 import com.github.zoewithabang.command.*;
 import com.github.zoewithabang.model.Alias;
+import com.github.zoewithabang.model.TaskInfo;
 import com.github.zoewithabang.model.UserData;
-import com.github.zoewithabang.service.AliasService;
-import com.github.zoewithabang.service.CommandService;
-import com.github.zoewithabang.service.OptionService;
-import com.github.zoewithabang.service.UserService;
+import com.github.zoewithabang.service.*;
 import com.github.zoewithabang.task.CyTubeNowPlayingPresence;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -38,6 +36,7 @@ public class ZeroBot implements IBot
     private OptionService optionService;
     private UserService userService;
     private CommandService commandService;
+    private TaskService taskService;
     
     public ZeroBot(IDiscordClient client, Properties properties)
     {
@@ -50,6 +49,7 @@ public class ZeroBot implements IBot
         optionService = new OptionService(properties);
         userService = new UserService(properties);
         commandService = new CommandService(properties);
+        taskService = new TaskService(properties);
     }
     
     @EventSubscriber
@@ -62,11 +62,11 @@ public class ZeroBot implements IBot
             updateNickname(optionService.getOptionValue("name"));
     
             //scheduled tasks
-            taskScheduler.scheduleAtFixedRate(new CyTubeNowPlayingPresence(this, properties), 2, 2, TimeUnit.SECONDS);
+            registerTasks();
         }
-        catch(SQLException e)
+        catch(Exception e)
         {
-            LOGGER.error("SQLException on setting up ZeroBot, exiting...", e);
+            LOGGER.error("Exception on setting up ZeroBot, exiting...", e);
             client.logout();
         }
     }
@@ -205,7 +205,7 @@ public class ZeroBot implements IBot
     }
     
     @Override
-    public void registerCommands()
+    public void registerCommands() throws Exception
     {
         try
         {
@@ -227,6 +227,37 @@ public class ZeroBot implements IBot
         catch(SQLException e)
         {
             LOGGER.error("SQLException occurred while registering commands.");
+            throw e;
+        }
+    }
+    
+    private void registerTasks() throws Exception
+    {
+        try
+        {
+            List<TaskInfo> activeTasks = taskService.getAllActiveTasks();
+            
+            activeTasks.stream()
+                .filter
+                    (
+                        task -> task.getTask()
+                            .equals(CyTubeNowPlayingPresence.TASK)
+                    )
+                .forEach
+                    (
+                        task -> taskScheduler.scheduleAtFixedRate
+                            (
+                                new CyTubeNowPlayingPresence(this, properties),
+                                task.getInitialDelay(),
+                                task.getPeriod(),
+                                TimeUnit.SECONDS
+                            )
+                    );
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException occurred while registering commands.");
+            throw e;
         }
     }
     

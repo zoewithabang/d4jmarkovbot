@@ -15,7 +15,7 @@ public interface IBot
 {
     Logger LOGGER = Logging.getLogger();
     
-    void registerCommands();
+    void registerCommands() throws Exception;
     IMessage sendMessage(IChannel channel, String message);
     IMessage sendEmbedMessage(IChannel channel, EmbedObject embed);
     IMessage sendEmbedMessageWithStream(IChannel channel, EmbedObject embed, InputStream stream, String fileName);
