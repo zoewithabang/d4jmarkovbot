@@ -122,7 +122,7 @@ class CommandDaoTest extends Specification
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute "INSERT INTO commands (command, active, permission_rank) VALUES ('" + command.getCommand() + "', " + command.getActive() ? 1 : 0 + ", " + command.getPermissionRank() + ")"
-                commandDao.delete(connection.getConnection(), updatedCommand)
+                commandDao.delete(connection.getConnection(), command)
                 retrievedRows = connection.rows("SELECT * FROM commands WHERE command = '" + command.getCommand() + "'")
                 transaction.rollback()
             }
@@ -130,6 +130,48 @@ class CommandDaoTest extends Specification
 
         then:
         retrievedRows.size() == 0
+        noExceptionThrown()
+    }
+
+    def "get all active commands"()
+    {
+        when:
+        def command1 = new CommandInfo("thisIsACommandName", true, 0)
+        def command2 = new CommandInfo("thisIsAnotherCommandName", false, 255)
+        def retrievedRows
+        Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
+            connection.withTransaction() { transaction ->
+                connection.execute "INSERT INTO commands (command, active, permission_rank) VALUES ('" + command1.getCommand() + "', " + command1.getActive() ? 1 : 0 + ", " + command1.getPermissionRank() + ")"
+                connection.execute "INSERT INTO commands (command, active, permission_rank) VALUES ('" + command2.getCommand() + "', " + command2.getActive() ? 1 : 0 + ", " + command2.getPermissionRank() + ")"
+                retrievedRows = commandDao.getAllCommandsWithActive(connection.getConnection(), true)
+                transaction.rollback()
+            }
+        }
+
+        then:
+        retrievedRows.size() >= 1
+        retrievedRows.contains(command1)
+        noExceptionThrown()
+    }
+
+    def "get all inactive commands"()
+    {
+        when:
+        def command1 = new CommandInfo("thisIsACommandName", true, 0)
+        def command2 = new CommandInfo("thisIsAnotherCommandName", false, 255)
+        def retrievedRows
+        Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
+            connection.withTransaction() { transaction ->
+                connection.execute "INSERT INTO commands (command, active, permission_rank) VALUES ('" + command1.getCommand() + "', " + command1.getActive() ? 1 : 0 + ", " + command1.getPermissionRank() + ")"
+                connection.execute "INSERT INTO commands (command, active, permission_rank) VALUES ('" + command2.getCommand() + "', " + command2.getActive() ? 1 : 0 + ", " + command2.getPermissionRank() + ")"
+                retrievedRows = commandDao.getAllCommandsWithActive(connection.getConnection(), false)
+                transaction.rollback()
+            }
+        }
+
+        then:
+        retrievedRows.size() >= 1
+        retrievedRows.contains(command2)
         noExceptionThrown()
     }
 }
