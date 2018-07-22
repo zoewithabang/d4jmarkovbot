@@ -364,10 +364,5 @@ public class ZeroBot implements IBot
             LOGGER.error("SQLException on attempting to find Alias command for '{}'.", command, e);
             return new ArrayList<>();
         }
-        catch(Exception e)
-        {
-            //rethrowing to attemptCommand
-            throw e;
-        }
     }
 }
