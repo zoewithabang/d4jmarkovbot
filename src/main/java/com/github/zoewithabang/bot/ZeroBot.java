@@ -207,58 +207,51 @@ public class ZeroBot implements IBot
     @Override
     public void registerCommands() throws Exception
     {
+        List<String> activeCommands;
+        
         try
         {
-            List<String> activeCommands = commandService.getAllActiveCommandNames();
-            
-            if(activeCommands.contains(GetAllMessagesFromUser.COMMAND)) { commands.put(GetAllMessagesFromUser.COMMAND, GetAllMessagesFromUser.class); }
-            if(activeCommands.contains(MarkovChain.COMMAND)) { commands.put(MarkovChain.COMMAND, MarkovChain.class); }
-            if(activeCommands.contains(GetCyTube.COMMAND)) { commands.put(GetCyTube.COMMAND, GetCyTube.class); }
-            if(activeCommands.contains(ManageAlias.COMMAND)) { commands.put(ManageAlias.COMMAND, ManageAlias.class); }
-            if(activeCommands.contains(ListAliases.COMMAND)) { commands.put(ListAliases.COMMAND, ListAliases.class); }
-            if(activeCommands.contains(GetCatPicture.COMMAND)) { commands.put(GetCatPicture.COMMAND, GetCatPicture.class); }
-            if(activeCommands.contains(CyTubeNowPlaying.COMMAND)) { commands.put(CyTubeNowPlaying.COMMAND, CyTubeNowPlaying.class); }
-            if(activeCommands.contains(ListCommands.COMMAND)) { commands.put(ListCommands.COMMAND, ListCommands.class); }
-            if(activeCommands.contains(ManageUser.COMMAND)) { commands.put(ManageUser.COMMAND, ManageUser.class); }
-            if(activeCommands.contains(ManageCommand.COMMAND)) { commands.put(ManageCommand.COMMAND, ManageCommand.class); }
-            if(activeCommands.contains(GetRank.COMMAND)) { commands.put(GetRank.COMMAND, GetRank.class); }
-            if(activeCommands.contains(HelpMessage.COMMAND)) { commands.put(HelpMessage.COMMAND, HelpMessage.class); }
+            activeCommands = commandService.getAllActiveCommandNames();
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException occurred while registering commands.");
+            LOGGER.error("SQLException occurred while getting active commands for registration.");
             throw e;
         }
+        
+        if(activeCommands.contains(GetAllMessagesFromUser.COMMAND)) { commands.put(GetAllMessagesFromUser.COMMAND, GetAllMessagesFromUser.class); }
+        if(activeCommands.contains(MarkovChain.COMMAND)) { commands.put(MarkovChain.COMMAND, MarkovChain.class); }
+        if(activeCommands.contains(GetCyTube.COMMAND)) { commands.put(GetCyTube.COMMAND, GetCyTube.class); }
+        if(activeCommands.contains(ManageAlias.COMMAND)) { commands.put(ManageAlias.COMMAND, ManageAlias.class); }
+        if(activeCommands.contains(ListAliases.COMMAND)) { commands.put(ListAliases.COMMAND, ListAliases.class); }
+        if(activeCommands.contains(GetCatPicture.COMMAND)) { commands.put(GetCatPicture.COMMAND, GetCatPicture.class); }
+        if(activeCommands.contains(CyTubeNowPlaying.COMMAND)) { commands.put(CyTubeNowPlaying.COMMAND, CyTubeNowPlaying.class); }
+        if(activeCommands.contains(ListCommands.COMMAND)) { commands.put(ListCommands.COMMAND, ListCommands.class); }
+        if(activeCommands.contains(ManageUser.COMMAND)) { commands.put(ManageUser.COMMAND, ManageUser.class); }
+        if(activeCommands.contains(ManageCommand.COMMAND)) { commands.put(ManageCommand.COMMAND, ManageCommand.class); }
+        if(activeCommands.contains(GetRank.COMMAND)) { commands.put(GetRank.COMMAND, GetRank.class); }
+        if(activeCommands.contains(HelpMessage.COMMAND)) { commands.put(HelpMessage.COMMAND, HelpMessage.class); }
+        
     }
     
     private void registerTasks() throws Exception
     {
+        List<TaskInfo> activeTasks;
+        
         try
         {
-            List<TaskInfo> activeTasks = taskService.getAllActiveTasks();
-            
-            activeTasks.stream()
-                .filter
-                    (
-                        task -> task.getTask()
-                            .equals(CyTubeNowPlayingPresence.TASK)
-                    )
-                .forEach
-                    (
-                        task -> taskScheduler.scheduleAtFixedRate
-                            (
-                                new CyTubeNowPlayingPresence(this, properties),
-                                task.getInitialDelay(),
-                                task.getPeriod(),
-                                TimeUnit.SECONDS
-                            )
-                    );
+            activeTasks = taskService.getAllActiveTasks();
         }
         catch(SQLException e)
         {
-            LOGGER.error("SQLException occurred while registering commands.");
+            LOGGER.error("SQLException occurred while getting active tasks for registration.");
             throw e;
         }
+        
+        activeTasks.stream()
+            .filter(task -> task.getTask().equals(CyTubeNowPlayingPresence.TASK))
+            .findAny()
+            .ifPresent(task -> taskScheduler.scheduleAtFixedRate(new CyTubeNowPlayingPresence(this, properties), task.getInitialDelay(), task.getPeriod(), TimeUnit.SECONDS));
     }
     
     private void attemptCommand(MessageReceivedEvent event, ArrayList<String> args)
