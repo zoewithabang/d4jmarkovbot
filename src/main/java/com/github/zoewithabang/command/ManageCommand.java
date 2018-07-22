@@ -86,6 +86,8 @@ public class ManageCommand implements ICommand
                 case DISABLE:
                     changeCommandState(eventChannel, commandName, false, sendBotMessages);
                     break;
+                default:
+                    throw new IllegalStateException("Unknown CommandCommandType, cannot process command management.");
             }
         }
         catch(SQLException e)

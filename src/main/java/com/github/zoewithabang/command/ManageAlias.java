@@ -75,16 +75,15 @@ public class ManageAlias implements ICommand
                         deleteAlias(eventChannel, aliasName, sendBotMessages);
                     }
                     break;
+                default:
+                    throw new IllegalStateException("Unknown AliasCommandType, cannot process alias management.");
             }
         }
-        catch(SQLException e)
+        catch(SQLException | IllegalStateException e)
         {
             //SQLExceptions handled in their methods with logging and error messages, just returning here
             LOGGER.error("Manage Alias command failed.", e);
-            if(sendBotMessages)
-            {
-                bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 6001);
-            }
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 6001);
         }
     }
     

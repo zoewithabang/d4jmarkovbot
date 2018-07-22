@@ -88,6 +88,8 @@ public class ManageUser implements ICommand
                 case DELETE:
                     attemptDeleteUser(eventChannel, userId, sendBotMessages, userIdMarkdown);
                     break;
+                default:
+                    throw new IllegalStateException("Unknown UserCommandType, cannot process user management.");
             }
         }
         catch(SQLException e)

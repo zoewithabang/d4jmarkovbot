@@ -252,6 +252,8 @@ public class MarkovChain implements ICommand
                 {
                     throw new IllegalArgumentException("Type server does not support specified users, found " + users.size());
                 }
+            default:
+                throw new IllegalArgumentException("Unknown MarkovChainCommandType, cannot validate users.");
         }
     }
     
