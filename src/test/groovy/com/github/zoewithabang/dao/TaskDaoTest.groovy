@@ -85,7 +85,7 @@ class TaskDaoTest extends Specification
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 taskDao.store(connection.getConnection(), task)
-                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = ?",
+                retrievedRows = connection.rows("SELECT task, active, initial_delay AS initialDelay, period FROM tasks WHERE task = ?",
                         [task.getTask()])
                 transaction.rollback()
             }
@@ -108,7 +108,7 @@ class TaskDaoTest extends Specification
                 connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
                         [task.getTask(), task.getActive() ? 1 : 0, task.getInitialDelay(), task.getPeriod()])
                 taskDao.update(connection.getConnection(), updatedTask)
-                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = ?",
+                retrievedRows = connection.rows("SELECT task, active, initial_delay AS initialDelay, period FROM tasks WHERE task = ?",
                         [task.getTask()])
                 transaction.rollback()
             }
@@ -130,7 +130,7 @@ class TaskDaoTest extends Specification
                 connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
                         [task.getTask(), task.getActive() ? 1 : 0, task.getInitialDelay(), task.getPeriod()])
                 taskDao.delete(connection.getConnection(), task)
-                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = ?",
+                retrievedRows = connection.rows("SELECT task, active, initial_delay AS initialDelay, period FROM tasks WHERE task = ?",
                         [task.getTask()])
                 transaction.rollback()
             }

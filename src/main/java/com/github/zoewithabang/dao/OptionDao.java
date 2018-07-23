@@ -73,7 +73,7 @@ public class OptionDao extends Dao<Option, String>
     @Override
     public void store(Connection connection, Option option) throws SQLException
     {
-        String query = "INSERT INTO options (key, value) VALUES (?, ?);";
+        String query = "INSERT INTO options (`key`, `value`) VALUES (?, ?);";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
@@ -92,7 +92,7 @@ public class OptionDao extends Dao<Option, String>
     @Override
     public void update(Connection connection, Option option) throws SQLException
     {
-        String query = "UPDATE options SET value = ? WHERE `key` = ?;";
+        String query = "UPDATE options SET `value` = ? WHERE `key` = ?;";
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {

@@ -85,7 +85,7 @@ class CommandDaoTest extends Specification
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 commandDao.store(connection.getConnection(), command)
-                retrievedRows = connection.rows("SELECT * FROM commands WHERE command = ?",
+                retrievedRows = connection.rows("SELECT command, active, permission_rank AS permissionRank FROM commands WHERE command = ?",
                         [command.getCommand()])
                 transaction.rollback()
             }
@@ -108,7 +108,7 @@ class CommandDaoTest extends Specification
                 connection.execute("INSERT INTO commands (command, active, permission_rank) VALUES (?, ?, ?)",
                         [command.getCommand(), command.getActive() ? 1 : 0, command.getPermissionRank()])
                 commandDao.update(connection.getConnection(), updatedCommand)
-                retrievedRows = connection.rows("SELECT * FROM commands WHERE command = ?",
+                retrievedRows = connection.rows("SELECT command, active, permission_rank AS permissionRank FROM commands WHERE command = ?",
                         [command.getCommand()])
                 transaction.rollback()
             }
@@ -130,7 +130,7 @@ class CommandDaoTest extends Specification
                 connection.execute("INSERT INTO commands (command, active, permission_rank) VALUES (?, ?, ?)",
                         [command.getCommand(), command.getActive() ? 1 : 0, command.getPermissionRank()])
                 commandDao.delete(connection.getConnection(), command)
-                retrievedRows = connection.rows("SELECT * FROM commands WHERE command = ?",
+                retrievedRows = connection.rows("SELECT command, active, permission_rank AS permissionRank FROM commands WHERE command = ?",
                         [command.getCommand()])
                 transaction.rollback()
             }
