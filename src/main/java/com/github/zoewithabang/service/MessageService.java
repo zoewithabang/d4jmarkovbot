@@ -33,7 +33,7 @@ public class MessageService implements IService
         try(Connection connection = messageDao.getConnection(database))
         {
             MessageData message = messageDao.getLatestForUser(connection, userId);
-            return Instant.ofEpochMilli(message.getTimestamp());
+            return Instant.ofEpochMilli(message.getTimestampLong());
         }
         catch(SQLException e)
         {

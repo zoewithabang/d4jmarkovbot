@@ -31,7 +31,7 @@ public class MessageDao extends Dao<MessageData, String>
                 String messageId = resultSet.getString("id");
                 String userId = resultSet.getString("user_id");
                 String content = resultSet.getString("content");
-                Long timestamp = resultSet.getTimestamp("timestamp").getTime();
+                Timestamp timestamp = resultSet.getTimestamp("timestamp");
                 message = new MessageData(messageId, userId, content, timestamp);
             }
             
@@ -59,7 +59,7 @@ public class MessageDao extends Dao<MessageData, String>
                 String messageId = resultSet.getString("id");
                 String userId = resultSet.getString("user_id");
                 String content = resultSet.getString("content");
-                Long timestamp = resultSet.getTimestamp("timestamp").getTime();
+                Timestamp timestamp = resultSet.getTimestamp("timestamp");
                 messageList.add(new MessageData(messageId, userId, content, timestamp));
             }
             
@@ -82,7 +82,7 @@ public class MessageDao extends Dao<MessageData, String>
             statement.setString(1, message.getId());
             statement.setString(2, message.getUserId());
             statement.setString(3, message.getContent());
-            statement.setTimestamp(4, new Timestamp(message.getTimestamp()));
+            statement.setTimestamp(4, message.getTimestampTimestamp());
             
             statement.executeUpdate();
         }
@@ -102,7 +102,7 @@ public class MessageDao extends Dao<MessageData, String>
         {
             statement.setString(1, message.getUserId());
             statement.setString(2, message.getContent());
-            statement.setTimestamp(3, new Timestamp(message.getTimestamp()));
+            statement.setTimestamp(3, message.getTimestampTimestamp());
             statement.setString(4, message.getId());
             
             statement.executeUpdate();
@@ -147,7 +147,7 @@ public class MessageDao extends Dao<MessageData, String>
             {
                 String messageId = resultSet.getString("id");
                 String content = resultSet.getString("content");
-                Long timestamp = resultSet.getTimestamp("timestamp").getTime();
+                Timestamp timestamp = resultSet.getTimestamp("timestamp");
                 message = new MessageData(messageId, userId, content, timestamp);
             }
             

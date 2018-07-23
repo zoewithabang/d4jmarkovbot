@@ -1,5 +1,6 @@
 package com.github.zoewithabang.model;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class MessageData implements IModel
@@ -17,6 +18,14 @@ public class MessageData implements IModel
         this.userId = userId;
         this.content = content;
         this.timestamp = timestamp;
+    }
+    
+    public MessageData(String id, String userId, String content, Timestamp timestamp)
+    {
+        this.id = id;
+        this.userId = userId;
+        this.content = content;
+        this.timestamp = timestamp.getTime();
     }
     
     public String getId()
@@ -49,14 +58,24 @@ public class MessageData implements IModel
         this.content = content;
     }
     
-    public Long getTimestamp()
+    public Long getTimestampLong()
     {
         return timestamp;
+    }
+    
+    public Timestamp getTimestampTimestamp()
+    {
+        return new Timestamp(timestamp);
     }
     
     public void setTimestamp(Long timestamp)
     {
         this.timestamp = timestamp;
+    }
+    
+    public void setTimestamp(Timestamp timestamp)
+    {
+        this.timestamp = timestamp.getTime();
     }
     
     @Override
