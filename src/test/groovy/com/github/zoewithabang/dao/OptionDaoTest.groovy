@@ -57,7 +57,7 @@ class OptionDaoTest extends Specification
     {
         when:
         def option1 = new Option("thisIsATestKey", "thisIsATestValue")
-        def option2 = new Option("thisIsATestKey", "thisIsATestValue")
+        def option2 = new Option("thisIsAnotherTestKey", "thisIsAnotherTestValue")
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
