@@ -13,7 +13,7 @@ import java.util.Properties;
 
 public class HelpMessage implements ICommand
 {
-    public static final String COMMAND = "np";
+    public static final String COMMAND = "help";
     private IBot bot;
     private Properties botProperties;
     private String prefix;
