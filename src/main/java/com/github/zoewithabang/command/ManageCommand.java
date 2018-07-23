@@ -90,14 +90,11 @@ public class ManageCommand implements ICommand
                     throw new IllegalStateException("Unknown CommandCommandType, cannot process command management.");
             }
         }
-        catch(SQLException e)
+        catch(Exception e)
         {
-            //SQLExceptions handled in their methods with logging and error messages, just returning here
+            //Exceptions handled in their methods with logging and error messages, just returning here
             LOGGER.error("Manage Command command failed.", e);
-            if(sendBotMessages)
-            {
-                bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 8001);
-            }
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 8001);
         }
     }
     
@@ -228,7 +225,7 @@ public class ManageCommand implements ICommand
         }
     }
     
-    private void changeCommandState(IChannel channel, String commandName, boolean enabled, boolean sendBotMessages) throws SQLException
+    private void changeCommandState(IChannel channel, String commandName, boolean enabled, boolean sendBotMessages) throws Exception
     {
         String enabledString = enabled ? "enabled" : "disabled";
         try
