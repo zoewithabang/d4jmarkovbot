@@ -107,6 +107,7 @@ public class ListCommands implements ICommand
         String commandsDesc = "Show this list of commands!";
         String rankDesc = "Get your own or another user's permission rank on the server.";
         String postsDesc = "Get the posts in this server for a user (for Markov chains).";
+        String helpDesc = "Describing a given command and how it can be used.";
     
         String rankString;
         
@@ -148,6 +149,12 @@ public class ListCommands implements ICommand
         {
             rankString = getRankStringForCommandName(GetAllMessagesFromUser.COMMAND);
             builder.appendField(prefix + GetAllMessagesFromUser.COMMAND + rankString, postsDesc, false);
+        }
+        //help
+        if(isActiveCommand(HelpMessage.COMMAND))
+        {
+            rankString = getRankStringForCommandName(HelpMessage.COMMAND);
+            builder.appendField(prefix + HelpMessage.COMMAND + rankString, helpDesc, false);
         }
         //markov
         if(isActiveCommand(MarkovChain.COMMAND))
