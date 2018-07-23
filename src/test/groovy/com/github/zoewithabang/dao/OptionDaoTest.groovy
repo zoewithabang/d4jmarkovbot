@@ -41,7 +41,8 @@ class OptionDaoTest extends Specification
         def retrievedOption
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO options (key, value) VALUES ('" + option.getKey() + "', '" + option.getValue() + "')"
+                connection.execute("INSERT INTO options (key, value) VALUES (?, ?)",
+                        [option.getKey(), option.getValue()])
                 retrievedOption = optionDao.get(connection.getConnection(), option.getKey())
                 transaction.rollback()
             }
@@ -60,8 +61,10 @@ class OptionDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO options (key, value) VALUES ('" + option1.getKey() + "', '" + option1.getValue() + "')"
-                connection.execute "INSERT INTO options (key, value) VALUES ('" + option2.getKey() + "', '" + option2.getValue() + "')"
+                connection.execute("INSERT INTO options (key, value) VALUES (?, ?)",
+                        [option1.getKey(), option1.getValue()])
+                connection.execute("INSERT INTO options (key, value) VALUES (?, ?)",
+                        [option2.getKey(), option2.getValue()])
                 retrievedRows = optionDao.getAll(connection.getConnection())
                 transaction.rollback()
             }
@@ -82,7 +85,8 @@ class OptionDaoTest extends Specification
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 optionDao.store(connection.getConnection(), option)
-                retrievedRows = connection.rows("SELECT * FROM options WHERE key = '" + option.getKey() + "'")
+                retrievedRows = connection.rows("SELECT * FROM options WHERE key = ?",
+                        [option.getKey()])
                 transaction.rollback()
             }
         }
@@ -101,9 +105,11 @@ class OptionDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO options (key, value) VALUES ('" + option.getKey() + "', '" + option.getValue() + "')"
+                connection.execute("INSERT INTO options (key, value) VALUES (?, ?)",
+                        [option.getKey(), option.getValue()])
                 optionDao.update(connection.getConnection(), updatedOption)
-                retrievedRows = connection.rows("SELECT * FROM options WHERE alias = '" + option.getKey() + "'")
+                retrievedRows = connection.rows("SELECT * FROM options WHERE key = ?",
+                        [option.getKey()])
                 transaction.rollback()
             }
         }
@@ -121,9 +127,11 @@ class OptionDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO options (key, value) VALUES ('" + option.getKey() + "', '" + option.getValue() + "')"
+                connection.execute("INSERT INTO options (key, value) VALUES (?, ?)",
+                        [option.getKey(), option.getValue()])
                 optionDao.delete(connection.getConnection(), option)
-                retrievedRows = connection.rows("SELECT * FROM options WHERE alias = '" + option.getKey() + "'")
+                retrievedRows = connection.rows("SELECT * FROM options WHERE key = ?",
+                        [option.getKey()])
                 transaction.rollback()
             }
         }

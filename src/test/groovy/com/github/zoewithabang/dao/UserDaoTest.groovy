@@ -6,6 +6,7 @@ import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.sql.Timestamp
 import java.time.Instant
 
 class UserDaoTest extends Specification
@@ -44,7 +45,8 @@ class UserDaoTest extends Specification
         def retrievedUser
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', '" + user.getTracked() ? 1 : 0 + "', '" + user.getPermissionRank() + "')"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
                 retrievedUser = userDao.get(connection.getConnection(), user.getId())
                 transaction.rollback()
             }
@@ -63,8 +65,10 @@ class UserDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user1.getId() + "', '" + user1.getTracked() ? 1 : 0 + "', '" + user1.getPermissionRank() + "')"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user2.getId() + "', '" + user2.getTracked() ? 1 : 0 + "', '" + user2.getPermissionRank() + "')"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user1.getId(), user1.getTracked() ? 1 : 0, user1.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user2.getId(), user2.getTracked() ? 1 : 0, user2.getPermissionRank()])
                 retrievedRows = userDao.getAll(connection.getConnection())
                 transaction.rollback()
             }
@@ -85,7 +89,8 @@ class UserDaoTest extends Specification
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 userDao.store(connection.getConnection(), user)
-                retrievedRows = connection.rows("SELECT * FROM users WHERE id = '" + user.getId() + "'")
+                retrievedRows = connection.rows("SELECT * FROM users WHERE id = ?",
+                        [user.getId()])
                 transaction.rollback()
             }
         }
@@ -104,9 +109,11 @@ class UserDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', '" + user.getTracked() ? 1 : 0 + "', '" + user.getPermissionRank() + "')"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
                 userDao.update(connection.getConnection(), updatedUser)
-                retrievedRows = connection.rows("SELECT * FROM users WHERE id = '" + user.getId() + "'")
+                retrievedRows = connection.rows("SELECT * FROM users WHERE id = ?",
+                        [user.getId()])
                 transaction.rollback()
             }
         }
@@ -124,9 +131,11 @@ class UserDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', '" + user.getTracked() ? 1 : 0 + "', '" + user.getPermissionRank() + "')"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
                 userDao.delete(connection.getConnection(), user)
-                retrievedRows = connection.rows("SELECT * FROM users WHERE id = '" + user.getId() + "'")
+                retrievedRows = connection.rows("SELECT * FROM users WHERE id = ?",
+                        [user.getId()])
                 transaction.rollback()
             }
         }
@@ -145,9 +154,12 @@ class UserDaoTest extends Specification
         def retrievedUser
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', '" + user.getTracked() ? 1 : 0 + "', '" + user.getPermissionRank() + "')"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
                 retrievedUser = userDao.getWithMessages(connection.getConnection(), user.getId())
                 transaction.rollback()
             }

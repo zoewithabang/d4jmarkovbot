@@ -41,8 +41,9 @@ class TaskDaoTest extends Specification
         def retrievedTask
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task.getTask() + "', " + task.getActive() ? 1 : 0 + ", " + task.getInitialDelay() + ", " + task.getPeriod()")"
-                retrievedCommand = taskDao.get(connection.getConnection(), task.getTask())
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task.getTask(), task.getActive() ? 1 : 0, task.getInitialDelay(), task.getPeriod()])
+                retrievedTask = taskDao.get(connection.getConnection(), task.getTask())
                 transaction.rollback()
             }
         }
@@ -60,8 +61,10 @@ class TaskDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task1.getTask() + "', " + task1.getActive() ? 1 : 0 + ", " + task1.getInitialDelay() + ", " + task1.getPeriod()")"
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task2.getTask() + "', " + task2.getActive() ? 1 : 0 + ", " + task2.getInitialDelay() + ", " + task2.getPeriod()")"
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task1.getTask(), task1.getActive() ? 1 : 0, task1.getInitialDelay(), task1.getPeriod()])
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task2.getTask(), task2.getActive() ? 1 : 0, task2.getInitialDelay(), task2.getPeriod()])
                 retrievedRows = taskDao.getAll(connection.getConnection())
                 transaction.rollback()
             }
@@ -82,7 +85,8 @@ class TaskDaoTest extends Specification
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 taskDao.store(connection.getConnection(), task)
-                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = '" + task.getTask() + "'")
+                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = ?",
+                        [task.getTask()])
                 transaction.rollback()
             }
         }
@@ -101,9 +105,11 @@ class TaskDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task.getTask() + "', " + task.getActive() ? 1 : 0 + ", " + task.getInitialDelay() + ", " + task.getPeriod()")"
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task.getTask(), task.getActive() ? 1 : 0, task.getInitialDelay(), task.getPeriod()])
                 taskDao.update(connection.getConnection(), updatedTask)
-                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = '" + task.getTask() + "'")
+                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = ?",
+                        [task.getTask()])
                 transaction.rollback()
             }
         }
@@ -121,9 +127,11 @@ class TaskDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task.getTask() + "', " + task.getActive() ? 1 : 0 + ", " + task.getInitialDelay() + ", " + task.getPeriod()")"
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task.getTask(), task.getActive() ? 1 : 0, task.getInitialDelay(), task.getPeriod()])
                 taskDao.delete(connection.getConnection(), task)
-                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = '" + task.getTask() + "'")
+                retrievedRows = connection.rows("SELECT * FROM tasks WHERE task = ?",
+                        [task.getTask()])
                 transaction.rollback()
             }
         }
@@ -141,8 +149,10 @@ class TaskDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task1.getTask() + "', " + task1.getActive() ? 1 : 0 + ", " + task1.getInitialDelay() + ", " + task1.getPeriod()")"
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task2.getTask() + "', " + task2.getActive() ? 1 : 0 + ", " + task2.getInitialDelay() + ", " + task2.getPeriod()")"
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task1.getTask(), task1.getActive() ? 1 : 0, task1.getInitialDelay(), task1.getPeriod()])
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task2.getTask(), task2.getActive() ? 1 : 0, task2.getInitialDelay(), task2.getPeriod()])
                 retrievedRows = taskDao.getAllWithActive(connection.getConnection(), true)
                 transaction.rollback()
             }
@@ -162,8 +172,10 @@ class TaskDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task1.getTask() + "', " + task1.getActive() ? 1 : 0 + ", " + task1.getInitialDelay() + ", " + task1.getPeriod()")"
-                connection.execute "INSERT INTO tasks (task, active, initial_delay, period) VALUES ('" + task2.getTask() + "', " + task2.getActive() ? 1 : 0 + ", " + task2.getInitialDelay() + ", " + task2.getPeriod()")"
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task1.getTask(), task1.getActive() ? 1 : 0, task1.getInitialDelay(), task1.getPeriod()])
+                connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
+                        [task2.getTask(), task2.getActive() ? 1 : 0, task2.getInitialDelay(), task2.getPeriod()])
                 retrievedRows = taskDao.getAllWithActive(connection.getConnection(), false)
                 transaction.rollback()
             }

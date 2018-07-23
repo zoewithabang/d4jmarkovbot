@@ -41,7 +41,8 @@ class AliasDaoTest extends Specification
         def retrievedAlias
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('" + alias.getAlias() + "', '" + alias.getCommand() + "', '" + alias.getDescription() + "')"
+                connection.execute("INSERT INTO aliases (alias, command, description) VALUES (?, ?, ?)",
+                        [alias.getAlias(), alias.getCommand(), alias.getDescription()])
                 retrievedAlias = aliasDao.get(connection.getConnection(), alias.getAlias())
                 transaction.rollback()
             }
@@ -60,8 +61,10 @@ class AliasDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('" + alias1.getAlias() + "', '" + alias1.getCommand() + "', '" + alias1.getDescription() + "')"
-                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('" + alias2.getAlias() + "', '" + alias2.getCommand() + "', '" + alias2.getDescription() + "')"
+                connection.execute("INSERT INTO aliases (alias, command, description) VALUES (?, ?, ?)",
+                        [alias1.getAlias(), alias1.getCommand(), alias1.getDescription()])
+                connection.execute("INSERT INTO aliases (alias, command, description) VALUES (?, ?, ?)",
+                        [alias2.getAlias(), alias2.getCommand(), alias2.getDescription()])
                 retrievedRows = aliasDao.getAll(connection.getConnection())
                 transaction.rollback()
             }
@@ -82,7 +85,8 @@ class AliasDaoTest extends Specification
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 aliasDao.store(connection.getConnection(), alias)
-                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = '" + alias.getAlias() + "'")
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = ?",
+                        [alias.getAlias()])
                 transaction.rollback()
             }
         }
@@ -101,9 +105,11 @@ class AliasDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('" + alias.getAlias() + "', '" + alias.getCommand() + "', '" + alias.getDescription() + "')"
+                connection.execute("INSERT INTO aliases (alias, command, description) VALUES (?, ?, ?)",
+                        [alias.getAlias(), alias.getCommand(), alias.getDescription()])
                 aliasDao.update(connection.getConnection(), updatedAlias)
-                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = '" + alias.getAlias() + "'")
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = ?",
+                        [alias.getAlias()])
                 transaction.rollback()
             }
         }
@@ -121,9 +127,11 @@ class AliasDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO aliases (alias, command, description) VALUES ('" + alias.getAlias() + "', '" + alias.getCommand() + "', '" + alias.getDescription() + "')"
+                connection.execute("INSERT INTO aliases (alias, command, description) VALUES (?, ?, ?)",
+                        [alias.getAlias(), alias.getCommand(), alias.getDescription()])
                 aliasDao.delete(connection.getConnection(), alias)
-                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = '" + alias.getAlias() + "'")
+                retrievedRows = connection.rows("SELECT * FROM aliases WHERE alias = ?",
+                        [alias.getAlias()])
                 transaction.rollback()
             }
         }

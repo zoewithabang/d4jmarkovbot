@@ -6,6 +6,7 @@ import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.sql.Timestamp
 import java.time.Instant
 
 class MessageDaoTest extends Specification
@@ -45,8 +46,10 @@ class MessageDaoTest extends Specification
         def retrievedMessage
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', " + user.getTracked() ? 1 : 0 + ", " + user.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message.getId() + "', '" + message.getUserId() + "', '" + message.getContent() + "', " + message.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message.getId(), message.getUserId(), message.getContent(), new Timestamp(message.getTimestamp())])
                 retrievedMessage = messageDao.get(connection.getConnection(), message.getId())
                 transaction.rollback()
             }
@@ -67,10 +70,14 @@ class MessageDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user1.getId() + "', " + user1.getTracked() ? 1 : 0 + ", " + user1.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user2.getId() + "', " + user2.getTracked() ? 1 : 0 + ", " + user2.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user1.getId(), user1.getTracked() ? 1 : 0, user1.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user2.getId(), user2.getTracked() ? 1 : 0, user2.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
                 retrievedRows = messageDao.getAll(connection.getConnection())
                 transaction.rollback()
             }
@@ -91,9 +98,11 @@ class MessageDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', " + user.getTracked() ? 1 : 0 + ", " + user.getPermissionRank() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
                 messageDao.store(connection.getConnection(), message)
-                retrievedRows = connection.rows("SELECT * FROM messages WHERE id = '" + message.getId() + "'")
+                retrievedRows = connection.rows("SELECT * FROM messages WHERE id = ?",
+                        [message.getId()])
                 transaction.rollback()
             }
         }
@@ -113,10 +122,13 @@ class MessageDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', " + user.getTracked() ? 1 : 0 + ", " + user.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message.getId() + "', '" + message.getUserId() + "', '" + message.getContent() + "', " + message.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message.getId(), message.getUserId(), message.getContent(), new Timestamp(message.getTimestamp())])
                 messageDao.update(connection.getConnection(), updatedMessage)
-                retrievedRows = connection.rows("SELECT * FROM messages WHERE id = '" + message.getId() + "'")
+                retrievedRows = connection.rows("SELECT * FROM messages WHERE id = ?",
+                        [message.getId()])
                 transaction.rollback()
             }
         }
@@ -135,10 +147,13 @@ class MessageDaoTest extends Specification
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', " + user.getTracked() ? 1 : 0 + ", " + user.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message.getId() + "', '" + message.getUserId() + "', '" + message.getContent() + "', " + message.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message.getId(), message.getUserId(), message.getContent(), new Timestamp(message.getTimestamp())])
                 messageDao.delete(connection.getConnection(), message)
-                retrievedRows = connection.rows("SELECT * FROM messages WHERE id = '" + message.getId() + "'")
+                retrievedRows = connection.rows("SELECT * FROM messages WHERE id = ?",
+                        [message.getId()])
                 transaction.rollback()
             }
         }
@@ -158,10 +173,14 @@ class MessageDaoTest extends Specification
         def retrievedMessage
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', " + user.getTracked() ? 1 : 0 + ", " + user.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message3.getId() + "', '" + message3.getUserId() + "', '" + message3.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message3.getId(), message3.getUserId(), message3.getContent(), new Timestamp(message3.getTimestamp())])
                 retrievedMessage = messageDao.getLatestForUser(connection.getConnection(), user.getId())
                 transaction.rollback()
             }
@@ -184,10 +203,14 @@ class MessageDaoTest extends Specification
         def messageCount
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', " + user.getTracked() ? 1 : 0 + ", " + user.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message3.getId() + "', '" + message3.getUserId() + "', '" + message3.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message3.getId(), message3.getUserId(), message3.getContent(), new Timestamp(message3.getTimestamp())])
                 messageCount = messageDao.getMessageCountForUsers(connection.getConnection(), userIdList)
                 transaction.rollback()
             }
@@ -214,12 +237,18 @@ class MessageDaoTest extends Specification
         def messageCount
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user1.getId() + "', " + user1.getTracked() ? 1 : 0 + ", " + user1.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user2.getId() + "', " + user2.getTracked() ? 1 : 0 + ", " + user2.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user3.getId() + "', " + user3.getTracked() ? 1 : 0 + ", " + user3.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message3.getId() + "', '" + message3.getUserId() + "', '" + message3.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user1.getId(), user1.getTracked() ? 1 : 0, user1.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user2.getId(), user2.getTracked() ? 1 : 0, user2.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user3.getId(), user3.getTracked() ? 1 : 0, user3.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message3.getId(), message3.getUserId(), message3.getContent(), new Timestamp(message3.getTimestamp())])
                 messageCount = messageDao.getMessageCountForUsers(connection.getConnection(), userIdList)
                 transaction.rollback()
             }
@@ -246,10 +275,14 @@ class MessageDaoTest extends Specification
         def retrievedMessages
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user.getId() + "', " + user.getTracked() ? 1 : 0 + ", " + user.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message3.getId() + "', '" + message3.getUserId() + "', '" + message3.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message3.getId(), message3.getUserId(), message3.getContent(), new Timestamp(message3.getTimestamp())])
                 retrievedMessages = messageDao.getRandomContentsForUsers(connection.getConnection(), userIdList, 0, 1)
                 transaction.rollback()
             }
@@ -281,12 +314,18 @@ class MessageDaoTest extends Specification
         def retrievedMessages
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user1.getId() + "', " + user1.getTracked() ? 1 : 0 + ", " + user1.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user2.getId() + "', " + user2.getTracked() ? 1 : 0 + ", " + user2.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user3.getId() + "', " + user3.getTracked() ? 1 : 0 + ", " + user3.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message3.getId() + "', '" + message3.getUserId() + "', '" + message3.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user1.getId(), user1.getTracked() ? 1 : 0, user1.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user2.getId(), user2.getTracked() ? 1 : 0, user2.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user3.getId(), user3.getTracked() ? 1 : 0, user3.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message3.getId(), message3.getUserId(), message3.getContent(), new Timestamp(message3.getTimestamp())])
                 retrievedMessages = messageDao.getRandomContentsForUsers(connection.getConnection(), userIdList, 0, 1)
                 transaction.rollback()
             }
@@ -310,12 +349,18 @@ class MessageDaoTest extends Specification
         def messageCount
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user1.getId() + "', " + user1.getTracked() ? 1 : 0 + ", " + user1.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user2.getId() + "', " + user2.getTracked() ? 1 : 0 + ", " + user2.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user3.getId() + "', " + user3.getTracked() ? 1 : 0 + ", " + user3.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message3.getId() + "', '" + message3.getUserId() + "', '" + message3.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user1.getId(), user1.getTracked() ? 1 : 0, user1.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user2.getId(), user2.getTracked() ? 1 : 0, user2.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user3.getId(), user3.getTracked() ? 1 : 0, user3.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message3.getId(), message3.getUserId(), message3.getContent(), new Timestamp(message3.getTimestamp())])
                 messageCount = messageDao.getTotalMessageCount(connection.getConnection())
                 transaction.rollback()
             }
@@ -342,12 +387,18 @@ class MessageDaoTest extends Specification
         def retrievedMessages
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user1.getId() + "', " + user1.getTracked() ? 1 : 0 + ", " + user1.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user2.getId() + "', " + user2.getTracked() ? 1 : 0 + ", " + user2.getPermissionRank() + ")"
-                connection.execute "INSERT INTO users (id, tracked, permission_rank) VALUES ('" + user3.getId() + "', " + user3.getTracked() ? 1 : 0 + ", " + user3.getPermissionRank() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message1.getId() + "', '" + message1.getUserId() + "', '" + message1.getContent() + "', " + message1.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message2.getId() + "', '" + message2.getUserId() + "', '" + message2.getContent() + "', " + message2.getTimestamp() + ")"
-                connection.execute "INSERT INTO messages (id, user_id, content, timestamp) VALUES ('" + message3.getId() + "', '" + message3.getUserId() + "', '" + message3.getContent() + "', " + message2.getTimestamp() + ")"
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user1.getId(), user1.getTracked() ? 1 : 0, user1.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user2.getId(), user2.getTracked() ? 1 : 0, user2.getPermissionRank()])
+                connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
+                        [user3.getId(), user3.getTracked() ? 1 : 0, user3.getPermissionRank()])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestamp())])
+                connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
+                        [message3.getId(), message3.getUserId(), message3.getContent(), new Timestamp(message3.getTimestamp())])
                 retrievedMessages = messageDao.getRandomContents(connection.getConnection(), 0, 1)
                 transaction.rollback()
             }
