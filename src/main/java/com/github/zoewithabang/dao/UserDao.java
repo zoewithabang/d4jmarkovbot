@@ -168,7 +168,7 @@ public class UserDao extends Dao<UserData, String>
                     
                     String userId = resultSet.getString("users_id");
                     String content = resultSet.getString("messages_content");
-                    Long timestamp = resultSet.getTimestamp("messages_timestamp").getTime();
+                    Timestamp timestamp = resultSet.getTimestamp("messages_timestamp");
         
                     user.addMessage(new MessageData(messageId, userId, content, timestamp));
                 }
