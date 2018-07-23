@@ -9,7 +9,8 @@ import sx.blah.discord.util.DiscordException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -38,8 +39,9 @@ class BotManager
         try
         {
             InputStream zeroBotPropertyStream = BotManager.class.getClassLoader().getResourceAsStream("zerobot.properties");
+            InputStreamReader zeroBotPropertyStreamReader = new InputStreamReader(zeroBotPropertyStream, StandardCharsets.UTF_8);
             Properties zeroBotProperties = new Properties();
-            zeroBotProperties.load(zeroBotPropertyStream);
+            zeroBotProperties.load(zeroBotPropertyStreamReader);
             
             botProperties.put("ZeroBot", zeroBotProperties);
         }
