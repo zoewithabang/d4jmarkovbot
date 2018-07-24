@@ -38,23 +38,50 @@ class BotManager
     {
         try
         {
-            InputStream zeroBotPropertyStream = BotManager.class.getClassLoader().getResourceAsStream("zerobot.properties");
-            InputStreamReader zeroBotPropertyStreamReader = new InputStreamReader(zeroBotPropertyStream, StandardCharsets.UTF_8);
             Properties zeroBotProperties = new Properties();
-            zeroBotProperties.load(zeroBotPropertyStreamReader);
+            
+            InputStream zeroBotPropertyStream = BotManager.class.getClassLoader().getResourceAsStream("zerobot.properties");
+            if(zeroBotPropertyStream != null)
+            {
+                LOGGER.info("Getting ZeroBot properties from file.");
+                InputStreamReader zeroBotPropertyStreamReader = new InputStreamReader(zeroBotPropertyStream, StandardCharsets.UTF_8);
+                zeroBotProperties.load(zeroBotPropertyStreamReader);
+            }
+            else
+            {
+                LOGGER.info("Getting ZeroBot properties from system arguments.");
+                String[] keys = {"token", "prefix", "dbuser", "dbpassword", "dbaddress", "dbport", "dbdatabase"};
+                zeroBotProperties = getPropertiesFromSystem("zerobot", keys);
+            }
             
             botProperties.put("ZeroBot", zeroBotProperties);
         }
         catch(IOException e)
         {
-            LOGGER.error("IOException on getting ZeroBot properties file.", e);
+            LOGGER.error("IOException on getting bot properties file.", e);
             throw e;
         }
         catch(NullPointerException e)
         {
-            LOGGER.error("NullPointerException on loading ZeroBot properties file.", e);
+            LOGGER.error("NullPointerException on loading bot properties.", e);
             throw e;
         }
+    }
+    
+    private static Properties getPropertiesFromSystem(String botName, String[] keys)
+    {
+        Properties properties = new Properties();
+        for(String key : keys)
+        {
+            String value = System.getProperty(botName + key);
+            if(value == null)
+            {
+                LOGGER.error("No value found for bot {} and property key {}.", botName, key);
+                throw new NullPointerException("Null value for required key.");
+            }
+            properties.put(key, value);
+        }
+        return properties;
     }
     
     private static void run() throws DiscordException
