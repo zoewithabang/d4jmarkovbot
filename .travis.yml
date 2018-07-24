@@ -1,0 +1,14 @@
+language: java
+sudo: false
+dist: trusty
+jdk:
+  - oraclejdk8
+  - oraclejdk10
+  - openjdk8
+  - openjdk10
+services: mysql
+before_install:
+  - mysql -u root -p -e "CREATE DATABASE zerobot;"
+  - mysql -u root -p zerobot < zerobot.sql
+script:
+  - mvn test -DargLine="-Dzerobottoken=X -Dzerobotprefix=! -Dzerobotdbuser=root -Dzerobotdbpassword= -Dzerobotdbaddress=localhost -Dzerobotdbport=3306 -Dzerobotdbdatabase=zerobot"
