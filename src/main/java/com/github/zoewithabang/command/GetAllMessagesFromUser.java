@@ -3,6 +3,7 @@ package com.github.zoewithabang.command;
 import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.model.UserData;
 import com.github.zoewithabang.service.MessageService;
+import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.service.UserService;
 import com.github.zoewithabang.util.DiscordHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -15,7 +16,6 @@ import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageHistory;
 import sx.blah.discord.util.RequestBuffer;
 
-import java.awt.*;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
@@ -29,6 +29,7 @@ public class GetAllMessagesFromUser implements ICommand
     private String prefix;
     private UserService userService;
     private MessageService messageService;
+    private OptionService optionService;
     private IUser user;
     
     public GetAllMessagesFromUser(IBot bot, Properties botProperties)
@@ -38,6 +39,7 @@ public class GetAllMessagesFromUser implements ICommand
         prefix = botProperties.getProperty("prefix");
         userService = new UserService(botProperties);
         messageService = new MessageService(botProperties);
+        optionService = new OptionService(botProperties);
     }
     
     @Override
@@ -146,7 +148,7 @@ public class GetAllMessagesFromUser implements ICommand
         
         EmbedBuilder builder = new EmbedBuilder();
         builder.appendField(title, content, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessage(channel, builder.build());
     }

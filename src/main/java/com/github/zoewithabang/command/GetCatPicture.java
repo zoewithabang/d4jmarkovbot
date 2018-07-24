@@ -2,12 +2,12 @@ package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.model.HttpResponse;
+import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.util.HttpRequestHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +22,7 @@ public class GetCatPicture implements ICommand
     private IBot bot;
     private Properties botProperties;
     private String prefix;
+    private OptionService optionService;
     private Random random;
     
     private final String CAT_API_SITE = "http://thecatapi.com";
@@ -33,6 +34,7 @@ public class GetCatPicture implements ICommand
         this.bot = bot;
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
+        optionService = new OptionService(botProperties);
         random = new Random();
     }
 
@@ -93,12 +95,12 @@ public class GetCatPicture implements ICommand
     
         EmbedBuilder builder = new EmbedBuilder();
         builder.appendField(title, content, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
     
         bot.sendEmbedMessage(channel, builder.build());
     }
     
-    public HttpResponse getCatPicture(String apiUrl, String dataFormat, String fileType) throws MalformedURLException, IOException, IllegalStateException
+    private HttpResponse getCatPicture(String apiUrl, String dataFormat, String fileType) throws MalformedURLException, IOException, IllegalStateException
     {
         try
         {
@@ -134,7 +136,7 @@ public class GetCatPicture implements ICommand
         
         builder.withImage("attachment://cat." + fileType);
         builder.withFooterText(source);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessageWithStream(channel, builder.build(), stream, "cat." + fileType);
     }

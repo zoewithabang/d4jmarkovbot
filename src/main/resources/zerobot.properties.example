@@ -1,10 +1,7 @@
 token=inserttokenhere
 prefix=!
-colour=#000000
 dbuser=username
 dbpassword=password
 dbaddress=localhost
 dbport=3306
 dbdatabase=databasename
-cytubeurl=https://www.example.com/r/room
-cytubeloglocation=/example/absolute/path/to/cytube/chanlogs/room.log

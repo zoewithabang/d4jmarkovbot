@@ -3,13 +3,13 @@ package com.github.zoewithabang.command;
 import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.model.CommandInfo;
 import com.github.zoewithabang.service.CommandService;
+import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.service.UserService;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +45,7 @@ public class ManageCommand implements ICommand
     private String prefix;
     private CommandService commandService;
     private UserService userService;
+    private OptionService optionService;
     private CommandCommandType type;
     private String commandName;
     private int rank;
@@ -56,6 +57,7 @@ public class ManageCommand implements ICommand
         prefix = botProperties.getProperty("prefix");
         commandService = new CommandService(botProperties);
         userService = new UserService(botProperties);
+        optionService = new OptionService(botProperties);
     }
     
     @Override
@@ -142,7 +144,7 @@ public class ManageCommand implements ICommand
         builder.appendField(title1, content1, false);
         builder.appendField(title2, content2, false);
         builder.appendField(title3, content3, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessage(channel, builder.build());
     }

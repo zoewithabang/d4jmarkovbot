@@ -1,6 +1,7 @@
 package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
+import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.service.UserService;
 import com.github.zoewithabang.util.DiscordHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -8,7 +9,6 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +44,7 @@ public class ManageUser implements ICommand
     private String prefix;
     private UserCommandType type;
     private UserService userService;
+    private OptionService optionService;
     private IUser user;
     private int requestedRank;
     private String userIdMarkdown;
@@ -55,6 +56,7 @@ public class ManageUser implements ICommand
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
         userService = new UserService(botProperties);
+        optionService = new OptionService(botProperties);
     }
     
     @Override
@@ -147,7 +149,7 @@ public class ManageUser implements ICommand
         builder.appendField(title1, content1, false);
         builder.appendField(title2, content2, false);
         builder.appendField(title3, content3, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessage(channel, builder.build());
     }

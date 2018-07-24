@@ -213,7 +213,7 @@ public class MarkovChain implements ICommand
         builder.appendField(title2, content2, false);
         builder.appendField(title3, content3, false);
         builder.appendField(title4, content4, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessage(channel, builder.build());
     }
@@ -329,7 +329,7 @@ public class MarkovChain implements ICommand
                 break;
             
             case SERVER:
-                colour = Color.decode(botProperties.getProperty("colour"));
+                colour = optionService.getBotColour();
                 thumbnail = server.getIconURL();
                 nameBuilder.append("Everybody says:");
                 break;

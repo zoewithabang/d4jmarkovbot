@@ -3,11 +3,11 @@ package com.github.zoewithabang.command;
 import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.model.Alias;
 import com.github.zoewithabang.service.AliasService;
+import com.github.zoewithabang.service.OptionService;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -19,6 +19,7 @@ public class ListAliases implements ICommand
     private Properties botProperties;
     private String prefix;
     private AliasService aliasService;
+    private OptionService optionService;
     
     public ListAliases(IBot bot, Properties botProperties)
     {
@@ -26,6 +27,7 @@ public class ListAliases implements ICommand
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
         aliasService = new AliasService(botProperties);
+        optionService = new OptionService(botProperties);
     }
     
     @Override
@@ -68,7 +70,7 @@ public class ListAliases implements ICommand
         EmbedBuilder builder = new EmbedBuilder();
         
         builder.withAuthorName("List of aliases:");
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
     
         for(Alias alias : aliases)
         {
@@ -88,7 +90,7 @@ public class ListAliases implements ICommand
         
         EmbedBuilder builder = new EmbedBuilder();
         builder.appendField(title, content, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessage(channel, builder.build());
     }

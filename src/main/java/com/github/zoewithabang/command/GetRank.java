@@ -1,6 +1,7 @@
 package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
+import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.service.UserService;
 import com.github.zoewithabang.util.DiscordHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -8,7 +9,6 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -20,6 +20,7 @@ public class GetRank implements ICommand
     private Properties botProperties;
     private String prefix;
     private UserService userService;
+    private OptionService optionService;
     private IUser user;
     
     public GetRank(IBot bot, Properties botProperties)
@@ -28,6 +29,7 @@ public class GetRank implements ICommand
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
         userService = new UserService(botProperties);
+        optionService = new OptionService(botProperties);
     }
     
     @Override
@@ -100,7 +102,7 @@ public class GetRank implements ICommand
         EmbedBuilder builder = new EmbedBuilder();
         builder.appendField(title1, content1, false);
         builder.appendField(title2, content2, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessage(channel, builder.build());
     }

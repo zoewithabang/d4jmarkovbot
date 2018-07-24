@@ -1,11 +1,11 @@
 package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
+import com.github.zoewithabang.service.OptionService;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -18,12 +18,14 @@ public class HelpMessage implements ICommand
     private Properties botProperties;
     private String prefix;
     private String requestedCommand;
+    private OptionService optionService;
     
     public HelpMessage(IBot bot, Properties botProperties)
     {
         this.bot = bot;
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
+        optionService = new OptionService(botProperties);
     }
     
     @Override
@@ -69,7 +71,7 @@ public class HelpMessage implements ICommand
     
         EmbedBuilder builder = new EmbedBuilder();
         builder.appendField(title, content, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         builder.withFooterText("Type " + prefix + ListCommands.COMMAND + " to see the list of available commands.");
     
         bot.sendEmbedMessage(channel, builder.build());

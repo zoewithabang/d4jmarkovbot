@@ -2,14 +2,15 @@ package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.model.CyTubeMedia;
+import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.util.CyTubeHelper;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,16 +20,14 @@ public class CyTubeNowPlaying implements ICommand
     private IBot bot;
     private Properties botProperties;
     private String prefix;
-    private File log;
-    private String url;
+    private OptionService optionService;
     
     public CyTubeNowPlaying(IBot bot, Properties botProperties)
     {
         this.bot = bot;
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
-        log = new File(botProperties.getProperty("cytubeloglocation"));
-        url = botProperties.getProperty("cytubeurl");
+        optionService = new OptionService(botProperties);
     }
     
     @Override
@@ -36,6 +35,8 @@ public class CyTubeNowPlaying implements ICommand
     {
         IChannel eventChannel = event.getChannel();
         CyTubeMedia nowPlaying;
+        File log;
+        String url;
         
         if(!validateArgs(event, args))
         {
@@ -46,6 +47,18 @@ public class CyTubeNowPlaying implements ICommand
             }
             return;
         }
+        
+        try
+        {
+            log = new File(optionService.getOptionValue("cytube_log_location"));
+            url = optionService.getOptionValue("cytube_url");
+        }
+        catch(SQLException e)
+        {
+            LOGGER.error("SQLException in getting CyTube parameters.");
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 4001);
+            return;
+        }
     
         try
         {
@@ -54,17 +67,17 @@ public class CyTubeNowPlaying implements ICommand
         catch(IOException e)
         {
             LOGGER.error("IOException in getting latest now playing CyTube media.");
-            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 4001);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 4002);
             return;
         }
         catch(IllegalStateException e)
         {
             LOGGER.error("IllegalStateException in getting latest now playing CyTube media.");
-            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 4002);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 4003);
             return;
         }
         
-        postNowPlayingMessage(event, nowPlaying);
+        postNowPlayingMessage(event, nowPlaying, url);
     }
     
     @Override
@@ -81,19 +94,19 @@ public class CyTubeNowPlaying implements ICommand
         
         EmbedBuilder builder = new EmbedBuilder();
         builder.appendField(title, content, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessage(channel, builder.build());
     }
     
-    private void postNowPlayingMessage(MessageReceivedEvent event, CyTubeMedia nowPlaying)
+    private void postNowPlayingMessage(MessageReceivedEvent event, CyTubeMedia nowPlaying, String url)
     {
         String links = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ") || [Tune in~](" + url + ")";
         EmbedBuilder builder = new EmbedBuilder();
     
         //uD83C and uDFB5 make a musical note emoji
         builder.appendField(nowPlaying.getTitle(), links + " \uD83C\uDFB5", false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
     
         LOGGER.debug("Sending now playing message with now playing data '{}'.", nowPlaying);
     

@@ -2,11 +2,11 @@ package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
 import com.github.zoewithabang.service.AliasService;
+import com.github.zoewithabang.service.OptionService;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -26,6 +26,7 @@ public class ManageAlias implements ICommand
     private String prefix;
     private AliasCommandType type;
     private AliasService aliasService;
+    private OptionService optionService;
     private String aliasName;
     private String aliasCommand;
     private String aliasDescription;
@@ -36,6 +37,7 @@ public class ManageAlias implements ICommand
         this.botProperties = botProperties;
         prefix = botProperties.getProperty("prefix");
         aliasService = new AliasService(botProperties);
+        optionService = new OptionService(botProperties);
     }
     
     @Override
@@ -135,7 +137,7 @@ public class ManageAlias implements ICommand
         builder.appendField(title1, content1, false);
         builder.appendField(title2, content2, false);
         builder.appendField(title3, content3, false);
-        builder.withColor(Color.decode(botProperties.getProperty("colour")));
+        builder.withColor(optionService.getBotColour());
         
         bot.sendEmbedMessage(channel, builder.build());
     }
