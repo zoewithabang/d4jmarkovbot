@@ -6,15 +6,15 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `aliases` (
-  `alias` varchar(255) NOT NULL,
-  `command` varchar(255) NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `alias` varchar(191) NOT NULL,
+  `command` varchar(191) NOT NULL,
+  `description` varchar(191) NOT NULL,
   PRIMARY KEY (`alias`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `commands`;
 CREATE TABLE `commands` (
-  `command` varchar(255) NOT NULL,
+  `command` varchar(191) NOT NULL,
   `active` tinyint(1) NOT NULL,
   `permission_rank` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`command`)
@@ -31,13 +31,13 @@ CREATE TABLE IF NOT EXISTS `messages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `options` (
-  `key` varchar(255) NOT NULL,
+  `key` varchar(191) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `tasks` (
-  `task` varchar(255) NOT NULL,
+  `task` varchar(191) NOT NULL,
   `active` tinyint(1) NOT NULL,
   `initial_delay` int NOT NULL,
   `period` int NOT NULL,
