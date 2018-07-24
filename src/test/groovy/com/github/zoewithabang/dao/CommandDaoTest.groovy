@@ -10,16 +10,24 @@ class CommandDaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     CommandDao commandDao
+    @Shared
+    CommandInfo command
+    @Shared
+    CommandInfo updatedCommand
+    @Shared
+    CommandInfo command2
 
     def setupSpec()
     {
         commandDao = new CommandDao(botProperties)
+        command = new CommandInfo("thisIsACommandName", true, 0)
+        updatedCommand = new CommandInfo("thisIsACommandName", false, 255)
+        command2 = new CommandInfo("thisIsAnotherCommandName", false, 255)
     }
 
     def "get a command"()
     {
         when:
-        def command = new CommandInfo("thisIsACommandName", true, 0)
         def retrievedCommand
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -38,13 +46,11 @@ class CommandDaoTest extends Specification implements DatabaseSpecTrait
     def "get all commands"()
     {
         when:
-        def command1 = new CommandInfo("thisIsACommandName", true, 0)
-        def command2 = new CommandInfo("thisIsAnotherCommandName", false, 255)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute("INSERT INTO commands (command, active, permission_rank) VALUES (?, ?, ?)",
-                        [command1.getCommand(), command1.getActive() ? 1 : 0, command1.getPermissionRank()])
+                        [command.getCommand(), command.getActive() ? 1 : 0, command.getPermissionRank()])
                 connection.execute("INSERT INTO commands (command, active, permission_rank) VALUES (?, ?, ?)",
                         [command2.getCommand(), command2.getActive() ? 1 : 0, command2.getPermissionRank()])
                 retrievedRows = commandDao.getAll(connection.getConnection())
@@ -54,7 +60,7 @@ class CommandDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() >= 2
-        retrievedRows.contains(command1)
+        retrievedRows.contains(command)
         retrievedRows.contains(command2)
         noExceptionThrown()
     }
@@ -62,7 +68,6 @@ class CommandDaoTest extends Specification implements DatabaseSpecTrait
     def "store a command"()
     {
         when:
-        def command = new CommandInfo("thisIsACommandName", true, 0)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -75,15 +80,13 @@ class CommandDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() == 1
-        (CommandInfo)retrievedRows.getAt(0) == command
+        (CommandInfo)retrievedRows[0] == command
         noExceptionThrown()
     }
 
     def "update a command"()
     {
         when:
-        def command = new CommandInfo("thisIsACommandName", true, 0)
-        def updatedCommand = new CommandInfo("thisIsACommandName", false, 255)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -98,14 +101,13 @@ class CommandDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() == 1
-        (CommandInfo)retrievedRows.getAt(0) == updatedCommand
+        (CommandInfo)retrievedRows[0] == updatedCommand
         noExceptionThrown()
     }
 
     def "delete a command"()
     {
         when:
-        def command = new CommandInfo("thisIsACommandName", true, 0)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -126,13 +128,11 @@ class CommandDaoTest extends Specification implements DatabaseSpecTrait
     def "get all active commands"()
     {
         when:
-        def command1 = new CommandInfo("thisIsACommandName", true, 0)
-        def command2 = new CommandInfo("thisIsAnotherCommandName", false, 255)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute("INSERT INTO commands (command, active, permission_rank) VALUES (?, ?, ?)",
-                        [command1.getCommand(), command1.getActive() ? 1 : 0, command1.getPermissionRank()])
+                        [command.getCommand(), command.getActive() ? 1 : 0, command.getPermissionRank()])
                 connection.execute("INSERT INTO commands (command, active, permission_rank) VALUES (?, ?, ?)",
                         [command2.getCommand(), command2.getActive() ? 1 : 0, command2.getPermissionRank()])
                 retrievedRows = commandDao.getAllCommandsWithActive(connection.getConnection(), true)
@@ -142,20 +142,18 @@ class CommandDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() >= 1
-        retrievedRows.contains(command1)
+        retrievedRows.contains(command)
         noExceptionThrown()
     }
 
     def "get all inactive commands"()
     {
         when:
-        def command1 = new CommandInfo("thisIsACommandName", true, 0)
-        def command2 = new CommandInfo("thisIsAnotherCommandName", false, 255)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute("INSERT INTO commands (command, active, permission_rank) VALUES (?, ?, ?)",
-                        [command1.getCommand(), command1.getActive() ? 1 : 0, command1.getPermissionRank()])
+                        [command.getCommand(), command.getActive() ? 1 : 0, command.getPermissionRank()])
                 connection.execute("INSERT INTO commands (command, active, permission_rank) VALUES (?, ?, ?)",
                         [command2.getCommand(), command2.getActive() ? 1 : 0, command2.getPermissionRank()])
                 retrievedRows = commandDao.getAllCommandsWithActive(connection.getConnection(), false)

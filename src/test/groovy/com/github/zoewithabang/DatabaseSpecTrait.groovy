@@ -1,6 +1,6 @@
 package com.github.zoewithabang
 
-import org.junit.Before
+import org.junit.BeforeClass
 
 trait DatabaseSpecTrait
 {
@@ -9,7 +9,7 @@ trait DatabaseSpecTrait
     Properties dbProperties
     String dbDriver
 
-    @Before
+    @BeforeClass
     def setupDatabaseSpec()
     {
         botProperties = new Properties()

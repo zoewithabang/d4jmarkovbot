@@ -10,16 +10,24 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     TaskDao taskDao
+    @Shared
+    TaskInfo task
+    @Shared
+    TaskInfo updatedTask
+    @Shared
+    TaskInfo task2
 
     def setupSpec()
     {
         taskDao = new TaskDao(botProperties)
+        task = new TaskInfo("thisIsATaskName", true, 0, 1)
+        updatedTask = new TaskInfo("thisIsATaskName", false, 10, 10)
+        task2 = new TaskInfo("thisIsAnotherTaskName", false, 10, 10)
     }
 
     def "get a task"()
     {
         when:
-        def task = new TaskInfo("thisIsATaskName", true, 0, 0)
         def retrievedTask
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -38,13 +46,11 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
     def "get all commands"()
     {
         when:
-        def task1 = new TaskInfo("thisIsATaskName", true, 0, 0)
-        def task2 = new TaskInfo("thisIsAnotherTaskName", false, 10, 10)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
-                        [task1.getTask(), task1.getActive() ? 1 : 0, task1.getInitialDelay(), task1.getPeriod()])
+                        [task.getTask(), task.getActive() ? 1 : 0, task.getInitialDelay(), task.getPeriod()])
                 connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
                         [task2.getTask(), task2.getActive() ? 1 : 0, task2.getInitialDelay(), task2.getPeriod()])
                 retrievedRows = taskDao.getAll(connection.getConnection())
@@ -54,7 +60,7 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() >= 2
-        retrievedRows.contains(task1)
+        retrievedRows.contains(task)
         retrievedRows.contains(task2)
         noExceptionThrown()
     }
@@ -62,7 +68,6 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
     def "store a command"()
     {
         when:
-        def task = new TaskInfo("thisIsATaskName", true, 0, 0)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -75,15 +80,13 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() == 1
-        (TaskInfo)retrievedRows.getAt(0) == task
+        (TaskInfo)retrievedRows[0] == task
         noExceptionThrown()
     }
 
     def "update a command"()
     {
         when:
-        def task = new TaskInfo("thisIsATaskName", true, 0, 0)
-        def updatedTask = new TaskInfo("thisIsATaskName", false, 10, 10)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -98,14 +101,13 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() == 1
-        (TaskInfo)retrievedRows.getAt(0) == updatedTask
+        (TaskInfo)retrievedRows[0] == updatedTask
         noExceptionThrown()
     }
 
     def "delete a command"()
     {
         when:
-        def task = new TaskInfo("thisIsATaskName", true, 0, 0)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -126,13 +128,11 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
     def "get all active commands"()
     {
         when:
-        def task1 = new TaskInfo("thisIsATaskName", true, 0, 0)
-        def task2 = new TaskInfo("thisIsAnotherTaskName", false, 10, 10)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
-                        [task1.getTask(), task1.getActive() ? 1 : 0, task1.getInitialDelay(), task1.getPeriod()])
+                        [task.getTask(), task.getActive() ? 1 : 0, task.getInitialDelay(), task.getPeriod()])
                 connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
                         [task2.getTask(), task2.getActive() ? 1 : 0, task2.getInitialDelay(), task2.getPeriod()])
                 retrievedRows = taskDao.getAllWithActive(connection.getConnection(), true)
@@ -142,20 +142,18 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() >= 1
-        retrievedRows.contains(task1)
+        retrievedRows.contains(task)
         noExceptionThrown()
     }
 
     def "get all inactive commands"()
     {
         when:
-        def task1 = new TaskInfo("thisIsATaskName", true, 0, 0)
-        def task2 = new TaskInfo("thisIsAnotherTaskName", false, 10, 10)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
-                        [task1.getTask(), task1.getActive() ? 1 : 0, task1.getInitialDelay(), task1.getPeriod()])
+                        [task.getTask(), task.getActive() ? 1 : 0, task.getInitialDelay(), task.getPeriod()])
                 connection.execute("INSERT INTO tasks (task, active, initial_delay, period) VALUES (?, ?, ?, ?)",
                         [task2.getTask(), task2.getActive() ? 1 : 0, task2.getInitialDelay(), task2.getPeriod()])
                 retrievedRows = taskDao.getAllWithActive(connection.getConnection(), false)

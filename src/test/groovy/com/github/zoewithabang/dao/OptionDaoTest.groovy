@@ -10,16 +10,24 @@ class OptionDaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     OptionDao optionDao
+    @Shared
+    Option option
+    @Shared
+    Option updatedOption
+    @Shared
+    Option option2
 
     def setupSpec()
     {
         optionDao = new OptionDao(botProperties)
+        option = new Option("thisIsATestKey", "thisIsATestValue")
+        updatedOption = new Option("thisIsAnotherTestKey", "thisIsAnotherTestValue")
+        option2 = new Option("thisIsTestKey2", "thisIsTestValue2")
     }
 
     def "get an option"()
     {
         when:
-        def option = new Option("thisIsATestKey", "thisIsATestValue")
         def retrievedOption
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -38,13 +46,11 @@ class OptionDaoTest extends Specification implements DatabaseSpecTrait
     def "get all options"()
     {
         when:
-        def option1 = new Option("thisIsATestKey", "thisIsATestValue")
-        def option2 = new Option("thisIsAnotherTestKey", "thisIsAnotherTestValue")
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute("INSERT INTO options (`key`, `value`) VALUES (?, ?)",
-                        [option1.getKey(), option1.getValue()])
+                        [option.getKey(), option.getValue()])
                 connection.execute("INSERT INTO options (`key`, `value`) VALUES (?, ?)",
                         [option2.getKey(), option2.getValue()])
                 retrievedRows = optionDao.getAll(connection.getConnection())
@@ -54,7 +60,7 @@ class OptionDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() >= 2
-        retrievedRows.contains(option1)
+        retrievedRows.contains(option)
         retrievedRows.contains(option2)
         noExceptionThrown()
     }
@@ -62,7 +68,6 @@ class OptionDaoTest extends Specification implements DatabaseSpecTrait
     def "store an option"()
     {
         when:
-        def option = new Option("thisIsATestKey", "thisIsATestValue")
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -75,15 +80,13 @@ class OptionDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() == 1
-        (Option)retrievedRows.getAt(0) == option
+        (Option)retrievedRows[0] == option
         noExceptionThrown()
     }
 
     def "update an option"()
     {
         when:
-        def option = new Option("thisIsATestKey", "thisIsATestValue")
-        def updatedOption = new Option("thisIsATestKey", "thisIsAnUpdatedTestValue")
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -98,14 +101,13 @@ class OptionDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() == 1
-        (Option)retrievedRows.getAt(0) == updatedOption
+        (Option)retrievedRows[0] == updatedOption
         noExceptionThrown()
     }
 
     def "delete an option"()
     {
         when:
-        def option = new Option("thisIsATestKey", "thisIsATestValue")
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->

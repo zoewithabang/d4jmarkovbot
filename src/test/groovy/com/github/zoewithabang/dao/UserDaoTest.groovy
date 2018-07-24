@@ -14,16 +14,24 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     UserDao userDao
+    @Shared
+    UserData user
+    @Shared
+    UserData updatedUser
+    @Shared
+    UserData user2
 
     def setupSpec()
     {
         userDao = new UserDao(botProperties)
+        user = new UserData("thisIsATestId", true, 0)
+        updatedUser = new UserData("thisIsATestId", false, 255)
+        user2 = new UserData("thisIsAnotherTestId", false, 255)
     }
 
     def "get a user"()
     {
         when:
-        def user = new UserData("thisIsATestId", true, 0)
         def retrievedUser
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -42,13 +50,11 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait
     def "get all users"()
     {
         when:
-        def user1 = new UserData("thisIsATestId", true, 0)
-        def user2 = new UserData("thisIsAnotherTestId", false, 255)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
                 connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
-                        [user1.getId(), user1.getTracked() ? 1 : 0, user1.getPermissionRank()])
+                        [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
                 connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
                         [user2.getId(), user2.getTracked() ? 1 : 0, user2.getPermissionRank()])
                 retrievedRows = userDao.getAll(connection.getConnection())
@@ -58,7 +64,7 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() >= 2
-        retrievedRows.contains(user1)
+        retrievedRows.contains(user)
         retrievedRows.contains(user2)
         noExceptionThrown()
     }
@@ -79,15 +85,13 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() == 1
-        (UserData)retrievedRows.getAt(0) == user
+        (UserData)retrievedRows[0] == user
         noExceptionThrown()
     }
 
     def "update a user"()
     {
         when:
-        def user = new UserData("thisIsATestId", true, 0)
-        def updatedUser = new UserData("thisIsATestId", false, 255)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -102,14 +106,13 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait
 
         then:
         retrievedRows.size() == 1
-        (UserData)retrievedRows.getAt(0) == updatedUser
+        (UserData)retrievedRows[0] == updatedUser
         noExceptionThrown()
     }
 
     def "delete a user"()
     {
         when:
-        def user = new UserData("thisIsATestId", true, 0)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -130,8 +133,7 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait
     def "get a user with messages"()
     {
         when:
-        def user = new UserData("thisIsATestId", true, 0)
-        def message1 = new MessageData("thisIsAMessageId", "thisIsATestId", "thisIsATestContent", Instant.now().toEpochMilli() - 1000)
+        def message = new MessageData("thisIsAMessageId", "thisIsATestId", "thisIsATestContent", Instant.now().toEpochMilli() - 1000)
         def message2 = new MessageData("thisIsAnotherMessageId", "thisIsATestId", "thisIsAnotherTestContent", Instant.now().toEpochMilli())
         def retrievedUser
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
@@ -139,9 +141,9 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait
                 connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
                         [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
                 connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
-                        [message1.getId(), message1.getUserId(), message1.getContent(), new Timestamp(message1.getTimestampLong())])
+                        [message.getId(), message.getUserId(), message.getContent(), message.getTimestampTimestamp()])
                 connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
-                        [message2.getId(), message2.getUserId(), message2.getContent(), new Timestamp(message2.getTimestampLong())])
+                        [message2.getId(), message2.getUserId(), message2.getContent(), message2.getTimestampTimestamp()])
                 retrievedUser = userDao.getWithMessages(connection.getConnection(), user.getId())
                 transaction.rollback()
             }
@@ -150,7 +152,7 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait
         then:
         retrievedUser == user
         retrievedUser.getMessages().size() == 2
-        retrievedUser.getMessages().contains(message1)
+        retrievedUser.getMessages().contains(message)
         retrievedUser.getMessages().contains(message2)
         noExceptionThrown()
     }
