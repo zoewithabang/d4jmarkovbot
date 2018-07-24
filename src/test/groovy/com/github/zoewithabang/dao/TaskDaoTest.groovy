@@ -43,7 +43,7 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
         noExceptionThrown()
     }
 
-    def "get all commands"()
+    def "get all tasks"()
     {
         when:
         def retrievedRows
@@ -65,7 +65,7 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
         noExceptionThrown()
     }
 
-    def "store a command"()
+    def "store a task"()
     {
         when:
         def retrievedRows
@@ -84,7 +84,7 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
         noExceptionThrown()
     }
 
-    def "update a command"()
+    def "update a task"()
     {
         when:
         def retrievedRows
@@ -105,7 +105,7 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
         noExceptionThrown()
     }
 
-    def "delete a command"()
+    def "delete a task"()
     {
         when:
         def retrievedRows
@@ -125,7 +125,7 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
         noExceptionThrown()
     }
 
-    def "get all active commands"()
+    def "get all active tasks"()
     {
         when:
         def retrievedRows
@@ -146,7 +146,7 @@ class TaskDaoTest extends Specification implements DatabaseSpecTrait
         noExceptionThrown()
     }
 
-    def "get all inactive commands"()
+    def "get all inactive tasks"()
     {
         when:
         def retrievedRows
