@@ -1,5 +1,7 @@
 package com.github.zoewithabang.dao
 
+import com.github.zoewithabang.BotManager
+import com.github.zoewithabang.TestHelper
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -13,10 +15,7 @@ class DaoTest extends Specification
 
     def setupSpec()
     {
-        InputStream zeroBotPropertyStream = getClass().getClassLoader().getResourceAsStream("zerobot.properties")
-        Properties botProperties = new Properties()
-        botProperties.load(zeroBotPropertyStream)
-        dao = new Dao(botProperties) {
+        dao = new Dao(TestHelper.getBotProperties()) {
             Object get(Connection connection, Object id) throws SQLException { return null }
 
             List getAll(Connection connection) throws SQLException { return null }

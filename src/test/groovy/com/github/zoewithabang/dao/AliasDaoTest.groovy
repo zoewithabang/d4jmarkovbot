@@ -1,5 +1,6 @@
 package com.github.zoewithabang.dao
 
+import com.github.zoewithabang.TestHelper
 import com.github.zoewithabang.model.Alias
 import groovy.sql.Sql
 import spock.lang.Shared
@@ -18,20 +19,12 @@ class AliasDaoTest extends Specification
 
     def setupSpec()
     {
-        InputStream zeroBotPropertyStream = getClass().getClassLoader().getResourceAsStream("zerobot.properties")
-        Properties botProperties = new Properties()
-        botProperties.load(zeroBotPropertyStream)
-        aliasDao = new AliasDao(botProperties)
+        Properties botProperties = TestHelper.getBotProperties()
+        dbUrl = TestHelper.getDbUrl(botProperties)
+        dbProperties = TestHelper.getDbProperties(botProperties)
+        dbDriver = TestHelper.getDbDriver()
 
-        dbUrl = "jdbc:mysql://" + botProperties.getProperty("dbaddress") + ":" + botProperties.getProperty("dbport") + "/" + botProperties.getProperty("dbdatabase")
-        dbProperties = new Properties()
-        dbProperties.setProperty("user", botProperties.getProperty("dbuser"))
-        dbProperties.setProperty("password", botProperties.getProperty("dbpassword"))
-        dbProperties.setProperty("useSSL", "true")
-        dbProperties.setProperty("verifyServerCertificate", "false")
-        dbProperties.setProperty("useUnicode", "yes")
-        dbProperties.setProperty("characterEncoding", "UTF-8")
-        dbDriver = "com.mysql.jdbc.Driver"
+        aliasDao = new AliasDao(botProperties)
     }
 
     def "get an alias"()
