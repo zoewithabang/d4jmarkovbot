@@ -1,1 +1,1 @@
-# ZeroBot
+# ZeroBot [![Build Status](https://travis-ci.org/zoewithabang/zerobot.svg?branch=master)](https://travis-ci.org/zoewithabang/zerobot)
