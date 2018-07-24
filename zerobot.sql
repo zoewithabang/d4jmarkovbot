@@ -43,3 +43,25 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `period` int NOT NULL,
   PRIMARY KEY (`task`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('alias', 1, 10);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('aliases', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('cat', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('command', 1, 255);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('commands', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('getposts', 1, 20);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('help', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('markov', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('music', 0, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('np', 0, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('rank', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('user', 1, 5);
+
+INSERT INTO options (`key`, `value`) VALUES ('colour', '#FACFFF');
+INSERT INTO options (`key`, `value`) VALUES ('cytube_log_location', '/home/example/cytube/chanlogs/channel.log');
+INSERT INTO options (`key`, `value`) VALUES ('cytube_url', 'https://www.example.com/r/channel');
+INSERT INTO options (`key`, `value`) VALUES ('markov_message_count', '200000');
+INSERT INTO options (`key`, `value`) VALUES ('markov_output_length', '20');
+INSERT INTO options (`key`, `value`) VALUES ('name', 'ZeroBot');
+
+INSERT INTO tasks (`task`, `active`, `initial_delay`, `period`) VALUES ('cytubeNp', 0, 2, 2);
