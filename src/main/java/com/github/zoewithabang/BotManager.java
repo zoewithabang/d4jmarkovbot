@@ -76,7 +76,7 @@ class BotManager
             String value = System.getProperty(botName + key);
             if(value == null)
             {
-                LOGGER.error("No value found for bot {} and property key {}.", botName, key);
+                LOGGER.error("No property value found for {}.", botName + key);
                 throw new NullPointerException("Null value for required key.");
             }
             properties.put(key, value);
