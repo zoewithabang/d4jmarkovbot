@@ -22,6 +22,7 @@ class AliasDaoTest extends Specification implements DatabaseSpecTrait
         aliasDao = new AliasDao(botProperties)
         alias = new Alias("thisIsATestAlias", "thisIsATestCommand", "thisIsATestDescription")
         updatedAlias = new Alias("thisIsATestAlias", "thisIsAnUpdatedTestCommand", "thisIsAnUpdatedTestDescription")
+        alias2 = new Alias("thisIsAnotherTestAlias", "thisIsAnotherTestCommand", "thisIsAnotherTestDescription")
     }
 
     def "get an alias"()

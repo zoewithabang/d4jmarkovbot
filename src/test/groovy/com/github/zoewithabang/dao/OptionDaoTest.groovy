@@ -21,7 +21,7 @@ class OptionDaoTest extends Specification implements DatabaseSpecTrait
     {
         optionDao = new OptionDao(botProperties)
         option = new Option("thisIsATestKey", "thisIsATestValue")
-        updatedOption = new Option("thisIsAnotherTestKey", "thisIsAnotherTestValue")
+        updatedOption = new Option("thisIsATestKey", "thisIsAnotherTestValue")
         option2 = new Option("thisIsTestKey2", "thisIsTestValue2")
     }
 
