@@ -1,29 +1,18 @@
 package com.github.zoewithabang.dao
 
-import com.github.zoewithabang.TestHelper
+import com.github.zoewithabang.DatabaseSpecTrait
 import com.github.zoewithabang.model.Alias
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-class AliasDaoTest extends Specification
+class AliasDaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     AliasDao aliasDao
-    @Shared
-    String dbUrl
-    @Shared
-    Properties dbProperties
-    @Shared
-    String dbDriver
 
     def setupSpec()
     {
-        Properties botProperties = TestHelper.getBotProperties()
-        dbUrl = TestHelper.getDbUrl(botProperties)
-        dbProperties = TestHelper.getDbProperties(botProperties)
-        dbDriver = TestHelper.getDbDriver()
-
         aliasDao = new AliasDao(botProperties)
     }
 

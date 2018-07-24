@@ -1,30 +1,18 @@
 package com.github.zoewithabang.dao
 
-import com.github.zoewithabang.BotManager
-import com.github.zoewithabang.TestHelper
+import com.github.zoewithabang.DatabaseSpecTrait
 import com.github.zoewithabang.model.CommandInfo
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-class CommandDaoTest extends Specification
+class CommandDaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     CommandDao commandDao
-    @Shared
-    String dbUrl
-    @Shared
-    Properties dbProperties
-    @Shared
-    String dbDriver
 
     def setupSpec()
     {
-        Properties botProperties = TestHelper.getBotProperties()
-        dbUrl = TestHelper.getDbUrl(botProperties)
-        dbProperties = TestHelper.getDbProperties(botProperties)
-        dbDriver = TestHelper.getDbDriver()
-
         commandDao = new CommandDao(botProperties)
     }
 

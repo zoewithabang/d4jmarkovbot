@@ -1,7 +1,6 @@
 package com.github.zoewithabang.dao
 
-import com.github.zoewithabang.BotManager
-import com.github.zoewithabang.TestHelper
+import com.github.zoewithabang.DatabaseSpecTrait
 import com.github.zoewithabang.model.MessageData
 import com.github.zoewithabang.model.UserData
 import groovy.sql.Sql
@@ -11,24 +10,13 @@ import spock.lang.Specification
 import java.sql.Timestamp
 import java.time.Instant
 
-class MessageDaoTest extends Specification
+class MessageDaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     MessageDao messageDao
-    @Shared
-    String dbUrl
-    @Shared
-    Properties dbProperties
-    @Shared
-    String dbDriver
 
     def setupSpec()
     {
-        Properties botProperties = TestHelper.getBotProperties()
-        dbUrl = TestHelper.getDbUrl(botProperties)
-        dbProperties = TestHelper.getDbProperties(botProperties)
-        dbDriver = TestHelper.getDbDriver()
-
         messageDao = new MessageDao(botProperties)
     }
 

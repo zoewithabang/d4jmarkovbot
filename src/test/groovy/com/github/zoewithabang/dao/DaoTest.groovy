@@ -1,21 +1,20 @@
 package com.github.zoewithabang.dao
 
-import com.github.zoewithabang.BotManager
-import com.github.zoewithabang.TestHelper
+import com.github.zoewithabang.DatabaseSpecTrait
 import spock.lang.Shared
 import spock.lang.Specification
 
 import java.sql.Connection
 import java.sql.SQLException
 
-class DaoTest extends Specification
+class DaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     Dao dao
 
     def setupSpec()
     {
-        dao = new Dao(TestHelper.getBotProperties()) {
+        dao = new Dao(botProperties) {
             Object get(Connection connection, Object id) throws SQLException { return null }
 
             List getAll(Connection connection) throws SQLException { return null }

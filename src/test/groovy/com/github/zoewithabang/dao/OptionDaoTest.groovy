@@ -1,30 +1,18 @@
 package com.github.zoewithabang.dao
 
-import com.github.zoewithabang.BotManager
-import com.github.zoewithabang.TestHelper
+import com.github.zoewithabang.DatabaseSpecTrait
 import com.github.zoewithabang.model.Option
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-class OptionDaoTest extends Specification
+class OptionDaoTest extends Specification implements DatabaseSpecTrait
 {
     @Shared
     OptionDao optionDao
-    @Shared
-    String dbUrl
-    @Shared
-    Properties dbProperties
-    @Shared
-    String dbDriver
 
     def setupSpec()
     {
-        Properties botProperties = TestHelper.getBotProperties()
-        dbUrl = TestHelper.getDbUrl(botProperties)
-        dbProperties = TestHelper.getDbProperties(botProperties)
-        dbDriver = TestHelper.getDbDriver()
-
         optionDao = new OptionDao(botProperties)
     }
 
