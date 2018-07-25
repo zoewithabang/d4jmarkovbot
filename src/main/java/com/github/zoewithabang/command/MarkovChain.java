@@ -205,7 +205,7 @@ public class MarkovChain implements ICommand
         String title3 = prefix + COMMAND + " server";
         String content3 = "Frankstein the whole server together for a post.";
         String title4 = "Additional notes:";
-        String content4 = "Users must have their posts stored before this command can be used for them." + "\n"
+        String content4 = "Users must have their posts stored before this command can be used for them." + "\n\n"
             + "For any of the above commands, append one or more seed words in quotes like `" + prefix + COMMAND + " server \"I love\"` to pick the sentence start!";
         
         EmbedBuilder builder = new EmbedBuilder();
@@ -253,6 +253,7 @@ public class MarkovChain implements ICommand
                 {
                     throw new IllegalArgumentException("Type server does not support specified users, found " + users.size());
                 }
+                break;
             default:
                 throw new IllegalArgumentException("Unknown MarkovChainCommandType, cannot validate users.");
         }
