@@ -222,14 +222,22 @@ public class MarkovChain implements ICommand
     {
         String argString = String.join(" ", args);
         
-        if(StringUtils.countMatches(argString, '"') != 2)
+        if(StringUtils.countMatches(argString, '"') == 2)
+        {
+            String seedWordString = argString.substring(argString.indexOf('"') + 1, argString.lastIndexOf('"'));
+            return Arrays.asList(seedWordString.split(" "));
+        }
+        else if(StringUtils.countMatches(argString, '“') == 1
+            && StringUtils.countMatches(argString, '”') == 1)
+        {
+            String seedWordString = argString.substring(argString.indexOf('“') + 1, argString.lastIndexOf('”'));
+            return Arrays.asList(seedWordString.split(" "));
+        }
+        else
         {
             LOGGER.warn("Args [{}] did not contain a single set of closed quotes, running with no seed words.", argString);
             return Collections.emptyList();
         }
-        
-        String seedWordString = argString.substring(argString.indexOf('"') + 1, argString.lastIndexOf('"'));
-        return Arrays.asList(seedWordString.split(" "));
     }
     
     protected void validateUsers(List<IUser> users, MarkovChainCommandType commandType)

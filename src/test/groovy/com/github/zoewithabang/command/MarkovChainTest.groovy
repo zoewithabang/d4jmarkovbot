@@ -53,4 +53,15 @@ class MarkovChainTest extends Specification
         seedWords.contains("seed")
         seedWords.contains("words")
     }
+
+    def "seed words defined with fancy quotes are still recognised"()
+    {
+        when:
+        def seedWords = markovChain.getSeedWords(["!command", "“seed", "words”", "<@realUser>"])
+
+        then:
+        seedWords.size() == 2
+        seedWords.contains("seed")
+        seedWords.contains("words")
+    }
 }
