@@ -1,1 +1,1 @@
-# ZeroBot [![Build Status](https://travis-ci.org/zoewithabang/zerobot.svg?branch=master)](https://travis-ci.org/zoewithabang/zerobot)
+# ZeroBot [![Build Status](https://travis-ci.org/zoewithabang/zerobot.svg?branch=master)](https://travis-ci.org/zoewithabang/zerobot) [![CodeFactor](https://www.codefactor.io/repository/github/zoewithabang/zerobot/badge/master)](https://www.codefactor.io/repository/github/zoewithabang/zerobot/overview/master)
