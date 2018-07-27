@@ -65,3 +65,5 @@ INSERT INTO options (`key`, `value`) VALUES ('markov_output_length', '20');
 INSERT INTO options (`key`, `value`) VALUES ('name', 'ZeroBot');
 
 INSERT INTO tasks (`task`, `active`, `initial_delay`, `period`) VALUES ('cytubeNp', 0, 2, 2);
+
+INSERT INTO users (`id`, `tracked`, `permission_rank`) VALUES ('insertyouridhere', 1, 255);
