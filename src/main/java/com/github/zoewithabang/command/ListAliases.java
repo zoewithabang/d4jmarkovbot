@@ -75,7 +75,7 @@ public class ListAliases implements ICommand
         for(Alias alias : aliases)
         {
             String title = prefix + alias.getAlias();
-            String content = prefix + alias.getCommand() + "\n" + alias.getDescription();
+            String content = "Command: " + prefix + alias.getCommand() + "\n" + "Description: " + alias.getDescription();
             builder.appendField(title, content, false);
         }
         
