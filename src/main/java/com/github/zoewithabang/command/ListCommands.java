@@ -108,8 +108,9 @@ public class ListCommands implements ICommand
         String commandDesc = "Enable/disable commands and edit their assigned permission ranks.";
         String commandsDesc = "Show this list of commands!";
         String rankDesc = "Get your own or another user's permission rank on the server.";
-        String postsDesc = "Get the posts in this server for a user (for Markov chains).";
-        String helpDesc = "Describing a given command and how it can be used.";
+        String postsDesc = "Get the posts in this server for a user (for Markov chains).\n" +
+            "**Please ask for user permission before storing posts.**";
+        String helpDesc = "Describe a given command and how it can be used.";
     
         String rankString;
         
