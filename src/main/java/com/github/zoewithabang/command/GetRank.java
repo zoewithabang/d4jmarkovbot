@@ -1,6 +1,7 @@
 package com.github.zoewithabang.command;
 
 import com.github.zoewithabang.bot.IBot;
+import com.github.zoewithabang.model.UserData;
 import com.github.zoewithabang.service.OptionService;
 import com.github.zoewithabang.service.UserService;
 import com.github.zoewithabang.util.DiscordHelper;
@@ -120,11 +121,12 @@ public class GetRank implements ICommand
     private void postUserRank(MessageReceivedEvent event, IUser user) throws SQLException
     {
         String userId = user.getStringID();
-        int rank;
+        String rank = "Rank ";
         
         try
         {
-            rank = userService.getUser(userId).getPermissionRank();
+            UserData userData = userService.getUser(userId);
+            rank += userData != null ? userData.getPermissionRank() : "0 (default)";
         }
         catch(SQLException e)
         {
@@ -134,8 +136,7 @@ public class GetRank implements ICommand
     
         EmbedBuilder builder = new EmbedBuilder();
         String title = user.getDisplayName(event.getGuild());
-        String content = "Rank " + rank;
-        builder.appendField(title, content, false);
+        builder.appendField(title, rank, false);
         builder.withThumbnail(user.getAvatarURL());
         builder.withColor(DiscordHelper.getColorOfTopRoleOfUser(user, event.getGuild()));
         
