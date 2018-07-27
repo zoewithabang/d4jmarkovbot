@@ -30,7 +30,7 @@ public class UserDao extends Dao<UserData, String>
             if(resultSet.next())
             {
                 String userId = resultSet.getString("id");
-                Boolean userTracked = resultSet.getBoolean("tracked");
+                Boolean userTracked = resultSet.getInt("tracked") == 1;
                 Integer permissionRank = resultSet.getInt("permission_rank");
                 user = new UserData(userId, userTracked, permissionRank);
             }
@@ -57,7 +57,7 @@ public class UserDao extends Dao<UserData, String>
             while(resultSet.next())
             {
                 String userId = resultSet.getString("id");
-                Boolean userTracked = resultSet.getBoolean("tracked");
+                Boolean userTracked = resultSet.getInt("tracked") == 1;
                 Integer permissionRank = resultSet.getInt("permission_rank");
                 userList.add(new UserData(userId, userTracked, permissionRank));
             }
@@ -79,7 +79,7 @@ public class UserDao extends Dao<UserData, String>
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
             statement.setString(1, user.getId());
-            statement.setBoolean(2, user.getTracked());
+            statement.setInt(2, user.getTracked() ? 1 : 0);
             statement.setInt(3, user.getPermissionRank());
             
             statement.executeUpdate();
@@ -98,7 +98,7 @@ public class UserDao extends Dao<UserData, String>
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setBoolean(1, user.getTracked());
+            statement.setInt(1, user.getTracked() ? 1 : 0);
             statement.setInt(2, user.getPermissionRank());
             statement.setString(3, user.getId());
             
@@ -153,7 +153,7 @@ public class UserDao extends Dao<UserData, String>
             if(resultSet.next())
             {
                 user.setId(resultSet.getString("users_id"));
-                user.setTracked(resultSet.getBoolean("users_tracked"));
+                user.setTracked(resultSet.getInt("users_tracked") == 1);
                 user.setPermissionRank(resultSet.getInt("users_permission_rank"));
     
                 do

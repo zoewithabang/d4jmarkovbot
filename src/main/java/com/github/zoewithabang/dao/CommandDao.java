@@ -31,7 +31,7 @@ public class CommandDao extends Dao<CommandInfo, String>
             
             if(resultSet.next())
             {
-                Boolean active = resultSet.getBoolean("active");
+                Boolean active = resultSet.getInt("active") == 1;
                 Integer permissionRank = resultSet.getInt("permission_rank");
                 command = new CommandInfo(commandString, active, permissionRank);
             }
@@ -58,7 +58,7 @@ public class CommandDao extends Dao<CommandInfo, String>
             while(resultSet.next())
             {
                 String command = resultSet.getString("command");
-                Boolean active = resultSet.getBoolean("active");
+                Boolean active = resultSet.getInt("active") == 1;
                 Integer permissionRank = resultSet.getInt("permission_rank");
                 commandList.add(new CommandInfo(command, active, permissionRank));
             }
@@ -80,7 +80,7 @@ public class CommandDao extends Dao<CommandInfo, String>
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
             statement.setString(1, command.getCommand());
-            statement.setBoolean(2, command.getActive());
+            statement.setInt(2, command.getActive() ? 1 : 0);
             statement.setInt(3, command.getPermissionRank());
         
             statement.executeUpdate();
@@ -99,7 +99,7 @@ public class CommandDao extends Dao<CommandInfo, String>
     
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setBoolean(1, command.getActive());
+            statement.setInt(1, command.getActive() ? 1 : 0);
             statement.setInt(2, command.getPermissionRank());
             statement.setString(3, command.getCommand());
         
@@ -136,7 +136,7 @@ public class CommandDao extends Dao<CommandInfo, String>
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setBoolean(1, active);
+            statement.setInt(1, active ? 1 : 0);
             
             ResultSet resultSet = statement.executeQuery();
             List<CommandInfo> commandList = new ArrayList<>();
