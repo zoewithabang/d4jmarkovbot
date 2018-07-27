@@ -212,6 +212,11 @@ public class ManageUser implements ICommand
     {
         if(authorCanGiveRank(author, requestedRank))
         {
+            if(!userService.userIsStored(userId))
+            {
+                addUser(channel, userId, false, userIdMarkdown);
+            }
+            
             updateUserRank(channel, userId, sendBotMessages, userIdMarkdown, requestedRank);
         }
         else
