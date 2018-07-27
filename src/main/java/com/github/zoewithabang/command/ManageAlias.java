@@ -165,6 +165,11 @@ public class ManageAlias implements ICommand
         aliasCommand = trimAndRemovePrefix(argGroups[1]);
         aliasDescription = argGroups[3].trim();
         
+        if(aliasName.isEmpty())
+        {
+            return false;
+        }
+        
         if(bot.getCommands().keySet().contains(aliasName))
         {
             LOGGER.warn("Command with the name '{}' already exists, aborting request to add alias.", aliasName);
@@ -220,6 +225,11 @@ public class ManageAlias implements ICommand
         aliasName = trimAndRemovePrefix(argGroups[0]);
         aliasCommand = trimAndRemovePrefix(argGroups[1]);
         aliasDescription = argGroups[3].trim();
+    
+        if(aliasName.isEmpty())
+        {
+            return false;
+        }
     
         try
         {
@@ -308,7 +318,7 @@ public class ManageAlias implements ICommand
         
         if(sendBotMessages)
         {
-            bot.sendMessage(eventChannel, "Alias added! Type '" + botProperties.getProperty("prefix") + aliasName + "' to use it (without the ' marks obvs).");
+            bot.sendMessage(eventChannel, "Alias added! Type `" + botProperties.getProperty("prefix") + aliasName + "` to use it!");
         }
     }
     
