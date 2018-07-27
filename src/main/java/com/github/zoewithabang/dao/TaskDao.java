@@ -31,7 +31,7 @@ public class TaskDao extends Dao<TaskInfo, String>
         
             if(resultSet.next())
             {
-                Boolean active = resultSet.getInt("active") == 1;
+                Boolean active = resultSet.getBoolean("active");
                 Integer initialDelay = resultSet.getInt("initial_delay");
                 Integer period = resultSet.getInt("period");
                 task = new TaskInfo(taskString, active, initialDelay, period);
@@ -59,7 +59,7 @@ public class TaskDao extends Dao<TaskInfo, String>
             while(resultSet.next())
             {
                 String taskString = resultSet.getString("task");
-                Boolean active = resultSet.getInt("active") == 1;
+                Boolean active = resultSet.getBoolean("active");
                 Integer initialDelay = resultSet.getInt("initial_delay");
                 Integer period = resultSet.getInt("period");
                 taskList.add(new TaskInfo(taskString, active, initialDelay, period));
@@ -82,7 +82,7 @@ public class TaskDao extends Dao<TaskInfo, String>
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
             statement.setString(1, task.getTask());
-            statement.setInt(2, task.getActive() ? 1 : 0);
+            statement.setBoolean(2, task.getActive());
             statement.setInt(3, task.getInitialDelay());
             statement.setInt(4, task.getPeriod());
         
@@ -102,7 +102,7 @@ public class TaskDao extends Dao<TaskInfo, String>
     
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setInt(1, task.getActive() ? 1 : 0);
+            statement.setBoolean(1, task.getActive());
             statement.setInt(2, task.getInitialDelay());
             statement.setInt(3, task.getPeriod());
             statement.setString(4, task.getTask());
@@ -140,7 +140,7 @@ public class TaskDao extends Dao<TaskInfo, String>
         
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
-            statement.setInt(1, active ? 1 : 0);
+            statement.setBoolean(1, active);
             
             ResultSet resultSet = statement.executeQuery();
             List<TaskInfo> taskList = new ArrayList<>();
