@@ -127,7 +127,7 @@ public class MarkovChain implements ICommand
         
         try
         {
-            output = markovChainBuilder.generateChain(seedWords, maxOutputLength);
+            output = markovChainBuilder.generateChain(seedWords, maxOutputLength, MARKOV_PREFIX_SIZE);
         }
         catch(Exception e)
         {

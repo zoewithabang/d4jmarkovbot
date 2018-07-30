@@ -63,7 +63,7 @@ class MarkovChainBuilderTest extends Specification
         when:
         MarkovChainBuilder.fixDanglingCharacters("Chain with a double  space")
         then:
-        notThrown(Exception)
+        noExceptionThrown()
     }
 
     def "multiline identify ending in punctuation"()
@@ -76,5 +76,19 @@ class MarkovChainBuilderTest extends Specification
         chain == "This is\n" +
                 "a multiline\n" +
                 "ending in a question mark?"
+    }
+
+    def "built markov table corrects for more than one space between words in source messages"()
+    {
+        when:
+        List<String> messages = new ArrayList<>()
+        messages.add("a double  space message")
+        MarkovChainBuilder markovChainBuilder = new MarkovChainBuilder(messages, 2)
+        TreeMap<String, List<String>> markovTable = markovChainBuilder.buildMarkovTable(messages, 2)
+
+        then:
+        markovTable.get("a double") == Arrays.asList("space")
+        markovTable.get("double space") == Arrays.asList("message")
+        noExceptionThrown()
     }
 }

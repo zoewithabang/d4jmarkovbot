@@ -11,21 +11,19 @@ public class MarkovChainBuilder
     private Logger LOGGER = Logging.getLogger();
     
     private final TreeMap<String, List<String>> markovTable;
-    private final int prefixSize;
     private final Random random = new Random();
     
     public MarkovChainBuilder(List<String> storedMessages, int prefixSize)
     {
-        this.prefixSize = prefixSize;
-        this.markovTable = buildMarkovTable(storedMessages);
+        this.markovTable = buildMarkovTable(storedMessages, prefixSize);
     }
     
-    public String generateChain(List<String> seedWords, int maxOutputSize)
+    public String generateChain(List<String> seedWords, int maxOutputSize, int prefixSize)
     {
-        return sanitizeChain(generateChainFromSeedWords(seedWords, maxOutputSize));
+        return sanitizeChain(generateChainFromSeedWords(seedWords, maxOutputSize, prefixSize));
     }
     
-    private String getInitialPrefix(List<String> seedWords)
+    private String getInitialPrefix(List<String> seedWords, int prefixSize)
     {
         if(seedWords.isEmpty())
         {
@@ -81,9 +79,9 @@ public class MarkovChainBuilder
         }
     }
     
-    private String generateChainFromSeedWords(List<String> seedWords, int maxOutputSize)
+    private String generateChainFromSeedWords(List<String> seedWords, int maxOutputSize, int prefixSize)
     {
-        String initialPrefix = getInitialPrefix(seedWords);
+        String initialPrefix = getInitialPrefix(seedWords, prefixSize);
         
         if(initialPrefix.isEmpty())
         {
@@ -216,13 +214,14 @@ public class MarkovChainBuilder
         }
     }
     
-    private TreeMap<String, List<String>> buildMarkovTable(List<String> storedMessages)
+    protected TreeMap<String, List<String>> buildMarkovTable(List<String> storedMessages, int prefixSize)
     {
         TreeMap<String, List<String>> markovTable = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Pattern multiSpace = Pattern.compile(" +");
         
         for(String message : storedMessages)
         {
-            List<String> words = new ArrayList<>(Arrays.asList(message.trim().split(" ")));
+            List<String> words = new ArrayList<>(Arrays.asList(multiSpace.matcher(message).replaceAll(" ").split(" ")));
             List<WordChain> wordChains = getAllWordChains(words, prefixSize);
             
             wordChains.forEach((wordChain) -> {
