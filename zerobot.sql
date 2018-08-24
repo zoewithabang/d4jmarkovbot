@@ -49,6 +49,7 @@ INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('aliases',
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('cat', 1, 0);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('command', 1, 255);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('commands', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('dog', 1, 0);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('getposts', 1, 20);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('help', 1, 0);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('markov', 1, 0);
@@ -57,9 +58,11 @@ INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('np', 0, 0
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('rank', 1, 0);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('user', 1, 5);
 
+INSERT INTO options (`key`, `value`) VALUES ('cat_api_key', '');
 INSERT INTO options (`key`, `value`) VALUES ('colour', '#FACFFF');
 INSERT INTO options (`key`, `value`) VALUES ('cytube_log_location', '/home/example/cytube/chanlogs/channel.log');
 INSERT INTO options (`key`, `value`) VALUES ('cytube_url', 'https://www.example.com/r/channel');
+INSERT INTO options (`key`, `value`) VALUES ('dog_api_key', '');
 INSERT INTO options (`key`, `value`) VALUES ('markov_message_count', '200000');
 INSERT INTO options (`key`, `value`) VALUES ('markov_output_length', '20');
 INSERT INTO options (`key`, `value`) VALUES ('name', 'ZeroBot');

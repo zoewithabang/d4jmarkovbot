@@ -231,7 +231,7 @@ public class ZeroBot implements IBot
         if(activeCommands.contains(ManageCommand.COMMAND)) { commands.put(ManageCommand.COMMAND, ManageCommand.class); }
         if(activeCommands.contains(GetRank.COMMAND)) { commands.put(GetRank.COMMAND, GetRank.class); }
         if(activeCommands.contains(HelpMessage.COMMAND)) { commands.put(HelpMessage.COMMAND, HelpMessage.class); }
-        
+        if(activeCommands.contains(GetDogPicture.COMMAND)) { commands.put(GetDogPicture.COMMAND, GetDogPicture.class); }
     }
     
     private void registerTasks() throws Exception

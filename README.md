@@ -25,8 +25,8 @@ If a user wants their stored posts removed, this automatically occurs when their
 If you have a CyTube server hosted on the same machine and have configured the options table in the database appropriately,
 you can use `music` and `np` to link a CyTube room and the currently playing song.
 
-### Cat!
-Use the `cat` command to get a cat picture!
+### Cat & Dog!
+Use the `cat` and `dog` commands to get cat and dog pictures!
 
 ### Command Aliases
 In order to not ping people constantly with `markov` commands, you can use `alias` to create a shorthand command alias! 
@@ -53,6 +53,13 @@ CREATE DATABASE zerobot;
 - In `zerobot.sql` in the project root directory, edit the last line to put your Discord user ID in as a replacement to 
 `insertyouridhere`, leaving the `''` around your ID. 
 [Click here if you do not know how to find your Discord user ID.](https://support.discordapp.com/hc/en-us/articles/206346498)
+- To get more cat and dog pictures, generate API keys on [The Cat API](https://thecatapi.com) and 
+[The Dog API](https://thedogapi.com) and insert them between the empty `''`s on these lines, also in `zerobot.sql`:
+```sql
+INSERT INTO options (`key`, `value`) VALUES ('cat_api_key', 'cat api key here');
+
+INSERT INTO options (`key`, `value`) VALUES ('dog_api_key', 'dog api key here');
+```
 - Run `zerobot.sql` on the new database that has been made, like below.
 ```
 mysql -u zerobot  -p zerobot < zerobot.sql
