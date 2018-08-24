@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -15,7 +16,7 @@ public class HttpRequestHelper
 {
     private static Logger LOGGER = Logging.getLogger();
     
-    public static HttpResponse performGetRequest(String urlString, String query, String charset) throws MalformedURLException, IOException
+    public static HttpResponse performGetRequest(String urlString, String query, Map<String, String> requestProperties) throws MalformedURLException, IOException
     {
         URL url;
         HttpURLConnection connection;
@@ -47,9 +48,9 @@ public class HttpRequestHelper
         try
         {
             connection = (HttpURLConnection)url.openConnection();
-            if(charset != null)
+            for(Map.Entry<String, String> entry : requestProperties.entrySet())
             {
-                connection.setRequestProperty("Accept-Charset", charset);
+                connection.setRequestProperty(entry.getKey(), entry.getValue());
             }
             
             int responseCode = connection.getResponseCode();
@@ -73,7 +74,7 @@ public class HttpRequestHelper
         }
         catch(IOException e)
         {
-            LOGGER.error("IOException on performing GET request for URL '{}' and charset '{}'.", url, charset, e);
+            LOGGER.error("IOException on performing GET request for URL '{}' and request properties '{}'.", url, requestProperties, e);
             throw e;
         }
     }

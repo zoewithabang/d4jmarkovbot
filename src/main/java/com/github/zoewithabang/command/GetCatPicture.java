@@ -12,9 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 public class GetCatPicture implements ICommand
 {
@@ -25,8 +23,8 @@ public class GetCatPicture implements ICommand
     private OptionService optionService;
     private Random random;
     
-    private final String CAT_API_SITE = "http://thecatapi.com";
-    private final String ENDPOINT_IMAGES_GET = "/api/images/get";
+    private final String CAT_API_SITE = "https://api.thecatapi.com/v1";
+    private final String ENDPOINT_IMAGES_GET = "/images/search";
     private final String[] FILE_TYPES = {"jpg", "png", "gif"};
 
     public GetCatPicture(IBot bot, Properties botProperties)
@@ -42,6 +40,8 @@ public class GetCatPicture implements ICommand
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
         IChannel eventChannel = event.getChannel();
+        String fileType;
+        Map<String, String> requestProperties = new HashMap<>();
         HttpResponse catPicture;
         
         if(!validateArgs(event, args))
@@ -54,16 +54,26 @@ public class GetCatPicture implements ICommand
             return;
         }
         
-        String fileType = FILE_TYPES[random.nextInt(FILE_TYPES.length)];
-
         try
         {
-            catPicture = getCatPicture(CAT_API_SITE + ENDPOINT_IMAGES_GET, "src", fileType);
+            fileType = FILE_TYPES[random.nextInt(FILE_TYPES.length)];
+            requestProperties.put("x-api-key", optionService.getOptionValue("cat_api_key"));
         }
         catch(Exception e)
         {
-            LOGGER.error("Exception occurred on getting cat picture URL.", e);
+            LOGGER.error("Exception occurred on setting headers and params.", e);
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 5001);
+            return;
+        }
+
+        try
+        {
+            catPicture = getCatPicture(CAT_API_SITE + ENDPOINT_IMAGES_GET, "src", fileType, requestProperties);
+        }
+        catch(Exception e)
+        {
+            LOGGER.error("Exception occurred on getting cat picture.", e);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 5002);
             return;
         }
         
@@ -76,7 +86,7 @@ public class GetCatPicture implements ICommand
         catch(Exception e)
         {
             LOGGER.error("Exception occurred on posting cat picture with source '{}'.", catPicture.getSource());
-            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 5002);
+            bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 5003);
             return;
         }
     }
@@ -100,11 +110,11 @@ public class GetCatPicture implements ICommand
         bot.sendEmbedMessage(channel, builder.build());
     }
     
-    private HttpResponse getCatPicture(String apiUrl, String dataFormat, String fileType) throws MalformedURLException, IOException, IllegalStateException
+    private HttpResponse getCatPicture(String apiUrl, String dataFormat, String fileType, Map<String, String> requestProperties) throws IOException, IllegalStateException
     {
         try
         {
-            HttpResponse response = HttpRequestHelper.performGetRequest(apiUrl, "format=" + dataFormat + "&type=" + fileType, null);
+            HttpResponse response = HttpRequestHelper.performGetRequest(apiUrl, "format=" + dataFormat + "&mime_types=" + fileType, requestProperties);
             
             if(response == null)
             {
