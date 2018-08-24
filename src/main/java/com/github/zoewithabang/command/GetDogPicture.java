@@ -25,7 +25,7 @@ public class GetDogPicture implements ICommand
     
     private final String DOG_API_SITE = "https://api.thedogapi.com/v1";
     private final String ENDPOINT_IMAGES_GET = "/images/search";
-    private final String[] FILE_TYPES = {"jpg", "png", "gif"};
+    private final String[] FILE_TYPES = {"jpg", "gif"};
 
     public GetDogPicture(IBot bot, Properties botProperties)
     {
