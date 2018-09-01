@@ -1,16 +1,14 @@
 package com.github.zoewithabang.dao
 
 import com.github.zoewithabang.DatabaseSpecTrait
+import com.github.zoewithabang.MessageSpecTrait
 import com.github.zoewithabang.UserSpecTrait
-import com.github.zoewithabang.model.MessageData
 import com.github.zoewithabang.model.UserData
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.time.Instant
-
-class UserDaoTest extends Specification implements DatabaseSpecTrait, UserSpecTrait
+class UserDaoTest extends Specification implements DatabaseSpecTrait, UserSpecTrait, MessageSpecTrait
 {
     @Shared
     UserDao userDao
@@ -63,7 +61,6 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait, UserSpecTr
     def "store a user"()
     {
         when:
-        def user = new UserData("thisIsATestId", true, 0)
         def retrievedRows
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
@@ -124,8 +121,6 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait, UserSpecTr
     def "get a user with messages"()
     {
         when:
-        def message = new MessageData("thisIsAMessageId", "thisIsATestId", "thisIsATestContent", Instant.now().toEpochMilli() - 1000)
-        def message2 = new MessageData("thisIsAnotherMessageId", "thisIsATestId", "thisIsAnotherTestContent", Instant.now().toEpochMilli())
         def retrievedUser
         Sql.withInstance(dbUrl, dbProperties, dbDriver) { connection ->
             connection.withTransaction() { transaction ->
