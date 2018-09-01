@@ -127,9 +127,9 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait, UserSpecTr
                 connection.execute("INSERT INTO users (id, tracked, permission_rank) VALUES (?, ?, ?)",
                         [user.getId(), user.getTracked() ? 1 : 0, user.getPermissionRank()])
                 connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
-                        [message.getId(), message.getUserId(), message.getContent(), message.getTimestampTimestamp()])
+                        [messageSameUser.getId(), messageSameUser.getUserId(), messageSameUser.getContent(), messageSameUser.getTimestampTimestamp()])
                 connection.execute("INSERT INTO messages (id, user_id, content, timestamp) VALUES (?, ?, ?, ?)",
-                        [message2.getId(), message2.getUserId(), message2.getContent(), message2.getTimestampTimestamp()])
+                        [messageSameUser2.getId(), messageSameUser2.getUserId(), messageSameUser2.getContent(), messageSameUser2.getTimestampTimestamp()])
                 retrievedUser = userDao.getWithMessages(connection.getConnection(), user.getId())
                 transaction.rollback()
             }
@@ -138,8 +138,8 @@ class UserDaoTest extends Specification implements DatabaseSpecTrait, UserSpecTr
         then:
         retrievedUser == user
         retrievedUser.getMessages().size() == 2
-        retrievedUser.getMessages().contains(message)
-        retrievedUser.getMessages().contains(message2)
+        retrievedUser.getMessages().contains(messageSameUser)
+        retrievedUser.getMessages().contains(messageSameUser2)
         noExceptionThrown()
     }
 }
