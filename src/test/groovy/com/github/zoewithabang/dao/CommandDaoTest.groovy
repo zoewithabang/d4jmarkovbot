@@ -1,28 +1,20 @@
 package com.github.zoewithabang.dao
 
+import com.github.zoewithabang.CommandSpecTrait
 import com.github.zoewithabang.DatabaseSpecTrait
 import com.github.zoewithabang.model.CommandInfo
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-class CommandDaoTest extends Specification implements DatabaseSpecTrait
+class CommandDaoTest extends Specification implements DatabaseSpecTrait, CommandSpecTrait
 {
     @Shared
     CommandDao commandDao
-    @Shared
-    CommandInfo command
-    @Shared
-    CommandInfo updatedCommand
-    @Shared
-    CommandInfo command2
 
     def setupSpec()
     {
         commandDao = new CommandDao(botProperties)
-        command = new CommandInfo("thisIsACommandName", true, 0)
-        updatedCommand = new CommandInfo("thisIsACommandName", false, 255)
-        command2 = new CommandInfo("thisIsAnotherCommandName", false, 255)
     }
 
     def "get a command"()

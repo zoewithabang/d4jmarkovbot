@@ -1,32 +1,23 @@
 package com.github.zoewithabang.dao
 
 import com.github.zoewithabang.DatabaseSpecTrait
+import com.github.zoewithabang.UserSpecTrait
 import com.github.zoewithabang.model.MessageData
 import com.github.zoewithabang.model.UserData
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.sql.Timestamp
 import java.time.Instant
 
-class UserDaoTest extends Specification implements DatabaseSpecTrait
+class UserDaoTest extends Specification implements DatabaseSpecTrait, UserSpecTrait
 {
     @Shared
     UserDao userDao
-    @Shared
-    UserData user
-    @Shared
-    UserData updatedUser
-    @Shared
-    UserData user2
 
     def setupSpec()
     {
         userDao = new UserDao(botProperties)
-        user = new UserData("thisIsATestId", true, 0)
-        updatedUser = new UserData("thisIsATestId", false, 255)
-        user2 = new UserData("thisIsAnotherTestId", false, 255)
     }
 
     def "get a user"()

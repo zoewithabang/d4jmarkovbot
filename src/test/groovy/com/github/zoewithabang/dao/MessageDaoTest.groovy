@@ -1,6 +1,8 @@
 package com.github.zoewithabang.dao
 
 import com.github.zoewithabang.DatabaseSpecTrait
+import com.github.zoewithabang.MessageSpecTrait
+import com.github.zoewithabang.UserSpecTrait
 import com.github.zoewithabang.model.MessageData
 import com.github.zoewithabang.model.UserData
 import groovy.sql.Sql
@@ -8,49 +10,15 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.sql.Timestamp
-import java.time.Instant
 
-class MessageDaoTest extends Specification implements DatabaseSpecTrait
+class MessageDaoTest extends Specification implements DatabaseSpecTrait, MessageSpecTrait, UserSpecTrait
 {
     @Shared
     MessageDao messageDao
-    @Shared
-    UserData user
-    @Shared
-    UserData user2
-    @Shared
-    UserData user3
-    @Shared
-    MessageData message
-    @Shared
-    MessageData updatedMessage
-    @Shared
-    MessageData message2
-    @Shared
-    MessageData message3
-    @Shared
-    MessageData messageSameUser
-    @Shared
-    MessageData messageSameUser2
-    @Shared
-    MessageData messageSameUser3
 
     def setupSpec()
     {
         messageDao = new MessageDao(botProperties)
-
-        user = new UserData("thisIsATestUser", true, 0)
-        user2 = new UserData("thisIsTestUser2", false, 255)
-        user3 = new UserData("thisIsTestUser3", true, 100)
-
-        message = new MessageData("thisIsATestId", "thisIsATestUser", "thisIsATestContent", Instant.now().toEpochMilli()- 10000)
-        updatedMessage = new MessageData("thisIsATestId", "thisIsTestUser2", "thisIsAnotherTestContent", Instant.now().toEpochMilli() - 1000)
-        message2 = new MessageData("thisIsTestId2", "thisIsTestUser2", "thisIsTestContent2", Instant.now().toEpochMilli() - 123456789)
-        message3 = new MessageData("thisIsTestId3", "thisIsTestUser3", "thisIsTestContent3", Instant.now().toEpochMilli() - 100000000)
-
-        messageSameUser = new MessageData("thisIsATestId", "thisIsATestUser", "thisIsATestContent", Instant.now().toEpochMilli()- 10000)
-        messageSameUser2 = new MessageData("thisIsATestId2", "thisIsATestUser", "thisIsATestContent2", Instant.now().toEpochMilli())
-        messageSameUser3 = new MessageData("thisIsATestId3", "thisIsATestUser", "thisIsATestContent3", Instant.now().toEpochMilli()- 123456789)
     }
 
     def "get a message"()

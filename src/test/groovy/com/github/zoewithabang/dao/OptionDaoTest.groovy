@@ -1,28 +1,20 @@
 package com.github.zoewithabang.dao
 
 import com.github.zoewithabang.DatabaseSpecTrait
+import com.github.zoewithabang.OptionSpecTrait
 import com.github.zoewithabang.model.Option
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-class OptionDaoTest extends Specification implements DatabaseSpecTrait
+class OptionDaoTest extends Specification implements DatabaseSpecTrait, OptionSpecTrait
 {
     @Shared
     OptionDao optionDao
-    @Shared
-    Option option
-    @Shared
-    Option updatedOption
-    @Shared
-    Option option2
 
     def setupSpec()
     {
         optionDao = new OptionDao(botProperties)
-        option = new Option("thisIsATestKey", "thisIsATestValue")
-        updatedOption = new Option("thisIsATestKey", "thisIsAnotherTestValue")
-        option2 = new Option("thisIsTestKey2", "thisIsTestValue2")
     }
 
     def "get an option"()

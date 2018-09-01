@@ -1,28 +1,20 @@
 package com.github.zoewithabang.dao
 
+import com.github.zoewithabang.AliasSpecTrait
 import com.github.zoewithabang.DatabaseSpecTrait
 import com.github.zoewithabang.model.Alias
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-class AliasDaoTest extends Specification implements DatabaseSpecTrait
+class AliasDaoTest extends Specification implements DatabaseSpecTrait, AliasSpecTrait
 {
     @Shared
     AliasDao aliasDao
-    @Shared
-    Alias alias
-    @Shared
-    Alias updatedAlias
-    @Shared
-    Alias alias2
 
     def setupSpec()
     {
         aliasDao = new AliasDao(botProperties)
-        alias = new Alias("thisIsATestAlias", "thisIsATestCommand", "thisIsATestDescription")
-        updatedAlias = new Alias("thisIsATestAlias", "thisIsAnUpdatedTestCommand", "thisIsAnUpdatedTestDescription")
-        alias2 = new Alias("thisIsAnotherTestAlias", "thisIsAnotherTestCommand", "thisIsAnotherTestDescription")
     }
 
     def "get an alias"()

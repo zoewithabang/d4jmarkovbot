@@ -1,28 +1,20 @@
 package com.github.zoewithabang.dao
 
 import com.github.zoewithabang.DatabaseSpecTrait
+import com.github.zoewithabang.TaskSpecTrait
 import com.github.zoewithabang.model.TaskInfo
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
 
-class TaskDaoTest extends Specification implements DatabaseSpecTrait
+class TaskDaoTest extends Specification implements DatabaseSpecTrait, TaskSpecTrait
 {
     @Shared
     TaskDao taskDao
-    @Shared
-    TaskInfo task
-    @Shared
-    TaskInfo updatedTask
-    @Shared
-    TaskInfo task2
 
     def setupSpec()
     {
         taskDao = new TaskDao(botProperties)
-        task = new TaskInfo("thisIsATaskName", true, 0, 1)
-        updatedTask = new TaskInfo("thisIsATaskName", false, 10, 10)
-        task2 = new TaskInfo("thisIsAnotherTaskName", false, 10, 10)
     }
 
     def "get a task"()
