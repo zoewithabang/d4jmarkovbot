@@ -4,7 +4,6 @@ import org.junit.Before
 
 trait DatabaseSpecTrait implements BotPropertiesTrait
 {
-    Properties botProperties
     String dbUrl
     Properties dbProperties
     String dbDriver
