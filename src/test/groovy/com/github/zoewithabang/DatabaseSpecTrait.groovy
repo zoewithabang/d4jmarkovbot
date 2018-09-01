@@ -2,7 +2,7 @@ package com.github.zoewithabang
 
 import org.junit.Before
 
-trait DatabaseSpecTrait implements BotPropertiesTrait
+trait DatabaseSpecTrait extends BotPropertiesTrait
 {
     String dbUrl
     Properties dbProperties
