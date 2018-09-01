@@ -1,9 +1,11 @@
 package com.github.zoewithabang
 
 import org.junit.Before
+import spock.lang.Shared
 
 trait BotPropertiesTrait
 {
+    @Shared
     Properties botProperties
 
     @Before
