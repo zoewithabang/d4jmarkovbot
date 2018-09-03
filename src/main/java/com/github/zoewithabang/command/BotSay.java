@@ -37,6 +37,7 @@ public class BotSay implements ICommand
     public void execute(MessageReceivedEvent event, List<String> args, boolean sendBotMessages)
     {
         IChannel eventChannel = event.getChannel();
+        boolean isStoredMessage = false;
     
         if(!validateArgs(event, args))
         {
@@ -57,6 +58,7 @@ public class BotSay implements ICommand
             else
             {
                 message = getStoredMessage(args.get(0));
+                isStoredMessage = true;
             }
         }
         catch(Exception e)
@@ -69,7 +71,9 @@ public class BotSay implements ICommand
         {
             String lastArg = args.get(args.size() - 1);
             
-            if(!lastArg.endsWith("\""))
+            if((isStoredMessage && args.size() == 2)
+                ||
+                (!isStoredMessage && !lastArg.endsWith("\"")))
             {
                 long channelId = Long.parseLong(lastArg);
                 channel = bot.getGuilds()
