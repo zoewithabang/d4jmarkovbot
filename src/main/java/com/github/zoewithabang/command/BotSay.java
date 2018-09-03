@@ -94,6 +94,7 @@ public class BotSay implements ICommand
             bot.postErrorMessage(eventChannel, sendBotMessages, COMMAND, 16002);
         }
         
+        LOGGER.info("Bot say run by user {} sending to channel {}.", event.getAuthor().getStringID(), event.getChannel().getStringID());
         bot.sendMessage(channel, message);
     }
     
