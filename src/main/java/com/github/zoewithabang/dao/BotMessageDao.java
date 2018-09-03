@@ -20,7 +20,7 @@ public class BotMessageDao extends Dao<BotMessage, String>
     @Override
     public BotMessage get(Connection connection, String name) throws SQLException
     {
-        String query = "SELECT * FROM bot_messages WHERE alias = ?;";
+        String query = "SELECT * FROM bot_messages WHERE `name` = ?;";
     
         try(PreparedStatement statement = connection.prepareStatement(query))
         {
