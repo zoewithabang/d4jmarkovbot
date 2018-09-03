@@ -135,9 +135,9 @@ public class ManageBotSay implements ICommand
     {
         String title1 = prefix + COMMAND + " add messageName \"the message to post\" \"description of message\"";
         String content1 = "Add a new message for me to be able to post.";
-        String title2 = prefix + COMMAND + " update aliasName \"updated message to post\" \"updated description of message\"";
+        String title2 = prefix + COMMAND + " update messageName \"updated message to post\" \"updated description of message\"";
         String content2 = "Update an existing message.";
-        String title3 = prefix + COMMAND + " delete aliasName";
+        String title3 = prefix + COMMAND + " delete messageName";
         String content3 = "Delete an existing message.";
     
         EmbedBuilder builder = new EmbedBuilder();
@@ -296,7 +296,7 @@ public class ManageBotSay implements ICommand
     
         if(sendBotMessages)
         {
-            bot.sendMessage(eventChannel, "Message added! Type `" + prefix + ManageBotSay.COMMAND + " " + botMessageName + "` to use it!");
+            bot.sendMessage(eventChannel, "Message added! Type `" + prefix + BotSay.COMMAND + " " + botMessageName + "` to use it!");
         }
     }
     
