@@ -205,6 +205,12 @@ public class ZeroBot implements IBot
     }
     
     @Override
+    public List<IGuild> getGuilds()
+    {
+        return client.getGuilds();
+    }
+    
+    @Override
     public void registerCommands() throws Exception
     {
         List<String> activeCommands;
@@ -232,6 +238,9 @@ public class ZeroBot implements IBot
         if(activeCommands.contains(GetRank.COMMAND)) { commands.put(GetRank.COMMAND, GetRank.class); }
         if(activeCommands.contains(HelpMessage.COMMAND)) { commands.put(HelpMessage.COMMAND, HelpMessage.class); }
         if(activeCommands.contains(GetDogPicture.COMMAND)) { commands.put(GetDogPicture.COMMAND, GetDogPicture.class); }
+        if(activeCommands.contains(BotSay.COMMAND)) { commands.put(BotSay.COMMAND, BotSay.class); }
+        if(activeCommands.contains(ListBotMessages.COMMAND)) { commands.put(ListBotMessages.COMMAND, ListBotMessages.class); }
+        if(activeCommands.contains(ManageBotSay.COMMAND)) { commands.put(ManageBotSay.COMMAND, ManageBotSay.class); }
     }
     
     private void registerTasks() throws Exception

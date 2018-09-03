@@ -111,6 +111,9 @@ public class ListCommands implements ICommand
         String postsDesc = "Get the posts in this server for a user (for Markov chains).\n" +
             "**Please ask for user permission before storing posts.**";
         String helpDesc = "Describe a given command and how it can be used.";
+        String botSayDesc = "Posts a pre-defined message.";
+        String botMessagesDesc = "Lists all pre-defined messages.";
+        String manageBotSayDesc = "Add, update or delete messages to post.";
     
         String rankString;
         
@@ -165,6 +168,12 @@ public class ListCommands implements ICommand
             rankString = getRankStringForCommandName(MarkovChain.COMMAND);
             builder.appendField(prefix + MarkovChain.COMMAND + rankString, markovDesc, false);
         }
+        //messages
+        if(isActiveCommand(ListBotMessages.COMMAND))
+        {
+            rankString = getRankStringForCommandName(ListBotMessages.COMMAND);
+            builder.appendField(prefix + ListBotMessages.COMMAND + rankString, botMessagesDesc, false);
+        }
         //music
         if(isActiveCommand(GetCyTube.COMMAND))
         {
@@ -182,6 +191,18 @@ public class ListCommands implements ICommand
         {
             rankString = getRankStringForCommandName(GetRank.COMMAND);
             builder.appendField(prefix + GetRank.COMMAND + rankString, rankDesc, false);
+        }
+        //say
+        if(isActiveCommand(BotSay.COMMAND))
+        {
+            rankString = getRankStringForCommandName(BotSay.COMMAND);
+            builder.appendField(prefix + BotSay.COMMAND + rankString, botSayDesc, false);
+        }
+        //setsay
+        if(isActiveCommand(ManageBotSay.COMMAND))
+        {
+            rankString = getRankStringForCommandName(ManageBotSay.COMMAND);
+            builder.appendField(prefix + ManageBotSay.COMMAND + rankString, manageBotSayDesc, false);
         }
         //user
         if(isActiveCommand(ManageUser.COMMAND))

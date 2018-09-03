@@ -12,6 +12,13 @@ CREATE TABLE IF NOT EXISTS `aliases` (
   PRIMARY KEY (`alias`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `bot_messages` (
+  `name` varchar(191) NOT NULL,
+  `message` varchar(1024) NOT NULL,
+  `description` varchar(191) NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `commands`;
 CREATE TABLE `commands` (
   `command` varchar(191) NOT NULL,
@@ -53,9 +60,12 @@ INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('dog', 1, 
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('getposts', 1, 20);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('help', 1, 0);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('markov', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('messages', 1, 0);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('music', 0, 0);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('np', 0, 0);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('rank', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('say', 1, 0);
+INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('setsay', 1, 5);
 INSERT INTO commands (`command`, `active`, `permission_rank`) VALUES ('user', 1, 5);
 
 INSERT INTO options (`key`, `value`) VALUES ('cat_api_key', '');

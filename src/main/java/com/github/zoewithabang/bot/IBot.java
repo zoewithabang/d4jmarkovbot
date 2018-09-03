@@ -3,12 +3,10 @@ package com.github.zoewithabang.bot;
 import com.github.zoewithabang.util.Logging;
 import org.slf4j.Logger;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.ActivityType;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.StatusType;
+import sx.blah.discord.handle.obj.*;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 public interface IBot
@@ -23,4 +21,5 @@ public interface IBot
     void updateNickname(String name);
     void postErrorMessage(IChannel channel, boolean sendErrorMessages, String command, Integer code);
     Map<String, Class> getCommands();
+    List<IGuild> getGuilds();
 }
