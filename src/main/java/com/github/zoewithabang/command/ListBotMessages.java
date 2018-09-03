@@ -69,7 +69,7 @@ public class ListBotMessages implements ICommand
     {
         EmbedBuilder builder = new EmbedBuilder();
     
-        builder.withAuthorName("List of aliases:");
+        builder.withAuthorName("List of messages:");
         builder.withColor(optionService.getBotColour());
     
         for(BotMessage botMessage : botMessages)
