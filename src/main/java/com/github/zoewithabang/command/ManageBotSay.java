@@ -296,7 +296,7 @@ public class ManageBotSay implements ICommand
     
         if(sendBotMessages)
         {
-            bot.sendMessage(eventChannel, "Message added! Type `" + botProperties.getProperty("prefix") + botMessageName + "` to use it!");
+            bot.sendMessage(eventChannel, "Message added! Type `" + prefix + ManageBotSay.COMMAND + " " + botMessageName + "` to use it!");
         }
     }
     
