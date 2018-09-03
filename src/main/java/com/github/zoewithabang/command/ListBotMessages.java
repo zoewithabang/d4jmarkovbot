@@ -74,8 +74,8 @@ public class ListBotMessages implements ICommand
     
         for(BotMessage botMessage : botMessages)
         {
-            String title = prefix + botMessage.getName();
-            String content = "Description: " + botMessage.getDescription();
+            String title = prefix + BotSay.COMMAND + " " + botMessage.getName();
+            String content = botMessage.getDescription();
             builder.appendField(title, content, false);
         }
     
