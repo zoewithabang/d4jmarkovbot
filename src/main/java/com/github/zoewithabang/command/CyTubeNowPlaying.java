@@ -101,7 +101,7 @@ public class CyTubeNowPlaying implements ICommand
     
     private void postNowPlayingMessage(MessageReceivedEvent event, CyTubeMedia nowPlaying, String url)
     {
-        String links = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ") || [Tune in~](" + url + ")";
+        String links = "[" + nowPlaying.getFullServiceName() + "](" + nowPlaying.getFullUrl() + ") || [Tune in~](" + url + "?queue=" + nowPlaying.getUrl() + ")";
         EmbedBuilder builder = new EmbedBuilder();
     
         //uD83C and uDFB5 make a musical note emoji
