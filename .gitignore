@@ -1,5 +1,7 @@
+.gradle/
 .idea/
-target/
+build/
+gradle/
 *.iml
 *bot.properties
 /*.log
