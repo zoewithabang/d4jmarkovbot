@@ -9,5 +9,7 @@ services: mysql
 before_install:
   - mysql -u root -e "CREATE DATABASE zerobot;"
   - mysql -u root zerobot < zerobot.sql
+  - chmod +x ./gradlew
+  - chmod +x ./gradle/wrapper/gradle-wrapper.jar
 script:
-  - mvn test -DargLine="-Dzerobottoken=X -Dzerobotprefix=! -Dzerobotdbuser=root -Dzerobotdbpassword= -Dzerobotdbaddress=localhost -Dzerobotdbport=3306 -Dzerobotdbdatabase=zerobot"
+  - ./gradlew build
