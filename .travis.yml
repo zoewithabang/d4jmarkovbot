@@ -10,5 +10,6 @@ before_install:
   - mysql -u root -e "CREATE DATABASE zerobot;"
   - mysql -u root zerobot < zerobot.sql
   - chmod +x ./gradlew
+  - chmod +x ./gradle/wrapper/gradle-wrapper.jar
 script:
   - ./gradlew build
